@@ -148,10 +148,10 @@ IPM <- COL18 %>% transmute(
   )
 
 # Cantidad privaciones adulto
-C_A = rowSums(IPM %>% select(starts_with("g0_A")), na.rm = T)
+IPM$C_A = rowSums(IPM %>% select(starts_with("g0_A")), na.rm = T)
 
 # Cantidad privaciones adulto mayor
-C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
+IPM$C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
 
 summary(C_A)
 summary(C_AM)
@@ -162,6 +162,25 @@ weighted.mean(C_A, IPM$factorex)
 
 mean(C_AM)
 weighted.mean(C_AM, IPM$factorex)
+
+## 
+IPM$AM_PMD = NA
+IPM$A_PMD = NA
+
+for(k in 1:100){
+  print(k)
+  IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, paste0("Adulto mayor PM con k =",k),  IPM$AM_PMD)
+  IPM$A_PMD = ifelse(IPM$C_A >= k/100, paste0("Adulto PM con k =",k),  IPM$A_PMD)
+  
+}
+IPM$AM_PMD = ifelse(IPM$adultos == 1, NA, IPM$AM_PMD )
+
+
+IPM$c_AM_PMD = ifelse(is.na(IPM$AM_PMD), 0, IPM$AM_PMD)
+IPM$c_A_PMD = ifelse(is.na(IPM$A_PMD), 0, IPM$A_PMD)
+
+
+
 
 
 
