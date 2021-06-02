@@ -149,10 +149,10 @@ IPM <- COL18 %>% transmute(
 
 # Cantidad privaciones adulto
 IPM$C_A = rowSums(IPM %>% select(starts_with("g0_A")), na.rm = T)
-
+IPM$C_A = ifelse(IPM$adultos == 0, NA, IPM$C_A)
 # Cantidad privaciones adulto mayor
 IPM$C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
-
+IPM$C_AM = ifelse(IPM$a_mayores == 0, NA, IPM$C_AM)
 summary(C_A)
 summary(C_AM)
 
