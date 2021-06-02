@@ -16,6 +16,7 @@ IPM <- COL18 %>% transmute(
   area = areageo2,
   factorex,
   edad,
+  sexo,
   # generadas desde basevariable
   nbi_ten = case_when(p5090 %in% c(5,6) ~ 1,
                       p5090 == 9 ~ NA_real_,
@@ -169,8 +170,11 @@ IPM$A_PMD = NA
 
 for(k in 1:100){
   print(k)
-  IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, paste0("Adulto mayor PM con k =",k),  IPM$AM_PMD)
-  IPM$A_PMD = ifelse(IPM$C_A >= k/100, paste0("Adulto PM con k =",k),  IPM$A_PMD)
+  #IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, paste0("Adulto mayor PM con k =",k),  IPM$AM_PMD)
+  #IPM$A_PMD = ifelse(IPM$C_A >= k/100, paste0("Adulto PM con k =",k),  IPM$A_PMD)
+  
+  IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, k,  IPM$AM_PMD)
+  IPM$A_PMD = ifelse(IPM$C_A >= k/100, k,  IPM$A_PMD)
   
 }
 IPM$AM_PMD = ifelse(IPM$adultos == 1, NA, IPM$AM_PMD )
@@ -180,6 +184,9 @@ IPM$c_AM_PMD = ifelse(is.na(IPM$AM_PMD), 0, IPM$AM_PMD)
 IPM$c_A_PMD = ifelse(is.na(IPM$A_PMD), 0, IPM$A_PMD)
 
 
+IPM %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
+  group_by(sexo) %>%
+  summarise(IPM_A = weighted.mean(c_AM_PMD, factorex))
 
 
 
