@@ -145,13 +145,24 @@ IPM <- COL18 %>% transmute(
   
   g0_AM_amay_analfab  = ifelse(adultos == 1,(1/4)*amay_analfab ,0),
   g0_AM_nbi_pen = ifelse(adultos == 1,(1/4)*nbi_pen,0),
-  
   )
 
+# Cantidad privaciones adulto
+C_A = rowSums(IPM %>% select(starts_with("g0_A")), na.rm = T)
+
+# Cantidad privaciones adulto mayor
+C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
+
+summary(C_A)
+summary(C_AM)
+
+mean(C_A)
+weighted.mean(C_A, IPM$factorex)
 
 
-# Variables de los Adultos: nbi_matviv_ee nbi_hacina21_ee nbi_tics_h 
-# nbi_agua_ee nbi_saneamiento_ee nbi_energia nbi_conclued ocup_priv2
+mean(C_AM)
+weighted.mean(C_AM, IPM$factorex)
 
-#Variables de Adultos Mayores: nbi_matviv_ee nbi_hacina21_ee 
-# nbi_tics_h nbi_agua_ee nbi_saneamiento_ee nbi_energia amay_analfab nbi_pen
+
+
+
