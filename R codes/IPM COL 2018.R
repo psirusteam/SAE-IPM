@@ -193,4 +193,4 @@ IPM %>% filter(a_mayores == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mu
   group_by(sexo) %>%
   summarise(IPM_AM = weighted.mean(c_AM_PMD, factorex))
 
-
+saveRDS(IPM, "Input/IPM.rds")
