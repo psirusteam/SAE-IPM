@@ -154,15 +154,15 @@ IPM$C_A = ifelse(IPM$adultos == 0, NA, IPM$C_A)
 # Cantidad privaciones adulto mayor
 IPM$C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
 IPM$C_AM = ifelse(IPM$a_mayores == 0, NA, IPM$C_AM)
-summary(C_A)
-summary(C_AM)
+summary(IPM$C_A)
+summary(IPM$C_AM)
 
-mean(C_A)
-weighted.mean(C_A, IPM$factorex)
+mean(IPM$C_A)
+weighted.mean(IPM$C_A, IPM$factorex)
 
 
-mean(C_AM)
-weighted.mean(C_AM, IPM$factorex)
+mean(IPM$C_AM)
+weighted.mean(IPM$C_AM, IPM$factorex)
 
 ## 
 IPM$AM_PMD = NA
@@ -184,11 +184,13 @@ IPM$c_AM_PMD = ifelse(is.na(IPM$AM_PMD), 0, IPM$AM_PMD)
 IPM$c_A_PMD = ifelse(is.na(IPM$A_PMD), 0, IPM$A_PMD)
 
 
-IPM %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
+IPM %>% filter(adultos == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
   group_by(sexo) %>%
-  summarise(IPM_A = weighted.mean(c_AM_PMD, factorex))
+  summarise(IPM_A = weighted.mean(c_A_PMD, factorex))
 
 
-
+IPM %>% filter(a_mayores == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
+  group_by(sexo) %>%
+  summarise(IPM_AM = weighted.mean(c_AM_PMD, factorex))
 
 
