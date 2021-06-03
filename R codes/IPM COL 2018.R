@@ -6,12 +6,21 @@ library(sas7bdat)
 
 # COL18 <- read.dta13("Input/col18n1/DATA/col18n1.dta")
 # saveRDS(COL18, "Input/COL18.rds")
+#
+# COL18 <- readRDS("Input/COL18.rds")
+# 
+# # Variables de privacion
+# 
+# COL18_2 = COL18 %>% select(id_hogar, id_pers,persindo, areageo2, factorex, edad, sexo, p5090, p4030s5, p5050,
+#                  p5020, p5030, p4030s1,p4000, p4020, p4010, p5080, p6160, p6170,
+#                  condact, p5000, p5010, p5210s16, p5210s3, anoest, 
+#                  p6920 , p6980s1 , p6980s2 , p7420s1 , p7420s2 , p7460,
+#                  iof2, iof2es, categ5_p)
+# saveRDS(COL18_2, "Input/COL18_baseIPM.rds")
 
-COL18 <- readRDS("Input/COL18.rds")
+COL18_2 <- readRDS("Input/COL18_baseIPM.rds")
 
-# Variables de privacion
-
-IPM <- COL18 %>% transmute(
+IPM <- COL18_2 %>% transmute(
   id_hogar, id_pers,
   area = areageo2,
   factorex,
