@@ -1,3 +1,6 @@
+#################
+### Librerías ###
+#################
 
 library(tidyverse)
 library(dplyr)
@@ -18,14 +21,23 @@ library(sas7bdat)
 #                  iof2, iof2es, categ5_p)
 # saveRDS(COL18_2, "Input/COL18_baseIPM.rds")
 
+################################################################################
+                    ### Lectura de bases de datos ###
+################################################################################
+
 COL18_2 <- readRDS("Input/COL18_baseIPM.rds")
 
 IPM <- COL18_2 %>% transmute(
+  
+  ###------------------ Identificador de hogar y personas -------------------### 
+  
   id_hogar, id_pers,
+  
+  
   area = areageo2,
   factorex,
-  edad,
-  sexo,
+  edad, sexo,
+  
   # generadas desde basevariable
   nbi_ten = case_when(p5090 %in% c(5,6) ~ 1,
                       p5090 == 9 ~ NA_real_,
@@ -203,3 +215,4 @@ IPM %>% filter(a_mayores == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mu
   summarise(IPM_AM = weighted.mean(c_AM_PMD, factorex))
 
 saveRDS(IPM, "Input/IPM.rds")
+
