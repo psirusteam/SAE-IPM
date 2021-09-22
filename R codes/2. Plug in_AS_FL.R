@@ -70,8 +70,8 @@ indicadores <- GEIH2018 %>% transmute(
 ###--------------- Anexando variables a la base estandarizada ---------------###
 
 Xencuesta %<>% left_join(indicadores %>% group_by(idhogar) %>%
-                         summarise(Priv_aseguramiento_salud = ifelse(any(Aseguramiento_Salud %in% 0), 1, 0),
-                                   Priv_Formalidad_laboral = ifelse(any(Formalidad_laboral %in% 0), 1, 0)), by = "idhogar")
+               summarise(Priv_aseguramiento_salud = ifelse(any(Aseguramiento_Salud %in% 0), 1, 0),
+                         Priv_Formalidad_laboral = ifelse(any(Formalidad_laboral %in% 0), 1, 0)), by = "idhogar")
 
 ################################################################################
 ###------------ Ajuste del modelo Plugin: aseguramiento en salud ------------###
@@ -79,46 +79,44 @@ Xencuesta %<>% left_join(indicadores %>% group_by(idhogar) %>%
 
 paste(names(Xencuesta), collapse = " + ")
 pluginreg_1 <- glmer(Priv_aseguramiento_salud ~ Area + tipo_viv_casa + 
-                       tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
-                       mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + 
-                       mpared6 + mpisos1 + mpisos2 + mpisos3 + mpisos4 + 
-                       mpisos5 + agua_alim1 + agua_alim2 + agua_alim3 + 
-                       agua_alim4 + agua_alim5 + agua_alim6  + jefe_Mujer + 
-                       prop_mujeres + electrica_ee + acueducto  + nhijos_hogar2 + 
-                       nhijos_hogar3 + nhijos_hogar4 + alcantarillado + 
-                       prop_alfabeta + gasnatural_redp + rec_basura + internet + 
-                       servhig1 + servhig2 + servhig3 + servhig4 + servhig5 + 
-                       tamhog2 + tamhog3 + tamhog4 + hacinamiento + prep_alim2 + 
-                       prep_alim3 + prep_alim4 + prep_alim5 + prep_alim6 + 
-                       Edad_jefe1 + Edad_jefe2 + Edad_jefe3 + Edad_jefe4 + 
-                       inasistente + Jefe_sup + ratio_prim + ratio_media + 
-                       ratio_sup + prop_ocupados + prop_inactivos + 
-                       trabajo_infantil + r_solt + r_casad + migrante_cortop +
-                       migrante_medianop + (1|Municipio), family = "binomial", 
-                     data = Xencuesta)
+                     tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
+                     mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 +
+                     mpisos1 + mpisos2 + mpisos3 + mpisos4 + mpisos5 +
+                     agua_alim1 + agua_alim2 + agua_alim3 + agua_alim4 +
+                     agua_alim5 + agua_alim6 + jefe_Mujer + prop_mujeres +
+                     electrica_ee + acueducto + nhijos_hogar2 + nhijos_hogar3 +
+                     nhijos_hogar4 + alcantarillado + prop_alfabeta +
+                     gasnatural_redp + rec_basura + internet + servhig1 + 
+                     servhig2 + servhig3 + servhig4 + servhig5 + tamhog2 +
+                     tamhog3 + tamhog4 + hacinamiento + prep_alim2 + prep_alim3 +
+                     prep_alim4 + prep_alim5 + prep_alim6 + Edad_jefe1 +
+                     Edad_jefe2 + Edad_jefe3 + Edad_jefe4 + inasistente +  
+                     Jefe_sup + ratio_prim + ratio_media + ratio_sup + 
+                     prop_ocupados + prop_inactivos + trabajo_infantil +
+                     r_solt + r_casad + migrante_cortop + migrante_medianop +
+                     (1|Municipio), family = "binomial", data = Xencuesta)
 
 ################################################################################
 ###-------------- Ajuste del modelo Plugin: Formalidad laboral --------------###
 ################################################################################
 
 pluginreg_2 <- glmer(Priv_Formalidad_laboral ~ Area + tipo_viv_casa + 
-                       tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
-                       mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + 
-                       mpared6 + mpisos1 + mpisos2 + mpisos3 + mpisos4 + 
-                       mpisos5 + agua_alim1 + agua_alim2 + agua_alim3 + 
-                       agua_alim4 + agua_alim5 + agua_alim6 + jefe_Mujer + 
-                       prop_mujeres + electrica_ee + acueducto + 
-                       nhijos_hogar2 + nhijos_hogar3 + nhijos_hogar4 + 
-                       alcantarillado + prop_alfabeta + gasnatural_redp + 
-                       rec_basura + internet + servhig1 + servhig2 + 
-                       servhig3 + servhig4 + servhig5 + tamhog2 + tamhog3 + 
-                       tamhog4 + hacinamiento + prep_alim2 + prep_alim3 + 
-                       prep_alim4 + prep_alim5 + prep_alim6 + Edad_jefe1 + 
-                       Edad_jefe2 + Edad_jefe3 + Edad_jefe4  + inasistente + 
-                       Jefe_sup + ratio_prim + ratio_media + ratio_sup + 
-                       prop_ocupados + prop_inactivos + trabajo_infantil + 
-                       r_solt + r_casad + migrante_medianop + migrante_cortop +
-                       (1|Municipio), family = "binomial", data = Xencuesta)
+                     tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
+                     mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 +
+                     mpisos1 + mpisos2 + mpisos3 + mpisos4 + mpisos5 + agua_alim1 +
+                     agua_alim2 + agua_alim3 + agua_alim4 + agua_alim5 + 
+                     agua_alim6 + jefe_Mujer + prop_mujeres + electrica_ee + 
+                     acueducto + nhijos_hogar2 + nhijos_hogar3 + nhijos_hogar4 + 
+                     alcantarillado + prop_alfabeta + gasnatural_redp + 
+                     rec_basura + internet + servhig1 + servhig2 + servhig3 +
+                     servhig4 + servhig5 + tamhog2 + tamhog3 + tamhog4 +
+                     hacinamiento + prep_alim2 + prep_alim3 + prep_alim4 +
+                     prep_alim5 + prep_alim6 + Edad_jefe1 + Edad_jefe2 + 
+                     Edad_jefe3 + Edad_jefe4 + inasistente + Jefe_sup + 
+                     ratio_prim + ratio_media + ratio_sup + prop_ocupados +
+                     prop_inactivos + trabajo_infantil + r_solt + r_casad +
+                     migrante_medianop + migrante_cortop + (1|Municipio),
+                     family = "binomial", data = Xencuesta)
 
 #------------------------------------------------------------------------------#
 #----------------- Exportando salidas: Modelo Plugin ajustado -----------------#
@@ -169,16 +167,17 @@ matrizCenso <- cbind.data.frame(Xcenso$Municipio, cbind(1, as.matrix(Xcenso %>%
 colnames(matrizCenso) <- c("Municipio","XB1","XB2")
 head(matrizCenso)
 
-#- Creando el vector nulo para ser reemplazado en el ciclo de estimación Plugin -#
+###------- Creando el vector nulo para ser reemplazado en el ciclo de -------### 
+###-------                         estimación Plugin                  -------###
 
 Xcenso$pluginSalud = numeric(14243219)
 Xcenso$pluginFormal = numeric(14243219)
 
-#-- Códigos de los municipios en el censo para el ciclo de estimación Plugin --#
+###--- Códigos de los municipios en el censo para el ciclo de estimación Plugin --#
 
 Div = unique(Xcenso$Municipio)
 
-# se definen efectos fijos y efectos aleatorios para cada uno de los dominios 
+###---- Efectos fijos y efectos aleatorios para cada uno de los dominios ----###
 
 ud =  data.frame(Municipio = as.numeric(rownames(ranef(pluginreg_1)$Municipio)), 
                  Salud = ranef(pluginreg_1)$Municipio[[1]],
@@ -187,13 +186,16 @@ ud =  data.frame(Municipio = as.numeric(rownames(ranef(pluginreg_1)$Municipio)),
 rownames(ud) <- NULL
 ud$Municipio <- as.factor(ud$Municipio)
 
+###--- Uniendo los efectos aleatorios estimados con el resto de municipios --###
+
 ud = data.frame(Municipio = unique(Xcenso$Municipio)) %>% 
      left_join(ud, by = "Municipio")
 
 ud$Salud[is.na(ud$Salud)] <- 0
 ud$Formal[is.na(ud$Formal)] <- 0
 
-# se estima para cada hogar en la muestra
+###---- Estimación de la probabilidad de que una persona tenga necesidad  ---###
+###----          en aseguramiento en salud y formalidad laboral           ---###
 
 for(i in 1:length(Div)){
   print(i)
@@ -218,23 +220,42 @@ saveRDS(Xcenso, file = "Xcenso_plugin.rds")
 
 Xcenso <- readRDS("Xcenso_plugin.rds")
 
+###---- Anexando la información de los resultados de los modelos al Censo ---###
 
-#CensoPersonas %<>% left_join(Xcenso %>% select(idhogar, pluginSalud, pluginFormal), by = "idhogar")
-CensoPersonas %<>% transmute(idhogar, Divipola, Departamento = U_DPTO, 
-                             Area = UA_CLASE) %>% 
-  left_join(Xcenso %>% transmute(idhogar, pluginSalud, pluginFormal), 
-            by = "idhogar")
+CensoPersonas %<>% transmute(idhogar, Divipola, Departamento = U_DPTO, Area = UA_CLASE) %>% 
+                   left_join(Xcenso %>% transmute(idhogar, pluginSalud, 
+                                                  pluginFormal), by = "idhogar")
 
+################################################################################
+###----- Estimación del porcentaje de personas con privación de acceso a ----###
+###-----                    salud o formalidad laboral                   ----###
+################################################################################
+
+###--- Nacional ---###
 
 CensoPersonas %>% summarise(PrivSalud = mean(pluginSalud, na.rm = T),
                             PrivFormal = mean(pluginFormal, na.rm = T))
 
-res_depto <- CensoPersonas %>% group_by(Departamento) %>% summarise(PrivSalud = mean(pluginSalud, na.rm = T),
-                                                       PrivFormal = mean(pluginFormal, na.rm = T))
+###--- Departamental ---###
 
-res_Mun <- CensoPersonas %>% group_by(Divipola) %>% summarise(PrivSalud = mean(pluginSalud, na.rm = T),
-                                                                    PrivFormal = mean(pluginFormal, na.rm = T))
+res_depto <- CensoPersonas %>% group_by(Departamento) %>% 
+             summarise(PrivSalud = mean(pluginSalud, na.rm = T), 
+                       PrivFormal = mean(pluginFormal, na.rm = T))
 
+###--- Municipal ---###
+
+res_Mun <- CensoPersonas %>% group_by(Divipola) %>% 
+           summarise(PrivSalud = mean(pluginSalud, na.rm = T),
+                     PrivFormal = mean(pluginFormal, na.rm = T))
+
+################################################################################
+###--------------- Guardando los resultados de los modelos SAE --------------###
+################################################################################
+
+###--- Nivel Departamental ---###
 
 write.csv2(res_depto, "Depto.csv")
+
+###--- Nivel Municipal ---###
+
 write.csv2(res_Mun, "Mun.csv")
