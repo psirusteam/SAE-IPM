@@ -311,60 +311,67 @@ IPM <- COL18_2 %>% transmute(
   ###-------------------------- Dimensión Trabajo ---------------------------###
   ##############################################################################
   
+  
   g0_A_nbi_conclued = ifelse(adultos == 1, (1/4) * nbi_conclued, 0),
   
   g0_A_ocup_priv2 = ifelse(adultos == 1, (1/4) * ocup_priv2, 0),
   
-  # Gaps Adultos mayores
+  ###----------------------------- Analfabetismo ----------------------------###
   
-  g0_AM_amay_analfab  = ifelse(adultos == 1,(1/4)*amay_analfab ,0),
-  g0_AM_nbi_pen = ifelse(adultos == 1,(1/4)*nbi_pen,0),
+  g0_AM_amay_analfab  = ifelse(adultos == 1, (1/4) * amay_analfab, 0),
+  
+  g0_AM_nbi_pen = ifelse(adultos == 1, (1/4) * nbi_pen, 0),
+
   )
 
-# Cantidad privaciones adulto
+###--------------------- Cantidad privaciones por adulto --------------------###
+
 IPM$C_A = rowSums(IPM %>% select(starts_with("g0_A")), na.rm = T)
+
 IPM$C_A = ifelse(IPM$adultos == 0, NA, IPM$C_A)
-# Cantidad privaciones adulto mayor
+
+###------------------ Cantidad privaciones por adulto mayor -----------------###
+
 IPM$C_AM = rowSums(IPM %>% select(starts_with("g0_AM")), na.rm = T)
+
 IPM$C_AM = ifelse(IPM$a_mayores == 0, NA, IPM$C_AM)
-summary(IPM$C_A)
-summary(IPM$C_AM)
 
-mean(IPM$C_A)
-weighted.mean(IPM$C_A, IPM$factorex)
+###---------- Estimación del porcentaje de adultos con privaciones ----------### 
 
+mean(IPM$C_A, na.rm = T)
+weighted.mean(IPM$C_A, IPM$factorex, na.rm = T)
 
-mean(IPM$C_AM)
-weighted.mean(IPM$C_AM, IPM$factorex)
+mean(IPM$C_AM, na.rm = T)
+weighted.mean(IPM$C_AM, IPM$factorex, na.rm = T)
 
-## 
+###----------------------------------- IPM ----------------------------------###
+
 IPM$AM_PMD = NA
 IPM$A_PMD = NA
 
 for(k in 1:100){
   print(k)
-  #IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, paste0("Adulto mayor PM con k =",k),  IPM$AM_PMD)
-  #IPM$A_PMD = ifelse(IPM$C_A >= k/100, paste0("Adulto PM con k =",k),  IPM$A_PMD)
-  
   IPM$AM_PMD = ifelse(IPM$C_AM >= k/100, k,  IPM$AM_PMD)
   IPM$A_PMD = ifelse(IPM$C_A >= k/100, k,  IPM$A_PMD)
-  
 }
-IPM$AM_PMD = ifelse(IPM$adultos == 1, NA, IPM$AM_PMD )
 
-
+IPM$AM_PMD = ifelse(IPM$adultos == 1, NA, IPM$AM_PMD)
 IPM$c_AM_PMD = ifelse(is.na(IPM$AM_PMD), 0, IPM$AM_PMD)
 IPM$c_A_PMD = ifelse(is.na(IPM$A_PMD), 0, IPM$A_PMD)
 
+###------------------- Pobreza multidimensional en adultos ------------------###
 
-IPM %>% filter(adultos == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
-  group_by(sexo) %>%
-  summarise(IPM_A = weighted.mean(c_A_PMD, factorex))
+IPM %>% filter(adultos == 1) %>% 
+        mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
+        group_by(sexo) %>% summarise(IPM_A = weighted.mean(c_A_PMD, factorex))
 
+###--------------- Pobreza multidimensional en adultos mayores --------------###
 
-IPM %>% filter(a_mayores == 1) %>% mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
-  group_by(sexo) %>%
-  summarise(IPM_AM = weighted.mean(c_AM_PMD, factorex))
+IPM %>% filter(a_mayores == 1) %>% 
+        mutate(sexo = ifelse(sexo == 1, "Hombre", "Mujer")) %>%
+        group_by(sexo) %>% summarise(IPM_AM = weighted.mean(c_AM_PMD, factorex))
+
+###--------------- Guardando los resultados obtenidos del IPM ---------------###
 
 saveRDS(IPM, "Input/IPM.rds")
 
