@@ -255,30 +255,65 @@ IPM <- COL18_2 %>% transmute(
   ###-------------------------- Dimensión VIVIENDA --------------------------###
   ##############################################################################
   
+  ###--- Condición de vivienda de los adultos ---###
+  
   g0_A_nbi_matviv = ifelse(adultos == 1,(1/8) * nbi_matviv, 0),
+  
+  ###--- Hacinamiento adultos ---###
   
   g0_A_nbi_hacina21 = ifelse(adultos == 1,(1/8) * nbi_hacina21, 0),
   
+  ###--- Condición de vivienda de los adultos mayores ---###
+  
   g0_AM_nbi_matviv = ifelse(a_mayores == 1,(1/8) * nbi_matviv, 0),
+  
+  ###--- Hacinamiento adultos mayores ---###
   
   g0_AM_nbi_hacina21 = ifelse(a_mayores == 1,(1/8) * nbi_hacina21, 0),
   
-  # Gaps de dimension servicios
+  ##############################################################################
+  ###------------------------- Dimensión SERVICIOS --------------------------###
+  ##############################################################################
   
-  g0_A_nbi_tics_h = ifelse(adultos == 1,(1/16)*nbi_tics_h,0),
-  g0_A_nbi_agua = ifelse(adultos == 1,(1/16)*nbi_agua,0),
-  g0_A_nbi_nbi_saneamiento = ifelse(adultos == 1,(1/16)*nbi_saneamiento,0),
-  g0_A_nbi_nbi_energia = ifelse(adultos == 1,(1/16)*nbi_energia,0), 
+  ###--- Acceso de un adulto a los TIC's ---###
   
-  g0_AM_nbi_tics_h = ifelse(a_mayores == 1,(1/16)*nbi_tics_h,0),
-  g0_AM_nbi_agua = ifelse(a_mayores == 1,(1/16)*nbi_agua,0),
-  g0_AM_nbi_nbi_saneamiento = ifelse(a_mayores == 1,(1/16)*nbi_saneamiento,0),
-  g0_AM_nbi_nbi_energia = ifelse(a_mayores == 1,(1/16)*nbi_energia,0), 
+  g0_A_nbi_tics_h = ifelse(adultos == 1, (1/16) * nbi_tics_h, 0),
   
-  # Gaps IPM adultos
+  ###--- Acceso de un adulto al servicio público de agua ---###
   
-  g0_A_nbi_conclued = ifelse(adultos == 1,(1/4)*nbi_conclued ,0),
-  g0_A_ocup_priv2 = ifelse(adultos == 1,(1/4)*ocup_priv2,0),
+  g0_A_nbi_agua = ifelse(adultos == 1,(1/16) * nbi_agua, 0),
+  
+  ###--- Acceso de un adulto al servicio público de saneamiento ---###
+  
+  g0_A_nbi_nbi_saneamiento = ifelse(adultos == 1, (1/16) * nbi_saneamiento, 0),
+  
+  ###--- Accesos de un adulto al servicio público de energía ---###
+  
+  g0_A_nbi_nbi_energia = ifelse(adultos == 1, (1/16) * nbi_energia,0), 
+  
+  ###--- Acceso de un adulto mayor a las TIC's ---###
+  
+  g0_AM_nbi_tics_h = ifelse(a_mayores == 1, (1/16) * nbi_tics_h,0),
+  
+  ###--- Acceso de un adulto mayor al servicio público de agua ---###
+  
+  g0_AM_nbi_agua = ifelse(a_mayores == 1, (1/16) * nbi_agua, 0),
+  
+  ###--- Acceso de un adulto mayor al servicio de saneamiento ---###
+  
+  g0_AM_nbi_nbi_saneamiento = ifelse(a_mayores == 1, (1/16) * nbi_saneamiento, 0),
+  
+  ###--- Acceso de un adulto mayor al servicio público de energía ---###
+  
+  g0_AM_nbi_nbi_energia = ifelse(a_mayores == 1, (1/16) * nbi_energia, 0), 
+  
+  ##############################################################################
+  ###-------------------------- Dimensión Trabajo ---------------------------###
+  ##############################################################################
+  
+  g0_A_nbi_conclued = ifelse(adultos == 1, (1/4) * nbi_conclued, 0),
+  
+  g0_A_ocup_priv2 = ifelse(adultos == 1, (1/4) * ocup_priv2, 0),
   
   # Gaps Adultos mayores
   
