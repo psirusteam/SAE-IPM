@@ -42,8 +42,7 @@ encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>% mutate(idhogar = paste0(di
 
 ###----------------- Encuesta con variables estandarizadas ------------------###
 
-#Xencuesta <-  readRDS("0. Data/Output/Xencuesta.rds") 
-Xencuesta <-  readRDS("Xencuesta.rds") 
+Xencuesta <-  readRDS("Input/1. Data/Xencuesta.rds") 
 
 ###----------------------------- Senate Weights -----------------------------###
 
@@ -58,8 +57,7 @@ Xencuesta %<>% select(-depto76, -tipo_viv_otro, -mpared7, -mpisos6, -servhig6,
 
 ###------------------ Seleccionando algunas variables: Censo ----------------###
 
-#Xcenso <- readRDS("0. Data/Output/Xcenso.rds") %>% mutate("(Intercept)" = 1,
-Xcenso <- readRDS("Xcenso.rds") %>% mutate("(Intercept)" = 1,
+Xcenso <- readRDS("Input/1. Data/Xcenso.rds") %>% mutate("(Intercept)" = 1,
           Municipio = ifelse(as.numeric(as.character(Municipio)) < 10000, 
           paste0(0, as.character(Municipio)), as.character(Municipio)),
           efectos = paste0(Municipio, "-", as.character(Area))) %>%
@@ -67,10 +65,8 @@ Xcenso <- readRDS("Xcenso.rds") %>% mutate("(Intercept)" = 1,
 
 ###---------------------- Exportando las bases de datos ---------------------###
 
-#saveRDS(Xencuesta,"5. Bootstrap/Output/XencuestaBootstrap.rds")
-#saveRDS(Xcenso, "5. Bootstrap/Output/XcensoBootstrap.rds")
-saveRDS(Xencuesta, "XencuestaBootstrap.rds")
-saveRDS(Xcenso, "XcensoBootstrap.rds")
+saveRDS(Xencuesta, "Input/1. Data/XencuestaBootstrap.rds")
+saveRDS(Xcenso, "Input/1. Data/XcensoBootstrap.rds")
 
 ################################################################################
 ###------------------- Tamaños muestrales y poblacionales -------------------###
