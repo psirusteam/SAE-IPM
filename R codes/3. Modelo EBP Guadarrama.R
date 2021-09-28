@@ -20,111 +20,118 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 library(sampling)
 library(magrittr)
+library(moments)
 select <- dplyr::select
 
 ###--- Definiendo la memoria RAM a emplear ---###
 
 memory.limit(18000000)
 
-###--- Definiendo el directorio de trabajo ---###
-
-#setwd("C:/Users/user/Desktop/CEPAL")
-
 ###---------------------------- Encuesta original ---------------------------###
 
-#encuesta <- readRDS("GEIH2018.rds") 
-encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>% mutate(idhogar = paste0(directorio, 
-            secuencia_p)) %>% filter(id_pers == 1) %>% 
-            mutate(pobrezaEx = ifelse(pobreza == 1, 1, 0),
-                   pobreza = ifelse(pobreza != 3, 1, 0),
-            estrato = paste(mes, DEPARTAMENTO, divipola, clase.x, sep = "_" ),
-            upm =  paste(estrato,segmento,sep = "_" ))
+encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>% 
+            mutate(idhogar = paste0(directorio, secuencia_p), 
+                   pobrezaEx = ifelse(pobreza == 1, 1, 0), 
+                   pobreza = ifelse(pobreza != 3, 1, 0), estrato = paste(mes, 
+                   DEPARTAMENTO, divipola, clase.x, sep = "_" ), 
+                   upm =  paste(estrato, segmento, sep = "_" ),
+                   Priv_Ing = ifelse(yemp < lp, 1, 0),
+                   PEA = ifelse(sexo == 1 & edad %in% 18:65, 1,
+                          ifelse(sexo == 2 & edad %in% 18:60, 1, 0)),
+                   Area = ifelse(clase.x == 1, 1, 0),
+                   efectos = paste0(divipola, "-", as.character(Area)))
 
-###----------------- Encuesta con variables estandarizadas ------------------###
+###------------ Filtro sobre la población económicamente activa -------------###
 
-Xencuesta <-  readRDS("Input/1. Data/Xencuesta.rds") 
-
-###----------------------------- Senate Weights -----------------------------###
-
-Xencuesta$SWeights <- nrow(Xencuesta)*(encuesta$factorex/sum(encuesta$factorex))
-
-###--------------- Quitando algunas variables dicotómicas: GEIH -------------###
-
-Xencuesta %<>% select(-depto76, -tipo_viv_otro, -mpared7, -mpisos6, -servhig6,
-                      -tamhog4, -prep_alim6, -agua_alim9, -agua_alim10, 
-                      -Edad_jefe1, -Edad_jefe5, -nhijos_hogar4) %>%
-               mutate(efectos = paste0(Municipio, "-", as.character(Area)))
+encuesta <- subset(encuesta, PEA == 1)
+encuesta$SWeights <- nrow(encuesta)*(encuesta$factorex/sum(encuesta$factorex))
 
 ###------------------ Seleccionando algunas variables: Censo ----------------###
 
 Xcenso <- readRDS("Input/1. Data/Xcenso.rds") %>% mutate("(Intercept)" = 1,
           Municipio = ifelse(as.numeric(as.character(Municipio)) < 10000, 
           paste0(0, as.character(Municipio)), as.character(Municipio)),
-          efectos = paste0(Municipio, "-", as.character(Area))) %>%
-          select("(Intercept)",names(Xencuesta)[-c(92,94)])
-
-###---------------------- Exportando las bases de datos ---------------------###
-
-saveRDS(Xencuesta, "Input/1. Data/XencuestaBootstrap.rds")
-saveRDS(Xcenso, "Input/1. Data/XcensoBootstrap.rds")
+          efectos = paste0(Municipio, "-", as.character(Area))) 
 
 ################################################################################
 ###------------------- Tamaños muestrales y poblacionales -------------------###
 ###-------------------     Dominios: Municipio - área     -------------------###
 ################################################################################
 
-###-------- Tamaños muestrales --------###
+###--------------------------- Tamaños muestrales ---------------------------###
 
-n_d = Xencuesta %>% group_by(efectos) %>% summarise(n = n()) %>%
+n_d = encuesta %>% group_by(efectos) %>% summarise(n = n()) %>%
       right_join(data.frame(efectos = unique((Xcenso$efectos))), 
                  by = "efectos") %>% mutate_all(~replace(., is.na(.), 0)) %>% 
       as.data.frame()
 
-###-------- Anexano
+###---------------------------- Estimación delta ----------------------------###
 
-delta = Xencuesta %>% mutate(factorex = encuesta$factorex) %>% group_by(efectos) %>% 
+delta = encuesta %>% mutate(factorex = factorex) %>% group_by(efectos) %>% 
         summarise(deltad = (sum(factorex)^(-2) * sum(factorex^2))) %>%
         right_join(data.frame(efectos = unique(Xcenso$efectos)), 
                    by = "efectos") %>% mutate_all(~replace(., is.na(.), Inf)) %>% 
         as.data.frame()
 
-###-------- Tamaños muestrales --------###
+###-------------------------- Tamaños Poblacionales -------------------------###
 
 N_d = Xcenso %>% lazy_dt() %>% group_by(efectos) %>% summarise(n = n()) %>% 
-  as.data.frame()
+                 as.data.frame()
 
-##################################
-##   Census Empirical Best BHF  ##
-##################################
+################################################################################
+###-------------- Identificando la constante de transformación --------------###
+################################################################################
 
-# matriz de medias de las covariables del censo
+# constante <- lapply(X = seq(100, 1000000, 100), FUN = function(y){
+#                     logIngcorte = log(encuesta$yemp + y)
+#                     simetria <- abs(skewness(logIngcorte))
+#                     data.frame(y, simetria)
+#                     }) %>% bind_rows()
+# 
+# s = constante[which.min(constante$simetria), 1]
 
+s = 104300
 
-#head(mean_values)
+###--- Creando la variable respuesta ---###
 
-# 1) Generando modelo mixto Battese Harter Fuller para todas las covariables
+encuesta %<>% mutate(logIngcorte  = log(encuesta$yemp + s))
+names(encuesta)
 
-s = 81958
+################################################################################
+###------------------------ Census Empirical Best BHF -----------------------###
+################################################################################
 
-Xencuesta %<>% mutate(logIngcorte  = log(encuesta$ingcorte + s))
+# P5020: Tipo de servicio sanitario                                            #
+# P5040: ¿cómo eliminan principalmente la basura en este hogar?                #
+# P5050: ¿de dónde obtiene este hogar el agua para consumo humano?             #
+# P5080: ¿con qué energía o combustible cocinan principalmente en este hogar?  #
+# P5090: La vivienda ocupada por este hogar es propia?                         #
+# P4000: Tipo de vivienda                                                      #
+# P4010: ¿cuál es el material predominante de las paredes de la vivienda?      #
+# P4020: ¿cuál es el material predominante de los pisos de la vivienda?        #
+# P4030S1: Energía eléctrica                                                   #
+# P4030S2: Gas natural conectado a red pública                                 #
+# P4030S3: Alcantarillado
+# P4030S4: Recolección de basuras
+# P4030S5: Acueducto
 
-BHFreg <- lmer(logIngcorte ~ depto05 + depto08 + depto11 + depto13 + depto15 + depto17 + depto18 + 
-                 depto19 + depto20 + depto23 + depto25 + depto27 + depto41 + depto44 + depto47 + 
-                 depto50 + depto52 + depto54 + depto63 + depto66 + depto68 + depto70 + depto73 + 
-                 Area + tipo_viv_casa + tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
-                 mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 + mpisos1 + mpisos2 +
-                 mpisos3 + mpisos4 + mpisos5 + electrica_ee + acueducto + alcantarillado + 
-                 gasnatural_redp + rec_basura + internet + servhig1 + servhig2 + servhig3 + 
-                 servhig4 + servhig5 + tamhog1 + tamhog2 + tamhog3 + hacinamiento + prep_alim1 + 
-                 prep_alim2 + prep_alim3 + prep_alim4 + prep_alim5 + agua_alim1 + agua_alim2 + 
-                 agua_alim3 + agua_alim4 + agua_alim5 + agua_alim6 + agua_alim7 + agua_alim8 + 
-                 jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + Edad_jefe4 + nhijos_hogar1 +
-                 nhijos_hogar2 + nhijos_hogar3 + prop_alfabeta + inasistente + Jefe_sup +
-                 ratio_prim + ratio_media + ratio_sup + prop_ocupados + prop_desocupados +
-                 prop_inactivos + trabajo_infantil + r_solt + r_casad + migrante_medianop +
+BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + P5020 + P5040 +
+                 + electrica_ee + 
+                 acueducto + alcantarillado + gasnatural_redp + rec_basura + 
+                 internet + servhig1 + servhig2 + servhig3 + servhig4 + 
+                 servhig5 +
+                  tamhog1 + tamhog2 + tamhog3 + hacinamiento + 
+                 jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + 
+                 Edad_jefe4 + nhijos_hogar1 +
+                 nhijos_hogar2 + nhijos_hogar3 + prop_alfabeta + inasistente + 
+                 Jefe_sup +
+                 ratio_prim + ratio_media + ratio_sup + prop_ocupados + 
+                 prop_desocupados +
+                 prop_inactivos + trabajo_infantil + r_solt + r_casad + 
+                 migrante_medianop +
                  migrante_cortop + (1|efectos),
                weights = SWeights,
-               data = Xencuesta)
+               data = encuesta)
 #save(BHFreg, file = "4. Modelo SAE censo/Output/ModeloBHF.RData")
 ## Gráfico cuantil-cuantil de residuos y efectos aleatorios
 
