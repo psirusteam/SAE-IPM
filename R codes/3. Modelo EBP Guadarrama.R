@@ -21,6 +21,7 @@ library(dplyr, warn.conflicts = FALSE)
 library(sampling)
 library(magrittr)
 library(moments)
+library(ggpubr)
 select <- dplyr::select
 
 ###--- Definiendo la memoria RAM a emplear ---###
@@ -137,9 +138,9 @@ BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + p5020 + p5040 + p5050 +
                p6008 + nhijos + sexoj + edadj + ocupr_p + (1|efectos),
                weights = SWeights, data = encuesta)
 
-save(BHFreg, file = "Output/ModeloBHF.RData")
+#save(BHFreg, file = "Output/ModeloBHF.RData")
 
-load("Output/ModeloBHF.RData")
+#load("Output/ModeloBHF.RData")
 
 ###-------------- Extrayendo los efectos aleatorios del modelo --------------###
 
@@ -150,20 +151,17 @@ ud = cbind.data.frame(indice = rownames(ranef(BHFreg)$efectos),
 ###----------- Normalidad de los residuos y los efectos aleatorios ----------###
 ###--------------------------------------------------------------------------###
 
+###-------- Gráfico cuantil-cuantil de residuos y efectos aleatorios --------###
 
-###--- Gráfico cuantil-cuantil de residuos y efectos aleatorios ---###
+ggqqplot(ud$ud)
+ggqqplot(residuals(BHFreg))
 
-par(mfrow = c(1,2))
-qqnorm(ud$ud)
-qqline(ud$ud)
-qqnorm(residuals(BHFreg))
-qqline(residuals(BHFreg))
+###------------------------- Gráfico de los residuos ------------------------###
 
-windows()
 plot(residuals(BHFreg))
 abline(h = 0)
 
-sum()
+sum(table(which(abs(as.numeric(residuals(BHFreg)))>3)))
 
 summary(residuals(BHFreg))
 
