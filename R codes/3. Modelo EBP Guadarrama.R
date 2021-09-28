@@ -139,6 +139,8 @@ BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + p5020 + p5040 + p5050 +
 
 save(BHFreg, file = "Output/ModeloBHF.RData")
 
+load("Output/ModeloBHF.RData")
+
 ###-------------- Extrayendo los efectos aleatorios del modelo --------------###
 
 ud = cbind.data.frame(indice = rownames(ranef(BHFreg)$efectos),
