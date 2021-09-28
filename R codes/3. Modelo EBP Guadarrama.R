@@ -95,7 +95,6 @@ s = 104300
 ###--- Creando la variable respuesta ---###
 
 encuesta %<>% mutate(logIngcorte  = log(encuesta$yemp + s))
-names(encuesta)
 
 ################################################################################
 ###------------------------ Census Empirical Best BHF -----------------------###
@@ -111,42 +110,58 @@ names(encuesta)
 # P4020: ¿cuál es el material predominante de los pisos de la vivienda?        #
 # P4030S1: Energía eléctrica                                                   #
 # P4030S2: Gas natural conectado a red pública                                 #
-# P4030S3: Alcantarillado
-# P4030S4: Recolección de basuras
-# P4030S5: Acueducto
+# P4030S3: Alcantarillado                                                      #
+# P4030S4: Recolección de basuras                                              #
+# P4030S5: Acueducto                                                           #
+# P5210s3: Internet                                                            #
+# P6008: Total de personas en el hogar                                         #
+# P6160: Sabe leer y escribir                                                  #
+# P6070: Estado civil                                                          #
+# P6210: Nivel educativo                                                       #
+# P755s1, s3                                                                   #
 
-BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + P5020 + P5040 +
-                 + electrica_ee + 
-                 acueducto + alcantarillado + gasnatural_redp + rec_basura + 
-                 internet + servhig1 + servhig2 + servhig3 + servhig4 + 
-                 servhig5 +
-                  tamhog1 + tamhog2 + tamhog3 + hacinamiento + 
-                 jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + 
-                 Edad_jefe4 + nhijos_hogar1 +
-                 nhijos_hogar2 + nhijos_hogar3 + prop_alfabeta + inasistente + 
-                 Jefe_sup +
-                 ratio_prim + ratio_media + ratio_sup + prop_ocupados + 
-                 prop_desocupados +
-                 prop_inactivos + trabajo_infantil + r_solt + r_casad + 
-                 migrante_medianop +
-                 migrante_cortop + (1|efectos),
-               weights = SWeights,
-               data = encuesta)
-#save(BHFreg, file = "4. Modelo SAE censo/Output/ModeloBHF.RData")
-## Gráfico cuantil-cuantil de residuos y efectos aleatorios
+# BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + P5020 + P5040 +
+#                  internet + servhig1 + servhig2 + servhig3 + servhig4 + 
+#                  servhig5 + tamhog1 + tamhog2 + tamhog3 + hacinamiento + 
+#                  jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + 
+#                  Edad_jefe4 + nhijos_hogar1 + nhijos_hogar2 + nhijos_hogar3 + 
+#                  prop_alfabeta + inasistente + Jefe_sup + prop_ocupados + 
+#                  prop_desocupados + prop_inactivos + trabajo_infantil +  
+#                  migrante_medianop +  migrante_cortop + (1|efectos),
+#                weights = SWeights,
+#                data = encuesta)
 
-ud = cbind.data.frame(indice = rownames(ranef(BHFreg)$efectos)
-                      ,ud = ranef(BHFreg)$efectos[[1]])
+BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + p5020 + p5040 + p5050 +
+               p5080 + p5090 + p4000 + p4010 + p4020 + p4030s1 + p4030s2 + 
+               p4030s3 + p4030s4 + p4030s5 + p5210s3 + p6160 + p6070 + p6210 +
+               p6008 + nhijos + sexoj + edadj + ocupr_p + (1|efectos),
+               weights = SWeights, data = encuesta)
+
+save(BHFreg, file = "Output/ModeloBHF.RData")
+
+###-------------- Extrayendo los efectos aleatorios del modelo --------------###
+
+ud = cbind.data.frame(indice = rownames(ranef(BHFreg)$efectos),
+                      ud = ranef(BHFreg)$efectos[[1]])
+
+###--------------------------------------------------------------------------###
+###----------- Normalidad de los residuos y los efectos aleatorios ----------###
+###--------------------------------------------------------------------------###
+
+
+###--- Gráfico cuantil-cuantil de residuos y efectos aleatorios ---###
+
 par(mfrow = c(1,2))
 qqnorm(ud$ud)
 qqline(ud$ud)
-
 qqnorm(residuals(BHFreg))
 qqline(residuals(BHFreg))
 
-
+windows()
 plot(residuals(BHFreg))
 abline(h = 0)
+
+sum()
 
 summary(residuals(BHFreg))
 
@@ -160,7 +175,7 @@ summary(residuals(BHFreg))
 betas <- as.matrix(fixed.effects(BHFreg))
 var_e <- summary(BHFreg)$sigma^2
 var_u <- as.numeric(VarCorr(BHFreg))
-gammad <- var_u/(var_u+var_e*delta$deltad)
+gammad <- var_u/(var_u + var_e * delta$deltad)
 sum(gammad == 0)
 # Tamaños muestrales y número de dominios 
 Prov = n_d$efectos
@@ -226,7 +241,7 @@ sd_Census <- sqrt(vard)
 
 # Totales de ingreso
 medias <- numeric(26)
-medias[1] <- encuesta %>% summarise(p = weighted.mean(ingcorte,factorex)) %>% as.numeric()
+medias[1] <- encuesta %>% summarise(p = weighted.mean(ingcorte, factorex)) %>% as.numeric()
 medias[2] <- encuesta %>% filter(cabecera == 1) %>% summarise(p = weighted.mean(ingcorte,factorex)) %>% as.numeric()
 medias[3:26] <- encuesta %>% group_by(DEPARTAMENTO) %>% 
   summarise(p = weighted.mean(ingcorte,factorex)) %>% select(p) %>% unlist(use.names = FALSE)
@@ -288,16 +303,16 @@ for(a in 1:A){
                                  censoYSAE) %>% lazy_dt()
   estimates <- censo_zone %>% mutate(
     a.ingreso = Benchmark(censoYSAE),
-    indicadorlp = ifelse((Area == 1 &  censoYSAE < lp[1]) | (Area == 0 & censoYSAE < lp[2]), 1, 0),
+    indicadorlp = ifelse((Area == 1 & censoYSAE < lp[1]) | (Area == 0 & censoYSAE < lp[2]), 1, 0),
     indicadorli = ifelse((Area == 1 & censoYSAE < li[1]) | (Area == 0 & censoYSAE < li[2]), 1, 0),
     a.pobreza = Benchmark2(indicadorlp),
     a.pobrezaEx = Benchmark2(indicadorli, extrema = TRUE)) %>% 
     group_by(Municipio) %>%
     summarise(ingcorte.medio = weighted.mean(censoYSAE,a.ingreso),
-              Total_P = round(sum(indicadorlp*a.pobreza)),
-              Total_I = round(sum(indicadorli*a.pobrezaEx)),
-              FGT0p = weighted.mean(indicadorlp,a.pobreza),
-              FGT0i = weighted.mean(indicadorli,a.pobrezaEx),
+              Total_P = round(sum(indicadorlp * a.pobreza)),
+              Total_I = round(sum(indicadorli * a.pobrezaEx)),
+              FGT0p = weighted.mean(indicadorlp, a.pobreza),
+              FGT0i = weighted.mean(indicadorli, a.pobrezaEx),
               Qsratio = laeken::qsr(censoYSAE)$value,
               Gini = laeken::gini(censoYSAE)$value
     ) %>% as.data.frame()
