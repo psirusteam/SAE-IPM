@@ -22,6 +22,7 @@ library(sampling)
 library(magrittr)
 library(moments)
 library(ggpubr)
+library(normtest)
 select <- dplyr::select
 
 ###--- Definiendo la memoria RAM a emplear ---###
@@ -83,19 +84,41 @@ N_d = Xcenso %>% lazy_dt() %>% group_by(efectos) %>% summarise(n = n()) %>%
 ###-------------- Identificando la constante de transformación --------------###
 ################################################################################
 
-# constante <- lapply(X = seq(100, 1000000, 100), FUN = function(y){
-#                     logIngcorte = log(encuesta$yemp + y)
-#                     simetria <- abs(skewness(logIngcorte))
-#                     data.frame(y, simetria)
-#                     }) %>% bind_rows()
-# 
-# s = constante[which.min(constante$simetria), 1]
+constante <- lapply(X = seq(100, 10000000, 10000), FUN = function(y){
+                    logIngcorte = log(encuesta$yemp + y)
+                    ajb <- ajb.norm.test(logIngcorte, nrepl = 2000)
+                    data.frame(y, ajb$p.value)
+                    }) %>% bind_rows()
 
-s = 104300
+s = constante[which.max(constante$simetria), 1]
+
+s = 114300
 
 ###--- Creando la variable respuesta ---###
 
 encuesta %<>% mutate(logIngcorte  = log(encuesta$yemp + s))
+
+###--------------------------------------------------------------------------###
+###---------- Validación de la normalidad de la variable respuesta ----------###
+###--------------------------------------------------------------------------###
+
+###-------- Gráfico cuantil-cuantil de residuos y efectos aleatorios --------###
+
+plot(density(encuesta$logIngcorte))
+ggqqplot(encuesta$logIngcorte)
+
+ajb <- ajb.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+frosini.norm.test(encuesta$logIngcorte, nrepl = 2000)
+geary.norm.test(encuesta$logIngcorte, nrepl = 2000)
+hegazy1.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+hegazy2.norm.test(encuesta$logIngcorte)
+wb.norm.test(encuesta$logIngcorte, nrepl = 2000)
+spiegelhalter.norm.test(encuesta$logIngcorte, nrepl = 2000)
+skewness.norm.test(encuesta$logIngcorte)
+
+agostino.test(encuesta$logIngcorte)
 
 ################################################################################
 ###------------------------ Census Empirical Best BHF -----------------------###
@@ -161,10 +184,16 @@ ggqqplot(residuals(BHFreg))
 plot(residuals(BHFreg))
 abline(h = 0)
 
-sum(table(which(abs(as.numeric(residuals(BHFreg)))>3)))
+ajb.norm.test(residuals(BHFreg), nrepl = 2000)
+frosini.norm.test 
+geary.norm.test 
+hegazy1.norm.test
+hegazy2.norm.test
+wb.norm.test(residuals(BHFreg), nrepl = 2000)
+spiegelhalter.norm.test(residuals(BHFreg), nrepl = 2000)
+skewness.norm.test(residuals(BHFreg))
 
-summary(residuals(BHFreg))
-
+agostino.test(residuals(BHFreg))
 
 #######################################
 # Procesamiento modelo SAE montecarlo #
@@ -184,8 +213,9 @@ D = dim(n_d)[1]
 # Creación vector X^T*Beta y generando matriz \mu de medias condicionales 
 setdiff(names(Xcenso),rownames(betas))
 
-XBCenso = data.frame(efectos = Xcenso$efectos, 
-                     XB = as.matrix(Xcenso %>% select(rownames(betas)) %>% sapply(as.numeric))%*%betas)
+XBCenso = data.frame(efectos = Xcenso$efectos, XB = as.matrix(Xcenso %>% 
+                     select(rownames(betas)) %>% sapply(as.numeric)) %*% betas)
+
 # saveRDS(XBCenso, "4. Modelo SAE censo/Output/XBCenso.rds")
 
 
