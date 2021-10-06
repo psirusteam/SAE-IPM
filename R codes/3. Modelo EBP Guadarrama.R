@@ -86,14 +86,14 @@ N_d = Xcenso %>% lazy_dt() %>% group_by(efectos) %>% summarise(n = n()) %>%
 
 ###------ Función para identificar el valor para transformar el ingreso -----### 
 
-constante <- lapply(X = seq(100, 100000, 1000), FUN = function(y){
-                    logIngcorte = log(encuesta$yemp + y)
-                    ajb <- ajb.norm.test(logIngcorte, nrepl = 2000)
-                    simetria <- skewness.norm.test(logIngcorte, nrepl = 2000)
-                    data.frame(y, ajb$p.value, simetria$p.value)
-                    }) %>% bind_rows()
-
-s = constante[which.max(constante$ajb), 1]
+# constante <- lapply(X = seq(100, 100000, 1000), FUN = function(y){
+#                     logIngcorte = log(encuesta$yemp + y)
+#                     ajb <- ajb.norm.test(logIngcorte, nrepl = 2000)
+#                     simetria <- skewness.norm.test(logIngcorte, nrepl = 2000)
+#                     data.frame(y, ajb$p.value, simetria$p.value)
+#                     }) %>% bind_rows()
+# 
+# s = constante[which.max(constante$ajb), 1]
 
 s = 114300
 
