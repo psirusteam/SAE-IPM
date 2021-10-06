@@ -84,13 +84,16 @@ N_d = Xcenso %>% lazy_dt() %>% group_by(efectos) %>% summarise(n = n()) %>%
 ###-------------- Identificando la constante de transformación --------------###
 ################################################################################
 
-constante <- lapply(X = seq(100, 10000000, 10000), FUN = function(y){
+###------ Función para identificar el valor para transformar el ingreso -----### 
+
+constante <- lapply(X = seq(100, 100000, 1000), FUN = function(y){
                     logIngcorte = log(encuesta$yemp + y)
                     ajb <- ajb.norm.test(logIngcorte, nrepl = 2000)
-                    data.frame(y, ajb$p.value)
+                    simetria <- skewness.norm.test(logIngcorte, nrepl = 2000)
+                    data.frame(y, ajb$p.value, simetria$p.value)
                     }) %>% bind_rows()
 
-s = constante[which.max(constante$simetria), 1]
+s = constante[which.max(constante$ajb), 1]
 
 s = 114300
 
@@ -107,18 +110,39 @@ encuesta %<>% mutate(logIngcorte  = log(encuesta$yemp + s))
 plot(density(encuesta$logIngcorte))
 ggqqplot(encuesta$logIngcorte)
 
+###------------ Pruebas de normalidad sobre variable transformada -----------###
+
+###--- Prueba de Jarque - Bera ajustada ---###
+
 ajb <- ajb.norm.test(encuesta$logIngcorte, nrepl = 2000)
 
-frosini.norm.test(encuesta$logIngcorte, nrepl = 2000)
-geary.norm.test(encuesta$logIngcorte, nrepl = 2000)
-hegazy1.norm.test(encuesta$logIngcorte, nrepl = 2000)
+###--- Prueba de Frosini ---###
 
-hegazy2.norm.test(encuesta$logIngcorte)
-wb.norm.test(encuesta$logIngcorte, nrepl = 2000)
-spiegelhalter.norm.test(encuesta$logIngcorte, nrepl = 2000)
-skewness.norm.test(encuesta$logIngcorte)
+frosini <- frosini.norm.test(encuesta$logIngcorte, nrepl = 2000)
 
-agostino.test(encuesta$logIngcorte)
+###--- Prueba de Geary ---###
+
+geary <- geary.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy1 <- hegazy1.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy2 <- hegazy2.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+###--- Prueba de Weisberg-Bingham ---###
+
+wb <- wb.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+###--- Prueba de Spiegelhalter ---###
+
+sh <- spiegelhalter.norm.test(encuesta$logIngcorte, nrepl = 2000)
+
+###--- Prueba de simetría Shapiro, Wilk and Chen ---###
+
+sime <- skewness.norm.test(encuesta$logIngcorte)
 
 ################################################################################
 ###------------------------ Census Empirical Best BHF -----------------------###
@@ -176,50 +200,136 @@ ud = cbind.data.frame(indice = rownames(ranef(BHFreg)$efectos),
 
 ###-------- Gráfico cuantil-cuantil de residuos y efectos aleatorios --------###
 
+###--- Efectos aleatorios ---###
+
 ggqqplot(ud$ud)
+
+###--- Residuales ---###
+
 ggqqplot(residuals(BHFreg))
 
-###------------------------- Gráfico de los residuos ------------------------###
+###--------------------------------------------------------------------------###
+###------------- Prueba de normalidad sobre el efecto aleatorio -------------###
+###--------------------------------------------------------------------------###
+
+plot(ud$ud)
+abline(h = 0)
+
+###--- Prueba de Jarque - Bera ajustada ---###
+
+ajb.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Frosini ---###
+
+frosini.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Geary ---###
+
+geary.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy1.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy2.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Weisberg-Bingham ---###
+
+wb.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de Spiegelhalter ---###
+
+spiegelhalter.norm.test(ud$ud, nrepl = 2000)
+
+###--- Prueba de simetría Shapiro, Wilk and Chen ---###
+
+skewness.norm.test(ud$ud, nrepl = 2000)
+
+###--------------------------------------------------------------------------###
+###----------------- Prueba de normalidad sobre los residuos ----------------###
+###--------------------------------------------------------------------------###
 
 plot(residuals(BHFreg))
 abline(h = 0)
 
+###--- Prueba de Jarque - Bera ajustada ---###
+
 ajb.norm.test(residuals(BHFreg), nrepl = 2000)
-frosini.norm.test 
-geary.norm.test 
-hegazy1.norm.test
-hegazy2.norm.test
+
+###--- Prueba de Frosini ---###
+
+frosini.norm.test(residuals(BHFreg), nrepl = 2000)
+
+###--- Prueba de Geary ---###
+
+geary.norm.test(residuals(BHFreg), nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy1.norm.test(residuals(BHFreg), nrepl = 2000)
+
+###--- Prueba de Hegazy-Green ---###
+
+hegazy2.norm.test(residuals(BHFreg), nrepl = 2000)
+
+###--- Prueba de Weisberg-Bingham ---###
+
 wb.norm.test(residuals(BHFreg), nrepl = 2000)
+
+###--- Prueba de Spiegelhalter ---###
+
 spiegelhalter.norm.test(residuals(BHFreg), nrepl = 2000)
-skewness.norm.test(residuals(BHFreg))
 
-agostino.test(residuals(BHFreg))
+###--- Prueba de simetría Shapiro, Wilk and Chen ---###
 
-#######################################
-# Procesamiento modelo SAE montecarlo #
-#######################################
+skewness.norm.test(residuals(BHFreg), nrepl = 2000)
 
-# Guardando coeficientes de regresión, varianza de efectos aleatorios y residuos del modelo
+################################################################################
+###------------------- Procesamiento modelo SAE Montecarlo ------------------###
+################################################################################
+
+###--- Efectos aleatorios ---###
 
 betas <- as.matrix(fixed.effects(BHFreg))
+
+###--- Varianza del término de error ---###
+
 var_e <- summary(BHFreg)$sigma^2
+
+###--- Varianza del efecto aleatorio ---###
+
 var_u <- as.numeric(VarCorr(BHFreg))
+
+###--- Gamma por dominio ---###
+
 gammad <- var_u/(var_u + var_e * delta$deltad)
 sum(gammad == 0)
-# Tamaños muestrales y número de dominios 
+
+###--- Tamaños muestrales ---###
+
 Prov = n_d$efectos
+
+###--- número de dominios ---###
+
 D = dim(n_d)[1]
 
-# Creación vector X^T*Beta y generando matriz \mu de medias condicionales 
-setdiff(names(Xcenso),rownames(betas))
+###--- Identificando el nombre de las variables ---###
+
+setdiff(names(Xcenso), rownames(betas))
+
+###----------------------- Creación del vector X'Beta -----------------------###
 
 XBCenso = data.frame(efectos = Xcenso$efectos, XB = as.matrix(Xcenso %>% 
                      select(rownames(betas)) %>% sapply(as.numeric)) %*% betas)
 
-# saveRDS(XBCenso, "4. Modelo SAE censo/Output/XBCenso.rds")
+# saveRDS(XBCenso, "Output/XBCenso.rds")
 
+###---generando matriz \mu de medias condicionales -###
 
 mu <- numeric(dim(Xcenso)[1])
+
 # Seleccionando mean values asociados a los betas de la regresion\
 
 mean_values <- Xencuesta %>% lazy_dt() %>% 
@@ -253,7 +363,7 @@ for (i in 1:D){
   print(i)
   provi <- which(Xcenso$efectos == Prov[i])
   if (n_d$n[i]!=0){
-    vardi <- var_u*(1-gammad[i]) + var_e
+    vardi <- var_u * (1-gammad[i]) + var_e
     vard[provi] <- as.matrix(rep(vardi, length(provi)))
   }else{
     vardi <- var_u + var_e
