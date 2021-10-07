@@ -179,19 +179,22 @@ BHFreg <- lmer(logIngcorte ~ depto05 + depto08 + depto11 + depto13 + depto15 +
                    depto17 + depto18 + depto19 + depto20 + depto23 + depto25 + 
                    depto27 + depto41 + depto44 + depto47 + depto50 + depto52 + 
                    depto54 + depto63 + depto66 + depto68 + depto70 + depto73 + 
-                 Area + tipo_viv_casa + tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
-                 mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 + mpisos1 + mpisos2 +
-                 mpisos3 + mpisos4 + mpisos5 + electrica_ee + acueducto + alcantarillado + 
-                 gasnatural_redp + rec_basura + internet + servhig1 + servhig2 + servhig3 + 
-                 servhig4 + servhig5 + tamhog1 + tamhog2 + tamhog3 + hacinamiento + prep_alim1 + 
-                 prep_alim2 + prep_alim3 + prep_alim4 + prep_alim5 + agua_alim1 + agua_alim2 + 
-                 agua_alim3 + agua_alim4 + agua_alim5 + agua_alim6 + agua_alim7 + agua_alim8 + 
-                 jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + Edad_jefe4 + nhijos_hogar1 +
-                 nhijos_hogar2 + nhijos_hogar3 + prop_alfabeta + inasistente + Jefe_sup +
-                 ratio_prim + ratio_media + ratio_sup + prop_ocupados + prop_desocupados +
-                 prop_inactivos + trabajo_infantil + r_solt + r_casad + migrante_medianop +
-                 migrante_cortop + (1|efectos),
-               weights = SWeights, data = encuesta)
+                   Area + tipo_viv_casa + tipo_viv_depto + tipo_viv_cuarto + 
+                   tipo_viv_indigena + mpared1 + mpared2 + mpared3 + mpared4 + 
+                   mpared5 + mpared6 + mpisos1 + mpisos2 + mpisos3 + mpisos4 + 
+                   mpisos5 + electrica_ee + acueducto + alcantarillado + 
+                   gasnatural_redp + rec_basura + internet + servhig1 + 
+                   servhig2 + servhig3 + servhig4 + servhig5 + tamhog1 + 
+                   tamhog2 + tamhog3 + hacinamiento + prep_alim1 + prep_alim2 + 
+                   prep_alim3 + prep_alim4 + prep_alim5 + agua_alim1 + agua_alim2 + 
+                   agua_alim3 + agua_alim4 + agua_alim5 + agua_alim6 + agua_alim7 + 
+                   agua_alim8 + jefe_Mujer + prop_mujeres + Edad_jefe2 + 
+                   Edad_jefe3 + Edad_jefe4 + nhijos_hogar1 + nhijos_hogar2 + 
+                   nhijos_hogar3 + prop_alfabeta + inasistente + Jefe_sup +
+                   ratio_prim + ratio_media + ratio_sup + prop_ocupados + 
+                   prop_desocupados + prop_inactivos + trabajo_infantil + 
+                   r_solt + r_casad + migrante_medianop + migrante_cortop + 
+                  (1|efectos), weights = SWeights, data = encuesta)
 
 save(BHFreg, file = "Output/ModeloBHF.RData")
 
