@@ -23,6 +23,9 @@ library(magrittr)
 library(moments)
 library(ggpubr)
 library(normtest)
+library(rgdal)
+library(sp)
+library(RColorBrewer)
 select <- dplyr::select
 
 ###--- Definiendo la memoria RAM a emplear ---###
@@ -410,7 +413,7 @@ proporcionesEx[3:26] <- encuesta %>% group_by(DEPARTAMENTO) %>%
 names(Xcenso)
 levels(encuesta$DEPARTAMENTO)
 MatrizCalibrada <- Xcenso %>% select(area.urbana = Area, starts_with("depto")) %>%
-  mutate(depto76 = 1-rowSums(Xcenso[,3:25]),unos = 1) %>% select(unos, area.urbana,everything())
+  mutate(depto76 = 1 - rowSums(Xcenso[,3:25]),unos = 1) %>% select(unos, area.urbana,everything())
 
 # saveRDS(medias, "Output/medias.rds")
 # saveRDS(proporciones, "Output/proporciones.rds") 
@@ -467,4 +470,41 @@ saveRDS(CensusEB, file = "Output/CensusEB250.rds")
 Estimaciones <- as.data.frame((CensusEB)/A)
 Estimaciones$Municipio <- estimates$Municipio
 Estimaciones %<>% select(Municipio, everything())
-saveRDS(Estimaciones, file = "4. Modelo SAE censo/Output/EstimacionesMontecarloSENATEWEIGHTS.rds")
+Estimaciones$FGT0p <- abs(Estimaciones$FGT0p)
+Estimaciones$FGT0i <- abs(Estimaciones$FGT0i)
+saveRDS(Estimaciones, file = "Output/EstimacionesMontecarloSENATEWEIGHTS.rds")
+
+################################################################################
+###---------------------------------- Mapas ---------------------------------###
+################################################################################
+
+###--- Cargue del shape ---###
+
+colMun <- readOGR("Input/2. MGN2020_MPIO_POLITICO", "MGN_MPIO_POLITICO")
+
+###--- Anexando estimaciones y pronósticos al shape ---###
+
+EstimMun <- merge(colMun, Estimaciones, by.x = "MPIO_CDPMP",
+                  by.y = "Municipio")
+
+###--- Paleta de colores ---###
+
+paleta <- brewer.pal(n = 11, name = "RdYlGn")
+
+###--- Cortes para el mapas del pronóstico del modelo FH ---###
+
+breaksFH_p <- classInt::classIntervals(EstimMun$FGT0p, n = 11, style = "equal",
+                                       intervalClosure = "right")
+
+breaksFH_i <- classInt::classIntervals(EstimMun$FGT0i, n = 11, style = "equal",
+                                       intervalClosure = "right")
+
+###--- Mapa de pobreza ---###
+
+windows()
+spplot(EstimMun, "FGT0p", col.regions = rev(paleta), at = breaksFH_p$brks)
+
+###--- Mapa de indigencia---###
+
+windows()
+spplot(EstimMun, "FGT0i", col.regions = rev(paleta), at = breaksFH_i$brks)
