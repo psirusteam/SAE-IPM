@@ -493,10 +493,10 @@ paleta <- brewer.pal(n = 11, name = "RdYlGn")
 
 ###--- Cortes para el mapas del pronóstico del modelo FH ---###
 
-breaksFH_p <- classInt::classIntervals(EstimMun$FGT0p, n = 11, style = "equal",
+breaksFH_p <- classInt::classIntervals(EstimMun$FGT0p, n = 11, style = "kmeans",
                                        intervalClosure = "right")
 
-breaksFH_i <- classInt::classIntervals(EstimMun$FGT0i, n = 11, style = "equal",
+breaksFH_i <- classInt::classIntervals(EstimMun$FGT0i, n = 11, style = "kmeans",
                                        intervalClosure = "right")
 
 ###--- Mapa de pobreza ---###
