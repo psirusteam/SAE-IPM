@@ -48,6 +48,10 @@ encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>%
 encuesta <- subset(encuesta, PEA == 1)
 encuesta$SWeights <- nrow(encuesta)*(encuesta$factorex/sum(encuesta$factorex))
 
+Xencuesta <-  readRDS("Input/1. Data/Xencuesta.rds") 
+
+encuesta <- left_join(encuesta, Xencuesta)
+
 ###------------------ Seleccionando algunas variables: Censo ----------------###
 
 Xcenso <- readRDS("Input/1. Data/Xcenso.rds") %>% mutate("(Intercept)" = 1,
@@ -168,24 +172,25 @@ sime <- skewness.norm.test(encuesta$logIngcorte)
 # P6210: Nivel educativo                                                       #
 # P755s1, s3                                                                   #
 
-# BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + P5020 + P5040 +
-#                  internet + servhig1 + servhig2 + servhig3 + servhig4 + 
-#                  servhig5 + tamhog1 + tamhog2 + tamhog3 + hacinamiento + 
-#                  jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + 
-#                  Edad_jefe4 + nhijos_hogar1 + nhijos_hogar2 + nhijos_hogar3 + 
-#                  prop_alfabeta + inasistente + Jefe_sup + prop_ocupados + 
-#                  prop_desocupados + prop_inactivos + trabajo_infantil +  
-#                  migrante_medianop +  migrante_cortop + (1|efectos),
-#                weights = SWeights,
-#                data = encuesta)
-
-BHFreg <- lmer(logIngcorte ~ DEPARTAMENTO + Area + p5020 + p5040 + p5050 +
-               p5080 + p5090 + p4000 + p4010 + p4020 + p4030s1 + p4030s2 + 
-               p4030s3 + p4030s4 + p4030s5 + p5210s3 + p6160 + p6070 + p6210 +
-               p6008 + nhijos + sexoj + edadj + ocupr_p + (1|efectos),
+BHFreg <- lmer(logIngcorte ~ depto05 + depto08 + depto11 + depto13 + depto15 + 
+                   depto17 + depto18 + depto19 + depto20 + depto23 + depto25 + 
+                   depto27 + depto41 + depto44 + depto47 + depto50 + depto52 + 
+                   depto54 + depto63 + depto66 + depto68 + depto70 + depto73 + 
+                 Area + tipo_viv_casa + tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
+                 mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 + mpisos1 + mpisos2 +
+                 mpisos3 + mpisos4 + mpisos5 + electrica_ee + acueducto + alcantarillado + 
+                 gasnatural_redp + rec_basura + internet + servhig1 + servhig2 + servhig3 + 
+                 servhig4 + servhig5 + tamhog1 + tamhog2 + tamhog3 + hacinamiento + prep_alim1 + 
+                 prep_alim2 + prep_alim3 + prep_alim4 + prep_alim5 + agua_alim1 + agua_alim2 + 
+                 agua_alim3 + agua_alim4 + agua_alim5 + agua_alim6 + agua_alim7 + agua_alim8 + 
+                 jefe_Mujer + prop_mujeres + Edad_jefe2 + Edad_jefe3 + Edad_jefe4 + nhijos_hogar1 +
+                 nhijos_hogar2 + nhijos_hogar3 + prop_alfabeta + inasistente + Jefe_sup +
+                 ratio_prim + ratio_media + ratio_sup + prop_ocupados + prop_desocupados +
+                 prop_inactivos + trabajo_infantil + r_solt + r_casad + migrante_medianop +
+                 migrante_cortop + (1|efectos),
                weights = SWeights, data = encuesta)
 
-#save(BHFreg, file = "Output/ModeloBHF.RData")
+save(BHFreg, file = "Output/ModeloBHF.RData")
 
 #load("Output/ModeloBHF.RData")
 
@@ -324,7 +329,7 @@ setdiff(names(Xcenso), rownames(betas))
 XBCenso = data.frame(efectos = Xcenso$efectos, XB = as.matrix(Xcenso %>% 
                      select(rownames(betas)) %>% sapply(as.numeric)) %*% betas)
 
-# saveRDS(XBCenso, "Output/XBCenso.rds")
+saveRDS(XBCenso, "Output/XBCenso.rds")
 
 ###---generando matriz \mu de medias condicionales -###
 
@@ -332,7 +337,7 @@ mu <- numeric(dim(Xcenso)[1])
 
 # Seleccionando mean values asociados a los betas de la regresion\
 
-mean_values <- Xencuesta %>% lazy_dt() %>% 
+mean_values <- encuesta %>% lazy_dt() %>% 
   mutate("(Intercept)" = 1) %>%
   group_by(efectos) %>%
   summarise_at(vars(rownames(betas)), funs(weighted.mean(., w = SWeights))) %>%
@@ -344,7 +349,7 @@ for (i in 1:D){
   print(i)
   provi <- which(Xcenso$efectos == Prov[i])
   if (n_d$n[i] != 0) {
-    meany <- weighted.mean(Xencuesta[Xencuesta$efectos == Prov[i],]$logIngcorte, Xencuesta[Xencuesta$efectos == Prov[i],]$SWeights)
+    meany <- weighted.mean(encuesta[encuesta$efectos == Prov[i],]$logIngcorte, encuesta[encuesta$efectos == Prov[i],]$SWeights)
     meanx_beta <- as.matrix(mean_values2[which(mean_values$efectos == Prov[i]),] )%*%betas # con intercepto
     add_term <- rep(gammad[i]*(meany - meanx_beta),length(provi))
   }else{
@@ -372,7 +377,6 @@ for (i in 1:D){
 }
 
 sd_Census <- sqrt(vard)
-
 
 ####################################
 # Totales para función benchmark   #
@@ -408,30 +412,29 @@ levels(encuesta$DEPARTAMENTO)
 MatrizCalibrada <- Xcenso %>% select(area.urbana = Area, starts_with("depto")) %>%
   mutate(depto76 = 1-rowSums(Xcenso[,3:25]),unos = 1) %>% select(unos, area.urbana,everything())
 
-# saveRDS(medias, "4. Modelo SAE censo/Output/medias.rds")
-# saveRDS(proporciones, "4. Modelo SAE censo/Output/proporciones.rds") 
-# saveRDS(proporcionesEx, "4. Modelo SAE censo/Output/proporcionesEx.rds")
-# saveRDS(MatrizCalibrada, "4. Modelo SAE censo/Output/MatrizCalibrada.rds")
-# 
-
-
+# saveRDS(medias, "Output/medias.rds")
+# saveRDS(proporciones, "Output/proporciones.rds") 
+# saveRDS(proporcionesEx, "Output/proporcionesEx.rds")
+# saveRDS(MatrizCalibrada, "Output/MatrizCalibrada.rds")
+ 
 
 ############################
 ## Monte carlo simulation ##
 ############################
+
 unique(encuesta$li)
 unique(encuesta$lp)
 
 lp <- c(296845, 200760)
 li <- c(147169, 127346)
 
-source("4. Modelo SAE censo/R codes/0 funcion benchmark.R")
+source("R codes/0. Benchmark.R")
 
 censo_zone0 <- cbind.data.frame(Municipio = Xcenso$Municipio, 
                                 Area =  Xcenso$Area)
 A = 50
 
-CensusEB <- matrix(0, nrow = 1122,ncol = 7)
+CensusEB <- matrix(0, nrow = 1122, ncol = 7)
 
 for(a in 1:A){
   print(a)
@@ -459,7 +462,7 @@ for(a in 1:A){
   CensusEB <- CensusEB + as.matrix(estimates[,-1])
 }
 
-# saveRDS(CensusEB, file = "4. Modelo SAE censo/Output/CensusEB250.rds")
+saveRDS(CensusEB, file = "Output/CensusEB250.rds")
 
 Estimaciones <- as.data.frame((CensusEB)/A)
 Estimaciones$Municipio <- estimates$Municipio
