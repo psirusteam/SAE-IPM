@@ -45,7 +45,8 @@ encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>%
                           ifelse(sexo == 2 & edad %in% 18:60, 1, 0)),
                    Area = ifelse(clase.x == 1, 1, 0),
                    efectos = paste0(divipola, "-", as.character(Area)))
-
+#COndact = 1
+# encuesta$condact == 1??
 ###------------ Filtro sobre la población económicamente activa -------------###
 
 encuesta <- subset(encuesta, PEA == 1)
@@ -115,6 +116,7 @@ encuesta %<>% mutate(logIngcorte  = log(encuesta$yemp + s))
 ###-------- Gráfico cuantil-cuantil de residuos y efectos aleatorios --------###
 
 plot(density(encuesta$logIngcorte))
+plot(density(encuesta$yemp))
 ggqqplot(encuesta$logIngcorte)
 
 ###------------ Pruebas de normalidad sobre variable transformada -----------###
@@ -423,7 +425,6 @@ MatrizCalibrada <- Xcenso %>% select(area.urbana = Area, starts_with("depto")) %
 # saveRDS(proporcionesEx, "Output/proporcionesEx.rds")
 # saveRDS(MatrizCalibrada, "Output/MatrizCalibrada.rds")
  
-
 ############################
 ## Monte carlo simulation ##
 ############################
@@ -475,7 +476,11 @@ Estimaciones$Municipio <- estimates$Municipio
 Estimaciones %<>% select(Municipio, everything())
 Estimaciones$FGT0p <- abs(Estimaciones$FGT0p)
 Estimaciones$FGT0i <- abs(Estimaciones$FGT0i)
-saveRDS(Estimaciones, file = "Output/EstimacionesMontecarloSENATEWEIGHTS.rds")
+#saveRDS(Estimaciones, file = "Output/EstimacionesMontecarloSENATEWEIGHTS.rds")
+
+Estimaciones <- readRDS("Output/EstimacionesMontecarloSENATEWEIGHTS.rds")
+Estimaciones$FGT0p <- abs(Estimaciones$FGT0p)
+Estimaciones$FGT0i <- abs(Estimaciones$FGT0i)
 
 ################################################################################
 ###---------------------------------- Mapas ---------------------------------###
