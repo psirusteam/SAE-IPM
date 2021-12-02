@@ -65,8 +65,8 @@ Xcenso <- readRDS("Input/1. Data/Xcenso.rds")
 
 indicadores <- GEIH2018 %>% transmute(
   idhogar = paste0(directorio, secuencia_p),
-  Aseguramiento_Salud = case_when(edad > 5 & p6090 == 1 ~ 1,
-                                  edad > 5 & p6090 == 2 ~ 0,
+  Aseguramiento_Salud = case_when(edad > 17 & p6090 == 1 ~ 1,
+                                  edad > 17 & p6090 == 2 ~ 0,
                                   TRUE ~ NA_real_),
   Formalidad_laboral = case_when(edad > 17 & condact3 == 1 & p6920 %in% c(1,3) ~ 1,
                                  edad > 17 & condact3 == 1 & p6920 %in% c(2) ~ 0,
@@ -184,7 +184,8 @@ betas2 = as.matrix(fixef(pluginreg_2))
 
 matrizCenso <- cbind.data.frame(Xcenso$Municipio, cbind(1, as.matrix(Xcenso %>% 
                                 select(rownames(betas1)[-1]))) %*% betas1,
-                                cbind(1, as.matrix(Xcenso %>% select(rownames(betas2)[-1]))) %*% betas2)
+                                cbind(1, as.matrix(Xcenso %>% 
+                                      select(rownames(betas2)[-1]))) %*% betas2)
 
 colnames(matrizCenso) <- c("Municipio","XB1","XB2")
 head(matrizCenso)
@@ -248,7 +249,7 @@ CensoPersonas1 <- CensoPersonas %>% transmute(idhogar, Divipola,
                                               Departamento = U_DPTO, 
                                               Area = UA_CLASE) 
                              
-CensoPersonas1 <- subset(CensoPersonas1, edad > 5) %>% left_join(Xcenso %>% 
+CensoPersonas1 <- subset(CensoPersonas1, edad > 17) %>% left_join(Xcenso %>% 
                                                       transmute(idhogar, pluginSalud),
                                                       by = "idhogar")
 
