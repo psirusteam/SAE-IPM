@@ -22,6 +22,7 @@ library(remotes)
 library(fastDummies)
 library(haven)
 library(magrittr)
+library(openxlsx)
 select <- dplyr::select
 
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
@@ -73,7 +74,7 @@ indicadores <- GEIH2018 %>% transmute(
 
 table(GEIH2018$condact3)
 
-###--------------- Anexando variables a la base estandarizada ---------------###
+###---------------- Identificando los registros que no son NA ---------------###
 
 indAS <- subset(indicadores, Aseguramiento_Salud %in% c(0, 1))
 table(indAS$Aseguramiento_Salud, useNA = "a")
@@ -81,9 +82,7 @@ table(indAS$Aseguramiento_Salud, useNA = "a")
 indFL <- subset(indicadores, Formalidad_laboral %in% c(0,1))
 table(indFL$Formalidad_laboral, useNA = "a")
 
-# Xencuesta1 %<>% left_join(indicadores %>% group_by(idhogar) %>%
-#                summarise(Priv_aseguramiento_salud = ifelse(any(Aseguramiento_Salud %in% 0), 1, 0),
-#                          Priv_Formalidad_laboral = ifelse(any(Formalidad_laboral %in% 0), 1, 0)), by = "idhogar")
+###--------------- Anexando variables a la base estandarizada ---------------###
 
 Xencuesta1 <- Xencuesta %>% right_join(indAS %>% group_by(idhogar) %>%
                            summarise(Priv_AS = ifelse(any(Aseguramiento_Salud %in% 0),
@@ -101,7 +100,7 @@ table(Xencuesta2$Priv_FL, useNA = "a")
 ################################################################################
 
 paste(names(Xencuesta), collapse = " + ")
-pluginreg_1 <- glmer(Priv_aseguramiento_salud ~ Area + tipo_viv_casa + 
+pluginreg_1 <- glmer(Priv_AS ~ Area + tipo_viv_casa + 
                      tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
                      mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 +
                      mpisos1 + mpisos2 + mpisos3 + mpisos4 + mpisos5 +
@@ -123,7 +122,7 @@ pluginreg_1 <- glmer(Priv_aseguramiento_salud ~ Area + tipo_viv_casa +
 ###-------------- Ajuste del modelo Plugin: Formalidad laboral --------------###
 ################################################################################
 
-pluginreg_2 <- glmer(Priv_Formalidad_laboral ~ Area + tipo_viv_casa + 
+pluginreg_2 <- glmer(Priv_FL ~ Area + tipo_viv_casa + 
                      tipo_viv_depto + tipo_viv_cuarto + tipo_viv_indigena + 
                      mpared1 + mpared2 + mpared3 + mpared4 + mpared5 + mpared6 +
                      mpisos1 + mpisos2 + mpisos3 + mpisos4 + mpisos5 + agua_alim1 +
@@ -249,7 +248,7 @@ CensoPersonas1 <- CensoPersonas %>% transmute(idhogar, Divipola,
                                               Departamento = U_DPTO, 
                                               Area = UA_CLASE) 
                              
-CensoPersonas1 <- subset(CensoPersonas1, edad >5) %>% left_join(Xcenso %>% 
+CensoPersonas1 <- subset(CensoPersonas1, edad > 5) %>% left_join(Xcenso %>% 
                                                       transmute(idhogar, pluginSalud),
                                                       by = "idhogar")
 
@@ -266,20 +265,24 @@ table(CensoPersonas$ocupados)
 
 ###--- Nacional ---###
 
-CensoPersonas %>% summarise(PrivSalud = mean(pluginSalud, na.rm = T),
-                            PrivFormal = mean(pluginFormal, na.rm = T))
+CensoPersonas1 %>% summarise(PrivSalud = mean(pluginSalud, na.rm = T))
+CensoPersonas2 %>% summarise(PrivFormal = mean(pluginFormal, na.rm = T))
 
 ###--- Departamental ---###
 
-res_depto <- CensoPersonas %>% group_by(Departamento) %>% 
-             summarise(PrivSalud = mean(pluginSalud, na.rm = T), 
-                       PrivFormal = mean(pluginFormal, na.rm = T))
+res_depto_Salud <- CensoPersonas1 %>% group_by(Departamento) %>% 
+                   summarise(PrivSalud = mean(pluginSalud, na.rm = T))
+
+res_depto_Laboral <- CensoPersonas2 %>% group_by(Departamento) %>%                              
+                       summarise(PrivFormal = mean(pluginFormal, na.rm = T))
 
 ###--- Municipal ---###
 
-res_Mun <- CensoPersonas %>% group_by(Divipola) %>% 
-           summarise(PrivSalud = mean(pluginSalud, na.rm = T),
-                     PrivFormal = mean(pluginFormal, na.rm = T))
+res_Mun_Salud <- CensoPersonas %>% group_by(Divipola) %>% 
+                  summarise(PrivSalud = mean(pluginSalud, na.rm = T))
+
+res_Mun_Laboral <- CensoPersonas %>% group_by(Divipola) %>%
+                    summarise(PrivFormal = mean(pluginFormal, na.rm = T))
 
 ################################################################################
 ###--------------- Guardando los resultados de los modelos SAE --------------###
@@ -287,6 +290,7 @@ res_Mun <- CensoPersonas %>% group_by(Divipola) %>%
 
 ###--- Nivel Departamental ---###
 
+write.csv2(res_depto, "Depto.csv")
 write.csv2(res_depto, "Depto.csv")
 
 ###--- Nivel Municipal ---###
