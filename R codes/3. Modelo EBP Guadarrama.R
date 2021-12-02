@@ -34,27 +34,38 @@ memory.limit(18000000)
 
 ###---------------------------- Encuesta original ---------------------------###
 
+#--- Dimensión privación por ingreso ---#
+#- Creación de la variables de pobreza y pobreza extrema -#
+#- Creación de la variable de privación: yemp (Ingreso por empleo) < Línea de pobreza (lp) -#
+#- Creación del filtro de la población económicamente activa (PEA)
+
 encuesta <- readRDS("Input/1. Data/GEIH2018.rds") %>% 
             mutate(idhogar = paste0(directorio, secuencia_p), 
                    pobrezaEx = ifelse(pobreza == 1, 1, 0), 
                    pobreza = ifelse(pobreza != 3, 1, 0), estrato = paste(mes, 
                    DEPARTAMENTO, divipola, clase.x, sep = "_" ), 
                    upm =  paste(estrato, segmento, sep = "_" ),
-                   Priv_Ing = ifelse(yemp < lp, 1, 0),
-                   PEA = ifelse(sexo == 1 & edad %in% 18:65, 1,
-                          ifelse(sexo == 2 & edad %in% 18:60, 1, 0)),
+#                   Priv_Ing = ifelse(yemp < lp, 1, 0),
                    Area = ifelse(clase.x == 1, 1, 0),
                    efectos = paste0(divipola, "-", as.character(Area)))
-#COndact = 1
-# encuesta$condact == 1??
-###------------ Filtro sobre la población económicamente activa -------------###
 
-encuesta <- subset(encuesta, PEA == 1)
+dim(encuesta)
+###------------ Filtro sobre la población ocupada -------------###
+
+encuesta <- subset(encuesta, condact == 1)
 encuesta$SWeights <- nrow(encuesta)*(encuesta$factorex/sum(encuesta$factorex))
+
+dim(encuesta)
+
+### Se carga Xencuesta (nivel de hogar): Variables dicotómicas de la info VIVienda # 
 
 Xencuesta <-  readRDS("Input/1. Data/Xencuesta.rds") 
 
 encuesta <- left_join(encuesta, Xencuesta)
+
+###--- Censo: Completo ---###
+
+CensoPersonas <- readRDS("Input/1. Data/Censo_Completo.rds")
 
 ###------------------ Seleccionando algunas variables: Censo ----------------###
 
@@ -62,6 +73,10 @@ Xcenso <- readRDS("Input/1. Data/Xcenso.rds") %>% mutate("(Intercept)" = 1,
           Municipio = ifelse(as.numeric(as.character(Municipio)) < 10000, 
           paste0(0, as.character(Municipio)), as.character(Municipio)),
           efectos = paste0(Municipio, "-", as.character(Area))) 
+
+CensoPersonas <- left_join(CensoPersonas, Xcenso, by = "idhogar")
+
+CensoPersonas <- subset(CensoPersonas, condact == 1)
 
 ################################################################################
 ###------------------- Tamaños muestrales y poblacionales -------------------###

@@ -18,7 +18,7 @@ library(haven)
 library(magrittr)
 library(formula.tools)
 library(remotes)
-library(StatisticalModels)
+#library(StatisticalModels)
 library(fastDummies)
 library(haven)
 library(magrittr)
@@ -26,7 +26,7 @@ select <- dplyr::select
 
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
 
-memory.limit(180000000)
+memory.limit(250000000)
 
 ################################################################################
 ###----------------------------- Loading datasets ---------------------------###
@@ -72,9 +72,10 @@ indicadores <- GEIH2018 %>% transmute(
                                  TRUE ~ NA_real_))
 
 table(GEIH2018$condact3)
+
 ###--------------- Anexando variables a la base estandarizada ---------------###
 
-indAS <- subset(indicadores, Aseguramiento_Salud %in% c(0,1))
+indAS <- subset(indicadores, Aseguramiento_Salud %in% c(0, 1))
 table(indAS$Aseguramiento_Salud, useNA = "a")
 
 indFL <- subset(indicadores, Formalidad_laboral %in% c(0,1))
