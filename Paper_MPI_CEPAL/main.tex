@@ -236,6 +236,13 @@ As shown in Table 1. two of nine indicators are not available in the census and 
     Most of the indicators are binary variables (deprivation: yes/no) and to obtain them, the EPP will be applied. However, since income information is also part of these indicators, a Pseudo EBP is also implemented. 
     
 \subsection{SAE Methods}
+
+\textcolor{red}{A definir: }
+\begin{itemize}
+\item \textcolor{red}{Porqué decidimos usar el EBP de Guadarrama con transformación log-shift? Cómo justificamos que esta es la mejor alternativa? Se podría justificar comparando ``clásico" EBP con EBP de Guadarrama, y/o distintas transformaciones }
+\item \textcolor{red}{Lo mismo para el EPP, porqué el Plug-in en lugar del EBP para variables binarias?}
+\end{itemize}
+
 In order to performing a complete poverty mapping and obtaining a local picture of
 poverty in a region, the use of an adequate estimation method becomes necessary.
 Unfortunately national surveys often are not suitable to give reliable statistical information
@@ -356,13 +363,20 @@ A Monte Carlo approach is used to obtain a numerically efficient approximation t
 
 \subsection{Measure of uncertainty}
 
+\textcolor{red} {Decidir qué vamos a hacer con el MSE??}
 \begin{itemize}
-    \item Parametric bootstrap based on \cite{moretti2021small}
+    \item \textcolor{red} {Bootstrap para obtener cada MSE por separado?, reportamos MSE independientemente?}
+    \item \textcolor{red} {Bootstrap para obtener cada MSE conjunto? ``sumamos" simplemente o buscamos otra alternativa? }
 \end{itemize}
 
 
 
 \section{Validation: Design-based simulation study}
+
+\textcolor{red} {Queremos validar el MSE?}
+\
+
+
 \begin{itemize}
     \item In this section we illustrate some of the aspects of composite indicators in a SAE context evaluation. In particular, combining the results of model prediction we described
 in sections bellow, we present results for the estimation of the MPI. We discuss how the design-based simulation results can guide the production of the
@@ -377,6 +391,9 @@ Analysis with the original sam. And we ple. %Table 3.2 presents summaries over m
 
 
 \subsection{Employment-related income estimation}
+
+\textcolor{red}{Iniciar con descripción del modelo. No hay seleccion de variables, ambos modelos usan las mismas. Por esto podríamos decidir si al iniciar la sección de resultados, queremos presentar las variables utilizadas, los tamaños de muestra, población, dominios en /fuera de muestra, etc.?}
+
 
 An EBP model to obtain employment-related income information was conducted. Income per capita of each individual as dependent variable and the socio-economic covariates described in Table \ref{tab:variables} as predictors. . 
 
@@ -415,7 +432,7 @@ An EBP model to obtain employment-related income information was conducted. Inco
  To select the model, several transformations were considered to achieve normality in the error terms, but the final version applies a Box-Cox transformation (\citealt{box1964}) with an optimal lambda () using the Restricted maximum likelihood (REML) approach. For this example, normality for both, the unit level and the random effects, is assumed.  Also, the marginal $R^2 =  $ and the conditional $R^2=$ were observed.
 
 
-
+\
 
 \begin{table}[ht] 
 \small{
@@ -426,7 +443,7 @@ An EBP model to obtain employment-related income information was conducted. Inco
 		\hline
          &Min &1st Q &Median& Mean & 3rd Q & Max \\ 
 		\hline
-		  Sample domains &  \multirow{2}{*}{12} & \multirow{2}{*}{62} & \multirow{2}{*}{103}& \multirow{2}{*}{144.37} & \multirow{2}{*}{191} & \multirow{2}{*}{877}   \\
+		  Sample domains &  \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{}& \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{}   \\
 		  (In-sample: \%) & &&&&&\\
 		  Population domains &    &  & &  &  & \\
 			\hline
@@ -434,38 +451,21 @@ An EBP model to obtain employment-related income information was conducted. Inco
 		\label{tab:sizes}
 \end{table}
 
-
-
-\begin{table}[ht]
-\begin{center}
-\small{
-	\caption{Coefficients of variation of the direct and model-based estimates for income (mean)}
-	\centering
-		\begin{tabular}{lrr}
-		\hline
-			CV	& Direct&  EBP\\
-				\hline
-
-			%	         \hline
-				     	 Min &&\\
-						  1st Q. &&\\
-				 		 Median  &&\\
-						Mean&&\\
-				         3rd Q.&&\\
-				          Max  &&\\
-			\hline
-	\end{tabular}
-	}
-	\end{center}
-\end{table}
+\begin{itemize}
+\item \textcolor{red}{Chequear diagnósticos de los residuos}
+\item  \textcolor{red}{QQ plots}
+\item  \textcolor{red}{Indicadores básicos: R2, ICC}
+\item \textcolor{red}{Comparamos estos resultados con distintas transformaciones o no?}
+\end{itemize}
 
 
 \subsection{Social security and pension estimation}
 
 \begin{itemize}
-    \item Similar description? do we need two different sections?
-    \item Tables, plots and maps.
-    
+    \item  \textcolor{red}{Decidir si describimos las variables del modelo otra vez aquí o una subsección inicial, al comienzo de la sección de resultados}
+    \item  \textcolor{red}{Chequear residuos para los efectos aleatorios: QQplot y Shapiro test}
+    \item \textcolor{red}{análisis de clasificación con los datos de encuesta: sensibilidad, especificidad, exactitud}
+\end{itemize}
 \end{itemize}
 
 
@@ -473,7 +473,7 @@ An EBP model to obtain employment-related income information was conducted. Inco
 
 
 \begin{itemize}
-    \item Genenal incidence of poverty by: sex, age group, area.
+    \item General incidence of poverty by: sex, age group, area.
     \item Description by indicator /domains
     \item Provide information with coefficients of variation 
 \end{itemize}
