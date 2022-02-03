@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  3 FEB 2022 11:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  3 FEB 2022 13:49
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -615,46 +615,52 @@ d on input line 366.
 [8]
 
 Package natbib Warning: Citation `box1964' on page 9 undefined on input line 44
-1.
+8.
 
 [9]
 
-./main.tex:478: LaTeX Error: \begin{document} ended by \end{itemize}.
+./main.tex:485: LaTeX Error: \begin{document} ended by \end{itemize}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.478 \end{itemize}
+l.485 \end{itemize}
                    
 ? 
-./main.tex:478: Extra \endgroup.
+./main.tex:485: Extra \endgroup.
 <recently read> \endgroup 
                           
-l.478 \end{itemize}
+l.485 \end{itemize}
                    
 ? 
-[10]
+[10] [11]
 No file main.bbl.
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 511.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 511.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 518.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 518.
 (./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 511.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 511.
-Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F238FBCFCA20117E268839DBA0B78D69;1343.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 518.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 518.
 
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `main.out':
+(rerunfilecheck)             Before: F238FBCFCA20117E268839DBA0B78D69;1343
+(rerunfilecheck)             After:  C63133E8D6514D6DA4114594DE9A7B5D;1416.
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 511.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 518.
  ) 
 Here is how much of TeX's memory you used:
- 10127 strings out of 480608
- 155492 string characters out of 5903630
+ 10129 strings out of 480608
+ 155513 string characters out of 5903630
  434341 words of memory out of 5000000
  25751 multiletter control sequences out of 15000+600000
  564224 words of font info for 101 fonts, out of 8000000 for 9000
@@ -677,10 +683,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2020/texmf-dist
 /fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on main.pdf (10 pages, 190272 bytes).
+Output written on main.pdf (11 pages, 190869 bytes).
 PDF statistics:
- 217 PDF objects out of 1000 (max. 8388607)
- 187 compressed objects within 2 object streams
- 43 named destinations out of 1000 (max. 500000)
+ 222 PDF objects out of 1000 (max. 8388607)
+ 191 compressed objects within 2 object streams
+ 45 named destinations out of 1000 (max. 500000)
  137 words of extra memory for PDF output out of 10000 (max. 10000000)
 
