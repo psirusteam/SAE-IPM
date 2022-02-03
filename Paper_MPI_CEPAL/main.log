@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  1 FEB 2022 18:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  3 FEB 2022 11:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -532,75 +532,76 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 53.
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 6
+6.
+
+(/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [1
 
 {/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 
 Package natbib Warning: Citation `UnitedNationsGeneralAssembly2015ResDevelopmen
-t' on page 2 undefined on input line 70.
+t' on page 2 undefined on input line 79.
 
 
 Package natbib Warning: Citation `foster1984' on page 2 undefined on input line
- 72.
+ 81.
 
-./main.tex:72: Misplaced alignment tab character &.
-l.72 ...and Betti, G. (Eds.), 2006; Belhadj, B., &
+./main.tex:81: Misplaced alignment tab character &.
+l.81 ...and Betti, G. (Eds.), 2006; Belhadj, B., &
                                                    Limam, M., 2012). Alkire ...
 
 ? 
-./main.tex:72: Misplaced alignment tab character &.
-l.72 ... Belhadj, B., & Limam, M., 2012). Alkire &
+./main.tex:81: Misplaced alignment tab character &.
+l.81 ... Belhadj, B., & Limam, M., 2012). Alkire &
                                                    Foster (2007), proposed a...
 
 ? 
 
 Package natbib Warning: Citation `CEPAL2014' on page 2 undefined on input line 
-73.
+82.
 
 
 Package natbib Warning: Citation `Mancero2001' on page 2 undefined on input lin
-e 73.
+e 82.
 
 
 Package natbib Warning: Citation `Pfeffermann2013' on page 2 undefined on input
- line 79.
+ line 88.
 
 
-Package natbib Warning: Citation `Rao2015' on page 2 undefined on input line 79
+Package natbib Warning: Citation `Rao2015' on page 2 undefined on input line 88
 .
 
 
 Package natbib Warning: Citation `Pratesi2016' on page 2 undefined on input lin
-e 79.
+e 88.
 
 
 Package natbib Warning: Citation `tzavidis2018start' on page 2 undefined on inp
-ut line 79.
+ut line 88.
 
 [2
 
 ]
-Overfull \hbox (9.09673pt too wide) in paragraph at lines 138--138
+Overfull \hbox (9.09673pt too wide) in paragraph at lines 147--147
 []\OT1/ptm/b/n/14.4 Case study: mul-ti-di-men-sional de-pri-va-tion in-dex for 
 adult
  []
 
 
 Package natbib Warning: Citation `DANE2019' on page 3 undefined on input line 1
-47.
+56.
 
 [3]
-Overfull \hbox (37.14656pt too wide) in paragraph at lines 174--200
+Overfull \hbox (37.14656pt too wide) in paragraph at lines 183--209
  [] 
  []
 
-[4]
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 2
-42.
- (/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/ts1ptm.fd
-File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) [5]
-Overfull \hbox (21.94666pt too wide) detected at line 298
+[4] [5]
+Overfull \hbox (21.94666pt too wide) detected at line 307
 [] [] \OT1/cmr/m/n/10.95 = [][] [] + 2[][][] [] []\OML/cmm/m/it/10.95 ^^N[] \OM
 S/cmsy/m/n/10.95 ^^@ \OML/cmm/m/it/10.95 ^^N[][][] \OT1/cmr/m/n/10.95 + [][] []
  \OML/cmm/m/it/10.95 :[]
@@ -609,28 +610,28 @@ S/cmsy/m/n/10.95 ^^@ \OML/cmm/m/it/10.95 ^^N[][][] \OT1/cmr/m/n/10.95 + [][] []
 [6] [7]
 
 Package amsfonts Warning: Obsolete command \bold; \mathbf should be used instea
-d on input line 357.
+d on input line 366.
 
 [8]
 
-Package natbib Warning: Citation `box1964' on page 9 undefined on input line 43
-2.
+Package natbib Warning: Citation `box1964' on page 9 undefined on input line 44
+1.
 
 [9]
 
-./main.tex:469: LaTeX Error: \begin{document} ended by \end{itemize}.
+./main.tex:478: LaTeX Error: \begin{document} ended by \end{itemize}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.469 \end{itemize}
+l.478 \end{itemize}
                    
 ? 
-./main.tex:469: Extra \endgroup.
+./main.tex:478: Extra \endgroup.
 <recently read> \endgroup 
                           
-l.469 \end{itemize}
+l.478 \end{itemize}
                    
 ? 
 [10]
@@ -638,20 +639,24 @@ No file main.bbl.
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 502.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 502.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 511.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 511.
 (./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 502.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 502.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 511.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 511.
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: F238FBCFCA20117E268839DBA0B78D69;1343.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 502.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 511.
  ) 
 Here is how much of TeX's memory you used:
- 10126 strings out of 480608
- 155484 string characters out of 5903630
+ 10127 strings out of 480608
+ 155492 string characters out of 5903630
  434341 words of memory out of 5000000
- 25750 multiletter control sequences out of 15000+600000
+ 25751 multiletter control sequences out of 15000+600000
  564224 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,14n,42p,970b,515s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -672,7 +677,7 @@ st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2020/texmf-dist
 /fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on main.pdf (10 pages, 189587 bytes).
+Output written on main.pdf (10 pages, 190272 bytes).
 PDF statistics:
  217 PDF objects out of 1000 (max. 8388607)
  187 compressed objects within 2 object streams
