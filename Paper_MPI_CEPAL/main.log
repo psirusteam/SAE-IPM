@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  3 FEB 2022 13:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.10)  4 FEB 2022 10:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -442,50 +442,64 @@ Package: xparse 2020-03-06 L3 Experimental document command parser
 \g__xparse_grabber_int=\count287
 \l__xparse_m_args_int=\count288
 \l__xparse_v_nesting_int=\count289
+) (/usr/local/texlive/2020/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2020/02/11 v2.0o Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+ptm on input line 11
+2.
+
+(/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/t1ptm.fd
+File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+))
+(/usr/local/texlive/2020/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks30
+\inpenc@posthook=\toks31
+)
+(/usr/local/texlive/2020/texmf-dist/tex/latex/preprint/authblk.sty
+Package: authblk 2001/02/27 1.3 (PWD)
+\affilsep=\skip75
+\@affilsep=\skip76
+\c@Maxaffil=\count290
+\c@authors=\count291
+\c@affil=\count292
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 51.
-LaTeX Font Info:    ... okay on input line 51.
-LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 5
-1.
- (/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/ot1ptm.fd
-File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
-)
-\c@maskedRefs=\count290
-
-(/usr/local/texlive/2020/texmf-dist/tex/latex/apacite/english.apc
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+\c@maskedRefs=\count293
+ (/usr/local/texlive/2020/texmf-dist/tex/latex/apacite/english.apc
 File: english.apc 2013/07/21 v6.03 apacite language file
 LaTeX Info: Redefining \BPBI on input line 129.
 LaTeX Info: Redefining \BHBI on input line 130.
 )
 (/usr/local/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count291
+\scratchcounter=\count294
 \scratchdimen=\dimen182
 \scratchbox=\box53
-\nofMPsegments=\count292
-\nofMParguments=\count293
-\everyMPshowfont=\toks30
-\MPscratchCnt=\count294
+\nofMPsegments=\count295
+\nofMParguments=\count296
+\everyMPshowfont=\toks32
+\MPscratchCnt=\count297
 \MPscratchDim=\dimen183
-\MPnumerator=\count295
-\makeMPintoPDFobject=\count296
-\everyMPtoPDFconversion=\toks31
+\MPnumerator=\count298
+\makeMPintoPDFobject=\count299
+\everyMPtoPDFconversion=\toks33
 ) (/usr/local/texlive/2020/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -500,7 +514,7 @@ Package caption Info: hyperref package is loaded.
 Package caption Info: threeparttable package is loaded.
 Package caption Info: End \AtBeginDocument code.
 \AtBeginShipoutBox=\box54
-Package hyperref Info: Link coloring OFF on input line 51.
+Package hyperref Info: Link coloring OFF on input line 65.
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -512,96 +526,95 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count297
+\c@section@level=\count300
 )
-LaTeX Info: Redefining \ref on input line 51.
-LaTeX Info: Redefining \pageref on input line 51.
-LaTeX Info: Redefining \nameref on input line 51.
+LaTeX Info: Redefining \ref on input line 65.
+LaTeX Info: Redefining \pageref on input line 65.
+LaTeX Info: Redefining \nameref on input line 65.
  (./main.out) (./main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 53.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 66.
 
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 53.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 66.
 
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 6
-6.
-
-(/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/ts1ptm.fd
-File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [1
 
 {/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 
 Package natbib Warning: Citation `UnitedNationsGeneralAssembly2015ResDevelopmen
-t' on page 2 undefined on input line 79.
+t' on page 2 undefined on input line 82.
 
 
 Package natbib Warning: Citation `foster1984' on page 2 undefined on input line
- 81.
+ 84.
 
-./main.tex:81: Misplaced alignment tab character &.
-l.81 ...and Betti, G. (Eds.), 2006; Belhadj, B., &
+./main.tex:84: Misplaced alignment tab character &.
+l.84 ...and Betti, G. (Eds.), 2006; Belhadj, B., &
                                                    Limam, M., 2012). Alkire ...
 
 ? 
-./main.tex:81: Misplaced alignment tab character &.
-l.81 ... Belhadj, B., & Limam, M., 2012). Alkire &
+./main.tex:84: Misplaced alignment tab character &.
+l.84 ... Belhadj, B., & Limam, M., 2012). Alkire &
                                                    Foster (2007), proposed a...
 
 ? 
 
 Package natbib Warning: Citation `CEPAL2014' on page 2 undefined on input line 
-82.
+85.
 
 
 Package natbib Warning: Citation `Mancero2001' on page 2 undefined on input lin
-e 82.
+e 85.
 
 
 Package natbib Warning: Citation `Pfeffermann2013' on page 2 undefined on input
- line 88.
+ line 91.
 
 
-Package natbib Warning: Citation `Rao2015' on page 2 undefined on input line 88
+Package natbib Warning: Citation `Rao2015' on page 2 undefined on input line 91
 .
 
 
 Package natbib Warning: Citation `Pratesi2016' on page 2 undefined on input lin
-e 88.
+e 91.
 
 
 Package natbib Warning: Citation `tzavidis2018start' on page 2 undefined on inp
-ut line 88.
+ut line 91.
 
 [2
 
 ]
-Overfull \hbox (9.09673pt too wide) in paragraph at lines 147--147
-[]\OT1/ptm/b/n/14.4 Case study: mul-ti-di-men-sional de-pri-va-tion in-dex for 
-adult
+Overfull \hbox (9.09673pt too wide) in paragraph at lines 150--150
+[]\T1/ptm/b/n/14.4 Case study: mul-ti-di-men-sional de-pri-va-tion in-dex for a
+dult
  []
 
 
 Package natbib Warning: Citation `DANE2019' on page 3 undefined on input line 1
-56.
+59.
 
 [3]
-Overfull \hbox (37.14656pt too wide) in paragraph at lines 183--209
+Overfull \hbox (37.14656pt too wide) in paragraph at lines 186--212
  [] 
  []
 
-[4] [5]
-Overfull \hbox (21.94666pt too wide) detected at line 307
+[4]
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 2
+54.
+ (/usr/local/texlive/2020/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+) [5]
+Overfull \hbox (21.94666pt too wide) detected at line 310
 [] [] \OT1/cmr/m/n/10.95 = [][] [] + 2[][][] [] []\OML/cmm/m/it/10.95 ^^N[] \OM
 S/cmsy/m/n/10.95 ^^@ \OML/cmm/m/it/10.95 ^^N[][][] \OT1/cmr/m/n/10.95 + [][] []
  \OML/cmm/m/it/10.95 :[]
@@ -610,28 +623,28 @@ S/cmsy/m/n/10.95 ^^@ \OML/cmm/m/it/10.95 ^^N[][][] \OT1/cmr/m/n/10.95 + [][] []
 [6] [7]
 
 Package amsfonts Warning: Obsolete command \bold; \mathbf should be used instea
-d on input line 366.
+d on input line 369.
 
 [8]
 
-Package natbib Warning: Citation `box1964' on page 9 undefined on input line 44
-8.
+Package natbib Warning: Citation `box1964' on page 9 undefined on input line 45
+1.
 
 [9]
 
-./main.tex:485: LaTeX Error: \begin{document} ended by \end{itemize}.
+./main.tex:488: LaTeX Error: \begin{document} ended by \end{itemize}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.485 \end{itemize}
+l.488 \end{itemize}
                    
 ? 
-./main.tex:485: Extra \endgroup.
+./main.tex:488: Extra \endgroup.
 <recently read> \endgroup 
                           
-l.485 \end{itemize}
+l.488 \end{itemize}
                    
 ? 
 [10] [11]
@@ -639,33 +652,27 @@ No file main.bbl.
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 518.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 518.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 521.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 521.
 (./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 518.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 518.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 521.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 521.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: C63133E8D6514D6DA4114594DE9A7B5D;1416.
 
-
-Package rerunfilecheck Warning: File `main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `main.out':
-(rerunfilecheck)             Before: F238FBCFCA20117E268839DBA0B78D69;1343
-(rerunfilecheck)             After:  C63133E8D6514D6DA4114594DE9A7B5D;1416.
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 518.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 521.
  ) 
 Here is how much of TeX's memory you used:
- 10129 strings out of 480608
- 155513 string characters out of 5903630
- 434341 words of memory out of 5000000
- 25751 multiletter control sequences out of 15000+600000
- 564224 words of font info for 101 fonts, out of 8000000 for 9000
+ 10405 strings out of 480608
+ 158011 string characters out of 5903630
+ 436353 words of memory out of 5000000
+ 26017 multiletter control sequences out of 15000+600000
+ 578055 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,14n,42p,970b,515s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 41i,14n,42p,969b,515s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/local/texl
@@ -683,10 +690,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2020/texmf-dist
 /fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on main.pdf (11 pages, 190869 bytes).
+Output written on main.pdf (11 pages, 190473 bytes).
 PDF statistics:
- 222 PDF objects out of 1000 (max. 8388607)
- 191 compressed objects within 2 object streams
+ 225 PDF objects out of 1000 (max. 8388607)
+ 194 compressed objects within 2 object streams
  45 named destinations out of 1000 (max. 500000)
- 137 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 145 words of extra memory for PDF output out of 10000 (max. 10000000)
 
