@@ -174,40 +174,63 @@ The multidimensional deprivation index proposed by ECLAC is consistent with an i
 
 %The index is calculated for adult (18-65 years) and senior population (>65 years). \textcolor{red}{Women 18-60 and men 18-65?}
 
-The MDI is defined as: 
-\textcolor{red}{briefly describe how it is computed.}
+The MDI, similarly as the Global Multdimensional Poverty Index (\cite{Alkire}), is defined as  the product of two measures: the incidence of multidimensional poverty and the intensity of poverty:
 
+\begin{equation*}
+    \text{MDI} = \text{H} \cdot \text{A}
+\end{equation*}
+
+
+where H is the headcount ratio or incidence of multidimentional poverty and A is the intensity of poverty. The Headcount ratio is defined as:
+
+\begin{equation*}
+    \text{H} = \frac{q}{n}
+\end{equation*}
+
+with $q$ the number of people who are multidimensionally poor and $n$ the total population. The intensity of poverty A is defined as: 
+
+\begin{equation*}
+    \text{A} = \frac{\sum_{1}^{q} s_i}{q}
+\end{equation*}
+
+
+with $s_i$ the deprivation score that the $i_th$ multidimentionally poor person experiences. 
+
+
+
+For this case study, the indicators and dimensions considered are explained in table 1. Each dimension has same weight (1/4) and one individual is defined as poor if he or she obtains 40\% of total deprivations. Notice that this index is based on individual information, i.e. quantity of deprivations by individual. In case one member of the household is defined multidimensionally poor, all members will received the same status. 
 
 \begin{table}[ht]
 \begin{center}
 \small{
 	\caption{Dimensions, indicators of the MDI and data availability in the census}
 	\centering
-		\begin{tabular}{llcc}
-		\hline
-				Dimension &Indicator&Available in census &Target population  \\
+\begin{tabular}{llccc}
 				\hline
-	Housing &Housing materials & Yes & Adults and seniors\\
-	& Overcrowding & Yes & Adults and seniors \\
-			\hline
-	Basic services &  Information communication & Yes & Adults and seniors \\
-	 & technologies (ICTs) & &\\
-	& Drinking water & Yes & Adults and seniors \\
-	& Sanitation & Yes & Adults and seniors \\
-	&Energy (electricity) & Yes & Adults and seniors \\
-			\hline
-	Education & Unfinished education & Yes &Adults \\
-	             & Illiteracy& Yes & Seniors \\
-	             		\hline
-	  Employment, social  & Pension & Yes & Seniors \\
-	  security and income & Employment-related income & No &Adults \\
-	   & Unemployment, precarious  & No & Adults\\
-	   & employment and out of the &&\\
-	   &labor force due to housework&&\\
-		
-
-			\hline
-	\end{tabular}
+				Dimension &Indicator& Weight &Available in census &Target population  \\
+				\hline
+				Housing &Poor housing materials & 1/8 & Yes & Adults and seniors\\
+				& Overcrowding & 1/8 &Yes & Adults and seniors \\
+				\hline
+				Basic services &  Lack of information communication & 1/16 &Yes & Adults and seniors \\
+				& technologies (ICTs) & &\\
+				& Lack of drinking water & 1/16&Yes & Adults and seniors \\
+				& Lack of sanitation &1/16 & Yes & Adults and seniors \\
+				& Lack of energy (electricity) & 1/16&Yes & Adults and seniors \\
+				\hline
+				Education & Unfinished education & 1/4 &Yes &Adults \\
+				& Illiteracy& 1/4 &Yes & Seniors \\
+				\hline
+				Employment, social  & No pension & 1/4 &Yes & Seniors \\
+				security and income & Insufficient employment-related  &1/8 & \textbf{No} &Adults \\
+				&income&&&\\
+				& Unemployment, precarious  &1/8 & \textbf{No} & Adults\\
+				& employment and out of the &&&\\
+				&labor force due to housework&&&\\
+				
+				
+				\hline
+			\end{tabular}
 	}
 	\end{center}
 \end{table}
