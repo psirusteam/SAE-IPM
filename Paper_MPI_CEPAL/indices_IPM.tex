@@ -1,0 +1,102 @@
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=3cm,lmargin=3cm,rmargin=3cm}
+\usepackage{amsmath}
+\usepackage{babel}
+\begin{document}
+Sean variables aleatorias independientes
+\begin{align*}
+y_{1i}\sim Ber\left(p_{1}\right), & y_{2i}\sim Ber\left(p_{2}\right)\,\,\forall\text{ individuo }i
+\end{align*}
+ 
+
+se define $X_{i}=\alpha\left(Y_{1i}+Y_{2i}\right)+k_{i}$ con $k_{i}$
+conocido $\forall i$ y sea 
+
+\[
+Z_{i}=\begin{cases}
+1 & \text{Si }X_{i}\geq\delta\\
+0 & \text{Si }X_{i}<\delta
+\end{cases}
+\]
+
+y $\bar{Z}_{d}=\frac{1}{N_{d}}\sum_{i\in U_{d}}z_{i}$, ¿cuál es $E\left(\bar{Z}_{d}\right)$?
+
+Soluci\'on: 
+
+Sea $W_{i}=\alpha\left(Y_{1i}+Y_{2i}\right)$
+
+Como $Y_{1i}$ y $Y_{2i}$ son variables Bernoulli, entonces toman
+valores de 0 y 1, entonces $Y_{1i}+Y_{2i}$ toma valores 0, 1 o 2.
+por lo tanto, los posibles valores de $W_{i}$ son 0, $\alpha$ y
+$2\alpha$, con las probabilidades dadas por: 
+\begin{itemize}
+\item 
+\begin{align*}
+Pr\left(W_{i}=0\right) & =Pr\left(Y_{1i}=0,Y_{2i}=0\right)=\left(1-p_{1}\right)\left(1-p_{2}\right)
+\end{align*}
+\item 
+\begin{align*}
+Pr\left(W_{i}=\alpha\right) & =Pr\left(Y_{1i}=0,Y_{2i}=1\right)+Pr\left(Y_{1i}=0,Y_{2i}=1\right)\\
+ & =p_{2}\left(1-p_{1}\right)+p_{1}\left(1-p_{2}\right)
+\end{align*}
+\item 
+\begin{align*}
+Pr\left(W_{i}=2\alpha\right) & =Pr\left(Y_{1i}=1,Y_{2i}=1\right)=p_{1}p_{2}
+\end{align*}
+\end{itemize}
+Es decir, la funci\'on de desidad de $W_{i}$ es:
+
+\begin{align*}
+f\left(W_{i}\right)= & \begin{cases}
+\left(1-p_{1}\right)\left(1-p2\right) & \text{S\'i }w_{i}=0\\
+p_{2}\left(1-p_{1}\right)+=p_{1}\left(1-p_{2}\right) & \text{S\'i }w_{i}=\alpha\\
+p_{1}p_{2} & \text{S\'i }w_{i}=2\alpha\\
+0 & \text{si no}
+\end{cases}
+\end{align*}
+
+Ahora, volviendo a $E\left(\bar{Z}_{d}\right),$ debemos hallar 
+
+\begin{align*}
+E\left(Z_{i}\right) & =1-Pr\left(X_{i}\le\delta\right)\\
+ & =1-Pr\left(\alpha\left(Y_{1i}+Y_{2i}\right)+k_{i}\le\delta\right)\\
+ & =1-Pr\left(\alpha\left(Y_{1i}+Y_{2i}\right)\le\delta-k_{i}\right)\\
+ & =1-Pr\left(W_{i}\le\delta-k_{i}\right)
+\end{align*}
+Esta probabilidad depende del valor de $\delta-k_{i}$ as\'i:
+\begin{description}
+\item [{Caso~1}] Si $\delta-k_{i}<0$, entonces $Pr\left(W_{i}\le\delta-k_{i}\right)=0$
+\item [{Caso~2}] Si $0\le\delta-k_{i}\le\alpha$ entonces 
+\[
+Pr\left(W_{i}\le\delta-k_{i}\right)=Pr\left(W_{i}=0\right)=\left(1-p_{1}\right)\left(1-p_{2}\right)
+\]
+\item [{Caso~3}] Si $\alpha\le\delta-k_{i}\le2\alpha$, entonces 
+\begin{align*}
+Pr\left(W_{i}\le\delta-k_{i}\right) & =Pr\left(W_{i}=0\right)+Pr\left(W=1\right)\\
+ & =\left(1-p_{1}\right)\left(1-p_{2}\right)+p_{2}\left(1-p_{1}\right)+p_{1}\left(1-p_{2}\right)
+\end{align*}
+\item [{Caso~4}] Si $2\alpha\le\delta-k_{i}$ entonces
+\begin{align*}
+Pr\left(W_{i}\le\delta-k_{i}\right) & =Pr\left(W_{i}=0\right)+Pr\left(W_{i}=\alpha\right)+Pr\left(W_{i}=2\alpha\right)=1
+\end{align*}
+\end{description}
+En conclusi\'on 
+
+\begin{align*}
+E\left(Z_{i}\right)= & \begin{cases}
+1 & \text{si }\delta-k_{i}\le0\\
+p_{2}\left(1-p_{1}\right)+p_{1}\left(1-p_{2}\right)+p_{1}p_{2} & \text{si }0<\delta-k_{i}\le\alpha\\
+p_{1}p_{2} & \text{si \ensuremath{\alpha\le\delta}-\ensuremath{k_{i}}<2\ensuremath{\alpha}}\\
+0 & \text{si }2\alpha\le\delta-k_{i}
+\end{cases}
+\end{align*}
+Luego, 
+
+\begin{align*}
+E\left(\bar{Z}_{d}\right)= & \frac{1}{N_{d}}\sum_{i\in U_{d}}E\left(Z_{i}\right)
+\end{align*}
+
+\end{document}
