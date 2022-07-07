@@ -27,7 +27,7 @@ library(magrittr)
 ### Loading datasets: EH and Population census ###
 ####################################################
 tasa_desocupacion <-
-  readRDS("Frecuentista/COL/Data/tasa_desocupacion.rds")
+  readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
 #######################################
 ### configuración inicial de Python ###
 #######################################
@@ -47,8 +47,8 @@ rgee::ee_Initialize(drive = T)
 ###################################################
 
 ## revisando COLentina
-COL <- read_sf("Frecuentista/COL/ShapeDeptoCOL/dv_Municipio.shp") %>% 
-  mutate(depto = ID_ESPACIA, nombre = NOM_MUNICI) 
+COL <- read_sf("Frecuentista_depto/COL/ShapeDeptoCOL/depto.shp") %>% 
+  mutate(depto = DPTO, nombre = NOMBRE_DPT) 
 
 ###################
 ### Luminosidad ###
@@ -99,4 +99,4 @@ tasa_desocupacion %<>%
   full_join(COL_urbano_cultivo, by = c("mpio" = "depto"))
 
 
-saveRDS(tasa_desocupacion, "Frecuentista/COL/Data/tasa_desocupacion.rds")
+saveRDS(tasa_desocupacion, "Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
