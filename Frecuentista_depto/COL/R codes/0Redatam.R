@@ -21,9 +21,9 @@ library(magrittr)
 ## leer base desde el repositorio CEPAL
 colombia <- redatam.open("Frecuentista_depto/COL/data/cpv2018col-cde.dicX")
 redatam.entities(colombia)
-redatam.variables(colombia, entity_name = "MUPIO")
-redatam.variables(colombia, entity_name = "VIVIENDA")
-redatam.variables(colombia, entity_name = "PERSONA")
+redatam.variables(colombia, entName =  "MUPIO")
+redatam.variables(colombia, entName = "VIVIENDA")
+redatam.variables(colombia, entName = "PERSONA")
 
 CONTEOS <- redatam.query(colombia,
                       "freq DEPTO.REDCODEN
@@ -50,7 +50,6 @@ map(grep(pattern = "_value", x = names(CONTEOS),value = TRUE),
 # Eliminando totales de la tabla
 CONTEOS2 <- CONTEOS %>%
   filter_at(vars(matches("_label")),all_vars(. !=  "__tot__"))
-
 
 ## sumas por variables de agregación, coincidir con el total nacional.
 map(grep(pattern = "_value", x = names(CONTEOS2),value = TRUE),
