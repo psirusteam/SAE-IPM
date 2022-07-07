@@ -40,34 +40,32 @@ memory.limit(250000000)
 ###----------------------------- Loading datasets ---------------------------###
 ################################################################################
 ## Leer encuesta
-encuesta_temp <- read_dta("Z:/BC/COL_2018N1.dta")
-
-encuesta <- read_dta("Z:/BG/col18n1/col18n1.dta")
-encuesta %<>% mutate(orden_temp = str_pad(
-  string = 1:n(),
-  width = 7,
-  pad = "0"
-))
-
-#upms <- sas7bdat::read.sas7bdat("Bayesiana/COL/Data/upm_dpto_2018.sas7bdat")
-# saveRDS(object = upms, file = "Bayesiana/COL/Data/upm_dpto_2018.rds")
-upms <- readRDS(file = "Bayesiana/COL/Data/upm_dpto_2018.rds")
-
-encuesta %<>% left_join(upms,
-                        by = c("directorio" = "DIRECTORIO",
-                               "secuencia_p" = "SECUENCIA_P",
-                               "orden"))
-
-encuesta$mpio <- substr(encuesta$segmento,8,12)
-
-encuesta %<>% arrange(orden_temp)
-encuesta$condactr_ee <- encuesta_temp$condactr_ee
-encuesta$etnia_ee <- encuesta_temp$etnia_ee
-encuesta$fep <- encuesta_temp[["_fep"]]
-table(encuesta$condact3, useNA = "a")
-encuesta %<>% filter(edad >= 18)
-saveRDS(encuesta, "Bayesiana/COL/Data/encuesta2018.rds")
-encuesta <- readRDS("Bayesiana/COL/Data/encuesta2018.rds")
+# encuesta_temp <- read_dta("Z:/BC/COL_2018N1.dta")
+# 
+# encuesta <- read_dta("Z:/BG/col18n1/col18n1.dta")
+# encuesta %<>% mutate(orden_temp = str_pad(
+#   string = 1:n(),
+#   width = 7,
+#   pad = "0"
+# ))
+# 
+# upms <- readRDS(file = "Frecuentista_depto/COL/Data/upm_dpto_2018.rds")
+# 
+# encuesta %<>% left_join(upms,
+#                         by = c("directorio" = "DIRECTORIO",
+#                                "secuencia_p" = "SECUENCIA_P",
+#                                "orden"))
+# 
+# encuesta$mpio <- substr(encuesta$segmento,8,12)
+# 
+# encuesta %<>% arrange(orden_temp)
+# encuesta$condactr_ee <- encuesta_temp$condactr_ee
+# encuesta$etnia_ee <- encuesta_temp$etnia_ee
+# encuesta$fep <- encuesta_temp[["_fep"]]
+# table(encuesta$condact3, useNA = "a")
+# encuesta %<>% filter(edad >= 18)
+# saveRDS(encuesta, "Frecuentista_depto/COL/Data/encuesta2018.rds")
+encuesta <- readRDS("Frecuentista_depto/COL/Data/encuesta2018.rds")
 ################################################################################
 ### GEIH: Creando las dimensiones de interés ###
 ################################################################################
@@ -75,13 +73,18 @@ encuesta <- readRDS("Bayesiana/COL/Data/encuesta2018.rds")
 # Materiales --------------------------------------------------------------
 # P4010 Material de las paredes 
 # p4020 Material del piso 
-table(encuesta$p4010, encuesta$p4020)
+prop.table( table(encuesta$p4010))
+prop.table(table(encuesta$p4020, useNA = "a"))
 
-encuesta %<>% mutate(ipm_Material = case_when(p4010 %in% c(6,7,8,9) |
-                                             p4020 %in% c(1) ~1,
-                                             TRUE ~ 0))
+encuesta %<>% mutate(ipm_Material_pared = ifelse(p4010 %in% c(1,2),0,1), 
+                     ipm_Material_piso =  ifelse(p4020 %in% c(4,5,6,7),0,1),
+                     ipm_Material = ifelse(ipm_Material_piso == 0 & 
+                                             ipm_Material_pared == 0, 0,1)
+                     )
 
-table(encuesta$ipm_Material, useNA = "a")
+prop.table(table(encuesta$ipm_Material_pared,encuesta$ipm_Material_piso))
+
+prop.table(table(encuesta$ipm_Material, useNA = "a"))
 
 
 # Hacinamiento  -----------------------------------------------------------
@@ -113,8 +116,8 @@ table(encuesta$ipm_Agua)
 # p5030 : Uso compartido de sanitario 
 encuesta$areageo
 encuesta %<>% mutate(ipm_Saneamiento = case_when(
-  areageo2 == 1 & !p5020 %in% c(1,2) & p5030 == 2  ~ 1,
-  areageo2 == 2 & !p5020 %in% c(1,2) & p5030 == 2 ~ 1,
+  areageo2 == 1 & !p5020 %in% c(1,2)   ~ 1,
+  areageo2 == 2 & !p5020 %in% c(1,2)   ~ 1,
   TRUE ~ 0))
 
 table(encuesta$ipm_Saneamiento)
@@ -233,7 +236,7 @@ encuesta_ipm <- encuesta %>%
     fep
   ) %>% filter(!is.na(edad))
 
-saveRDS(encuesta_ipm, file = "Bayesiana/COL/Data/encuesta_ipm.rds")
+saveRDS(encuesta_ipm, file = "Frecuentista_depto/COL/Data/encuesta_ipm.rds")
 
 
 
