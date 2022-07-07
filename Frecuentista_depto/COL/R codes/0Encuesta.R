@@ -71,13 +71,13 @@ encuesta <- readRDS("Frecuentista_depto/COL/Data/encuesta2018.rds")
 ################################################################################
 
 # Materiales --------------------------------------------------------------
-# P4010 Material de las paredes 
-# p4020 Material del piso 
+# P4010 Material de las paredes 2. i,c,h,g,d,e,f,b,a
+# p4020 Material del piso       3. A.b,c,d,g,f,e
 prop.table( table(encuesta$p4010))
 prop.table(table(encuesta$p4020, useNA = "a"))
 
-encuesta %<>% mutate(ipm_Material_pared = ifelse(p4010 %in% c(1,2),0,1), 
-                     ipm_Material_piso =  ifelse(p4020 %in% c(4,5,6,7),0,1),
+encuesta %<>% mutate(ipm_Material_pared = ifelse(p4010 %in% c(1,2,6,5),0,1), 
+                     ipm_Material_piso =  ifelse(p4020 %in% c(5,6,7,4,3,2),0,1),
                      ipm_Material = ifelse(ipm_Material_piso == 0 & 
                                              ipm_Material_pared == 0, 0,1)
                      )

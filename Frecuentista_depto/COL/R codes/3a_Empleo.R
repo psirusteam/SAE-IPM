@@ -19,8 +19,8 @@ library(rstanarm)
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-encuesta_ipm <- readRDS("Frecuentista_depto_boot_editado/COL/Data/encuesta_ipm.rds")
-tasa_desocupados <- readRDS("Frecuentista_depto_boot_editado/COL/Data/tasa_desocupacion.rds")
+encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
+tasa_desocupados <- readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
 
 # Agregando encuesta ------------------------------------------------------
 statelevel_predictors_df <- tasa_desocupados
@@ -84,7 +84,7 @@ fit <- glmer(
 
 
 
-saveRDS(fit, file = "Frecuentista_depto_boot_editado/COL/Data/fit_freq_empleo.rds")
+saveRDS(fit, file = "Frecuentista_depto/COL/Data/fit_freq_empleo.rds")
 
 
 
