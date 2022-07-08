@@ -31,12 +31,12 @@ diseno <- as_survey_design_(.data = encuesta_ipm,
                               )
 
 
-diseno %>% group_by(depto) %>% 
-  summarise(Educacion = survey_mean(ipm_educacion, vartype = c("se", "cv")),
-            Empleo = survey_mean(ipm_Empleo_Aseguramiento, vartype = c("se", "cv"))) %>% 
-  openxlsx::write.xlsx(
-    file = "Frecuentista_depto/COL/Output/Educacion_y_Empleo_dir.xlsx",
-    overwrite = TRUE)
+Estimacion_dir <- diseno %>% group_by(depto) %>% 
+  summarise(Educacion = survey_mean(ipm_educacion),
+            Empleo = survey_mean(ipm_Empleo_Aseguramiento))
+
+saveRDS(Estimacion_dir,
+file = "Frecuentista_depto/COL/Output/Educacion_y_Empleo_dir.rds")          
 
 
 

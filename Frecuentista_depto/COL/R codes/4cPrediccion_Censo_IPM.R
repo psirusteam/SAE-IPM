@@ -17,16 +17,16 @@ library(tidyverse)
 library(rstan)
 library(rstanarm)
 library(bayesplot)
-source("Frecuentista_depto_boot_editado/0Funciones/funciones_mrp.R", encoding = "UTF-8")
+source("Frecuentista_depto/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-fit_educacion <- readRDS( file = "Frecuentista_depto_boot_editado/COL/Data/fit_freq_educacion.rds")
-fit_empleo <- readRDS( file = "Frecuentista_depto_boot_editado/COL/Data/fit_freq_empleo.rds")
+fit_educacion <- readRDS( file = "Frecuentista_depto/COL/Data/fit_freq_educacion.rds")
+fit_empleo <- readRDS( file = "Frecuentista_depto/COL/Data/fit_freq_empleo.rds")
 
-encuesta_ipm <- readRDS("Frecuentista_depto_boot_editado/COL/Data/encuesta_ipm.rds")
-censo_ipm <- readRDS("Frecuentista_depto_boot_editado/COL/Data/censo_ipm2.rds") 
-tasa_desocupados <- readRDS("Frecuentista_depto_boot_editado/COL/Data/tasa_desocupacion.rds")
+encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
+censo_ipm <- readRDS("Frecuentista_depto/COL/Data/censo_ipm2.rds") 
+tasa_desocupados <- readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
 
 # Agregando encuesta ------------------------------------------------------
 statelevel_predictors_df <- tasa_desocupados
@@ -101,6 +101,6 @@ ipm_estimado <- map_df(1:ncol(ipm_MC), function(x) data.frame(t(ipm_MC)[x,])) %>
 group_by(depto) %>% summarise(ipm_estimado_MC = mean(ipm))
 
 saveRDS(ipm_estimado, 
-    file = "Frecuentista_depto_boot_editado/COL/Data/ipm_MC.rds")
+    file = "Frecuentista_depto/COL/Data/ipm_MC.rds")
 
 
