@@ -18,6 +18,7 @@ library(rstan)
 library(rstanarm)
 library(bayesplot)
 library(purrr)
+select <- dplyr::select
 source("Frecuentista_depto/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 
 # Loading data ------------------------------------------------------------
@@ -69,7 +70,24 @@ empleo_MC <- replicate(100,MC_empleo())
 ipm_empleo <- map_df(1:ncol(empleo_MC), function(x) data.frame(t(empleo_MC)[x,])) %>%
 group_by(depto) %>% summarise(ipm_empleo_estimado_MC = mean(empleo_MC))
 
+
+
 saveRDS(ipm_empleo, 
     file = "Frecuentista_depto/COL/Data/ipm_empleo.rds")
 
+diseno_empleo <- encuesta_ipm %>%  as_survey_design(weights = fep)
 
+estimacion_dir <- diseno_empleo %>% group_by(depto) %>%
+  summarise(empleo = survey_mean(ipm_Empleo_Aseguramiento)) %>% 
+  select(-empleo_se)
+
+
+ipm_empleo <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_empleo.rds")
+
+
+estimacion_dir <- full_join(estimacion_dir,ipm_empleo)
+plot(estimacion_dir$empleo, estimacion_dir$ipm_empleo_estimado_MC)
+abline(b=1, a = 0, col = 2)
+
+openxlsx::write.xlsx(x = estimacion_dir,
+ file = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/empleo_dir_sae.xlsx")

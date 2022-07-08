@@ -18,6 +18,7 @@ library(rstan)
 library(rstanarm)
 library(bayesplot)
 library(purrr)
+select <- dplyr::select
 source("Frecuentista_depto/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 
 # Loading data ------------------------------------------------------------
@@ -72,4 +73,21 @@ group_by(depto) %>% summarise(ipm_educacion_estimado_MC = mean(educacion_MC))
 saveRDS(ipm_educacion, 
     file = "Frecuentista_depto/COL/Data/ipm_educacion.rds")
 
+diseno_educacion <- encuesta_ipm %>%  as_survey_design(weights = fep)
+
+estimacion_dir <- diseno_educacion %>% group_by(depto) %>%
+  summarise(educacion = survey_mean(ipm_educacion)) %>% 
+  select(-educacion_se)
+
+
+ipm_educacion <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_educacion.rds")
+
+
+estimacion_dir <- full_join(estimacion_dir,ipm_educacion)
+plot(estimacion_dir$educacion, estimacion_dir$ipm_educacion_estimado_MC)
+abline(b=1, a = 0, col = 2)
+data.frame(estimacion_dir)
+
+openxlsx::write.xlsx(x = estimacion_dir,
+  file = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/educacion_dir_sae.xlsx")
 
