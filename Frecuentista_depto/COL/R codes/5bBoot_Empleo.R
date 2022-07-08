@@ -51,9 +51,6 @@ statelevel_predictors_df <- tasa_desocupados
 
 Censo_agregado <- readRDS("Frecuentista_depto/COL/Data/censo_ipm2.rds")
 
-## leer estimacion MC del IPM  
-ipm_MC <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_empleo.rds")
-
 
 byAgrega <- c("depto", "area", "sexo", "edad",
               "ipm_Material",
@@ -62,7 +59,6 @@ byAgrega <- c("depto", "area", "sexo", "edad",
               "ipm_Saneamiento",
               "ipm_Energia",
               "ipm_Internet" )
-
 
 poststrat_df <- left_join(Censo_agregado %>% mutate_at(all_of(byAgrega), as.character), 
                           statelevel_predictors_df,
@@ -101,8 +97,7 @@ encuesta_agg <- encuesta %>%
 
 ##### Iniciando el boot 
 
-ii = 1
-for(ii in 1:100){
+for(ii in 4:100){
 
 ud <- udm %>%  mutate(
     udi_empleo = rnorm(1:n(), 0, sd = sqrt(var_u_empleo)) )  %>% data.frame()
@@ -254,5 +249,5 @@ list.files("Frecuentista_depto/COL/Data/iter_empleo_BOOT_MC/",full.names = TRUE
   group_by(depto) %>% summarise(smce = sqrt(mean(diff^2))) %>% 
   inner_join(ipm_MC) %>% 
   openxlsx::write.xlsx(
-    file = "Frecuentista_depto/COL/Output/empleo_smce_MC.xlsx", overwrite = TRUE)
+    file = "Frecuentista_depto/COL/Output/empleo_smce_MC.xlsx")
 

@@ -56,7 +56,7 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_estimado_MC",
     breaks = brks_ipm,
-    title = "IPM-SAE",
+    title = "IPM",
     palette = "YlOrRd"
   ) + tm_layout(asp = 0)
 
@@ -72,7 +72,7 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Agua",
     breaks = brks_ipm,
-    title = "Censo Agua",
+    title = "IPM (Agua)",
     palette = "YlOrRd"
   ) + tm_layout(asp = 0)
 
@@ -88,8 +88,8 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_educacion_estimado_MC",
     breaks = brks_ipm,
-    title = "Educacion-SAE",
-    palette = "YlOrRd"
+    title = "IPM (Educacion)",
+    palette = "-YlOrRd"
   ) + tm_layout(asp = 0)
 
 tmap_save(
@@ -105,7 +105,7 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_empleo_estimado_MC",
     breaks = brks_ipm,
-    title = "Empleo y aseguramiento\n en salud SAE",
+    title = "IPM (Empleo)",
     palette = "YlOrRd"
   ) + tm_layout(asp = 0)
 

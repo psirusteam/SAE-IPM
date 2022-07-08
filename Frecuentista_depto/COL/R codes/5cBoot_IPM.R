@@ -29,46 +29,12 @@ library(haven)
 library(magrittr)
 library(openxlsx)
 library(purrr)
+library(furrr)
 select <- dplyr::select
-source("Frecuentista_depto_boot_editado/0Funciones/funciones_mrp.R",
+source("Frecuentista_depto/0Funciones/funciones_mrp.R",
        encoding = "UTF-8")
-
-fipm <- function(data_MC_boot){
-  iter_ipm_boot <-  pmap(as.list(data_MC_boot),
-                     function(
-                       depto,n,
-                       ipm_Material,
-                       ipm_Saneamiento,
-                       ipm_Energia,
-                       ipm_Internet,
-                       ipm_Agua,
-                       ipm_Hacinamiento,
-                       prob_boot_educacion,
-                       prob_boot_empleo
-                     ) {
-                       y_empleo =  rbinom(n, 1, prob = prob_boot_empleo)
-                       y_educacion =  rbinom(n, 1, prob = prob_boot_educacion)
-                       ipm <- 0.1 * (
-                         ipm_Material+
-                           ipm_Saneamiento+
-                           ipm_Energia+
-                           ipm_Internet+
-                           ipm_Agua+
-                           ipm_Hacinamiento) +
-                         0.2 * (y_educacion +   y_empleo) 
-                       
-                       ipm_dummy <- ifelse(ipm < 0.4, 0, 1) 
-                       mean(ipm_dummy)
-                     })
-  
-  data_MC_boot$ipm <- unlist(iter_ipm_boot) 
-  
-  data_MC_boot %>% group_by(depto) %>%
-    summarise(ipm = sum((n*ipm))/sum(n))
-}
-
-
-
+source("Frecuentista_depto/0Funciones/aux_ipm.R",
+       encoding = "UTF-8")
 
 
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
@@ -79,16 +45,16 @@ memory.limit(250000000)
 ###----------------------------- Loading datasets ---------------------------###
 ################################################################################
 ## Leer modelos
-fit_educacion <- readRDS("Frecuentista_depto_boot_editado//COL/Data/fit_freq_educacion.rds")
-fit_empleo <- readRDS("Frecuentista_depto_boot_editado//COL/Data/fit_freq_empleo.rds")
+fit_educacion <- readRDS("Frecuentista_depto//COL/Data/fit_freq_educacion.rds")
+fit_empleo <- readRDS("Frecuentista_depto//COL/Data/fit_freq_empleo.rds")
 
 ## leer encuesta
-encuesta <- readRDS("Frecuentista_depto_boot_editado/COL/Data/encuesta_ipm.rds")
+encuesta <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
 
 ###--- Censo: Completo ---###
 
-Censo_agregado <- readRDS("Frecuentista_depto_boot_editado/COL/Data/censo_ipm2.rds")
-tasa_desocupados <- readRDS("Frecuentista_depto_boot_editado/COL/Data/tasa_desocupacion.rds")
+Censo_agregado <- readRDS("Frecuentista_depto/COL/Data/censo_ipm2.rds")
+tasa_desocupados <- readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
 statelevel_predictors_df <- tasa_desocupados
 
 
@@ -118,10 +84,10 @@ var_u_empleo <- as.numeric(VarCorr(fit_empleo))
 
 udm_1 <- ranef(fit_educacion)$depto %>%
                  rename(udm_educacion = "(Intercept)") %>% 
-                  rownames_to_column(var = "depto")
+                  tibble::rownames_to_column(var = "depto")
 udm_2 <- ranef(fit_empleo)$depto %>%
   rename(udm_empleo = "(Intercept)") %>% 
-  rownames_to_column(var = "depto")
+  tibble::rownames_to_column(var = "depto")
 
 udm <- full_join(udm_1, udm_2, by = "depto")
 
@@ -146,9 +112,7 @@ encuesta_agg <- encuesta %>%
 
 ##### Iniciando el boot 
 
-Estimacion.boot <- list()
-ii = 1
-for(ii in 1:100){
+for(ii in 4:100){
 
   
 ud <- udm %>%  mutate(
@@ -156,7 +120,7 @@ ud <- udm %>%  mutate(
     udi_empleo = rnorm(1:n(), 0, sd = sqrt(var_u_empleo))
   )  %>% data.frame()
 
-# pred_educacion = Xtb + ud 
+
 poststrat_temp <- inner_join(poststrat_df, ud, by = "depto") %>% 
   mutate(prob.boot_educaicion = boot::inv.logit(pred_educacion - udm_educacion +  udi_educacion), 
          prob.boot_empleo = boot::inv.logit(pred_empleo - udm_empleo +  udi_empleo))
@@ -254,89 +218,21 @@ encuesta_boot_agg %<>%
 encuesta_boot_agg <- inner_join(encuesta_boot_agg, 
                               statelevel_predictors_df,
                               by = c("depto"))
-
-fit_boot_educacion <- glmer(
-  cbind(Educacion, No_educacion) ~  (1 | depto) +
-    edad +
-    area +
-    # anoest +
-    # etnia +
-    # depto:area +
-    # depto:etnia +
-    # depto:sexo +
-    # depto:edad +
-    # depto:anoest +
-    # area:etnia +
-    # area:sexo +
-    # area:edad +
-    # area:anoest +
-    # etnia:sexo +
-    # etnia:edad +
-    # etnia:anoest +
-    # sexo:edad +
-    # sexo:anoest +
-    # edad:anoest +
-    ipm_Material+
-    ipm_Hacinamiento+
-    ipm_Agua+
-    ipm_Saneamiento +
-    ipm_Energia + 
-    ipm_Internet +
-    sexo  + tasa_desocupacion +
-    F182013_stable_lights + 
-    X2016_crops.coverfraction +
-    X2016_urban.coverfraction  ,
-  family = binomial(link = "logit"),
-  data = encuesta_boot_agg
+fit_MC <- future_map(
+  setNames(c("No_educacion", "No_empleo"),
+           c("fit_educion_MC", "fit_emplo_MC")),
+  ~ modelo(y_si = .x, setdata = encuesta_boot_agg)
 )
 
-cat("fit_boot_educacion ii = ", ii, "...... OK\n")
-
-fit_boot_empleo <- glmer(
-  cbind(Empleo, No_empleo) ~  (1 | depto) +
-    edad +
-    area +
-    # anoest +
-    # etnia +
-    # depto:area +
-    # depto:etnia +
-    # depto:sexo +
-    # depto:edad +
-    # depto:anoest +
-    # area:etnia +
-    # area:sexo +
-    # area:edad +
-    # area:anoest +
-    # etnia:sexo +
-    # etnia:edad +
-    # etnia:anoest +
-    # sexo:edad +
-    # sexo:anoest +
-    # edad:anoest +
-    ipm_Material+
-    ipm_Hacinamiento+
-    ipm_Agua+
-    ipm_Saneamiento +
-    ipm_Energia + 
-    ipm_Internet +
-    sexo  + tasa_desocupacion +
-    F182013_stable_lights + 
-    X2016_crops.coverfraction +
-    X2016_urban.coverfraction  ,
-  family = binomial(link = "logit"),
-  data = encuesta_boot_agg
-)
-
-cat("fit_boot_empleo ii = ", ii, "...... OK\n")
 
 poststrat_temp$prob_boot_educacion <- predict(
-  fit_boot_educacion,
+  fit_MC$fit_educion_MC,
   newdata = poststrat_df,
   type = "response",
   allow.new.levels = TRUE
 )
 poststrat_temp$prob_boot_empleo <- predict(
-  fit_boot_empleo,
+  fit_MC$fit_emplo_MC,
   newdata = poststrat_df,
   type = "response",
   allow.new.levels = TRUE
@@ -350,7 +246,7 @@ poststrat_boot_MC <- poststrat_temp %>% data.frame() %>%
 poststrat_boot_MC %<>% mutate_at(vars(matches("ipm_")), as.numeric) 
 cat("Inicia MC ii = ", ii, "\n")
 
-ipm_MC <- replicate(20,fipm(poststrat_boot_MC))
+ipm_MC <- replicate(20,aux_ipm(poststrat_boot_MC))
 
 cat("Termina MC ii = ", ii, "...... OK\n")
 
@@ -360,7 +256,7 @@ ipm_estimado_MC <- map_df(1:ncol(ipm_MC), function(x) data.frame(t(ipm_MC)[x,]))
 ipm_estimado_MC <- inner_join(ipm_estimado_MC, boot_ipm_censo, by = "depto")
 
 saveRDS(object = ipm_estimado_MC, 
-        file = paste0("Frecuentista_depto_boot_editado/COL/Data/iter_IPM_BOOT_MC/boot_",
+        file = paste0("Frecuentista_depto/COL/Data/iter_IPM_BOOT_MC/boot_",
                       ii, ".rds"))
 
 
@@ -372,14 +268,14 @@ cat(paste0(rep("-", 60), collapse = ""),"\n")
 
 
 ## leer estimacion MC del IPM  
-ipm_MC <- readRDS(file = "Frecuentista_depto_boot_editado/COL/Data/ipm_MC.rds")
+ipm_MC <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_MC.rds")
 
 
-list.files("Frecuentista_depto_boot_editado/COL/Data/iter_IPM_BOOT_MC/",full.names = TRUE
+list.files("Frecuentista_depto/COL/Data/iter_IPM_BOOT_MC/",full.names = TRUE
 ) %>% 
   map_df(~readRDS(.x) ) %>% 
   mutate(diff = ipm_boot_estimado - ipm_boot) %>% 
   group_by(depto) %>% summarise(smce = sqrt(mean(diff^2))) %>% 
   inner_join(ipm_MC) %>% 
   openxlsx::write.xlsx(
-    file = "Frecuentista_depto_boot_editado/COL/Output/smce_MC.xlsx")
+    file = "Frecuentista_depto/COL/Output/smce_MC.xlsx")

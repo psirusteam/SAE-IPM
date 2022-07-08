@@ -63,15 +63,12 @@ byAgrega <- c("depto", "area", "sexo", "edad",
               "ipm_Energia",
               "ipm_Internet" )
 
-
 poststrat_df <- left_join(Censo_agregado %>% mutate_at(all_of(byAgrega), as.character), 
                           statelevel_predictors_df,
                           by = c("depto"))
 
 poststrat_df$pred_educacion <-  predict(fit_educacion, poststrat_df,
                                allow.new.levels = TRUE)
-
-
 
 
 ## Efectos aleatorios 
@@ -101,8 +98,7 @@ encuesta_agg <- encuesta %>%
 
 ##### Iniciando el boot 
 
-ii = 1
-for(ii in 1:100){
+for(ii in 4:100){
 
 ud <- udm %>%  mutate(
     udi_educacion = rnorm(1:n(), 0, sd = sqrt(var_u_educacion)) )  %>% data.frame()
@@ -254,5 +250,5 @@ list.files("Frecuentista_depto/COL/Data/iter_educacion_BOOT_MC/",full.names = TR
   group_by(depto) %>% summarise(smce = sqrt(mean(diff^2))) %>% 
   inner_join(ipm_MC) %>% 
   openxlsx::write.xlsx(
-    file = "Frecuentista_depto/COL/Output/educacion_smce_MC.xlsx", overwrite = TRUE)
+    file = "Frecuentista_depto/COL/Output/educacion_smce_MC.xlsx")
 
