@@ -21,12 +21,12 @@ library(survey)
 library(srvyr)
 theme_set(bayesplot::theme_default())
 
-source(file = "Frecuentista_depto/0Funciones/funciones_mrp.R",
+source(file = "Frecuentista_mpio/0Funciones/funciones_mrp.R",
        encoding = "UTF-8")
 # Loading data ------------------------------------------------------------
 
-encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
-censo_ipm <- readRDS("Frecuentista_depto/COL/Data/censo_ipm2.rds")
+encuesta_ipm <- readRDS("Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
+censo_ipm <- readRDS("Frecuentista_mpio/COL/Data/censo_ipm2.rds")
 
 # Exploratory data analysis -----------------------------------------------
 
@@ -47,7 +47,7 @@ sex_plot <-
 depto_plot <-
   Plot_Compare(dat_censo = censo_ipm,
                dat_encuesta = encuesta_ipm,
-               by = "depto")
+               by = "mpio")
 
 #--- Patchwork in action ---#
 (age_plot | sex_plot ) / ( depto_plot)
@@ -75,11 +75,11 @@ ggplot(data = temp, aes(x = Dimension,y = Value, fill = Fuente)) +
   geom_bar(stat = "identity", position="dodge")
 
 ## Resultados depto
-conteo_censo <- censo_ipm %>% group_by(depto)  %>%
+conteo_censo <- censo_ipm %>% group_by(mpio)  %>%
   summarise_at(vars(matches("ipm")),~weighted.mean(.,w = n))
 
 
-estimacion_encuesta <- diseno %>% group_by(depto) %>% 
+estimacion_encuesta <- diseno %>% group_by(mpio) %>% 
   summarise_at(vars(matches("ipm")),list(dir = survey_mean)) %>% 
   dplyr::select(!ends_with("_se"))
 

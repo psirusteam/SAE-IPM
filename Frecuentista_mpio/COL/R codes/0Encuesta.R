@@ -49,7 +49,7 @@ memory.limit(250000000)
 #   pad = "0"
 # ))
 # 
-# upms <- readRDS(file = "Frecuentista_depto/COL/Data/upm_dpto_2018.rds")
+# upms <- readRDS(file = "Frecuentista_mpio/COL/Data/upm_dpto_2018.rds")
 # 
 # encuesta %<>% left_join(upms,
 #                         by = c("directorio" = "DIRECTORIO",
@@ -64,8 +64,8 @@ memory.limit(250000000)
 # encuesta$fep <- encuesta_temp[["_fep"]]
 # table(encuesta$condact3, useNA = "a")
 # encuesta %<>% filter(edad >= 18)
-# saveRDS(encuesta, "Frecuentista_depto/COL/Data/encuesta2018.rds")
-encuesta <- readRDS("Frecuentista_depto/COL/Data/encuesta2018.rds")
+# saveRDS(encuesta, "Frecuentista_mpio/COL/Data/encuesta2018.rds")
+encuesta <- readRDS("Frecuentista_mpio/COL/Data/encuesta2018.rds")
 ################################################################################
 ### GEIH: Creando las dimensiones de interés ###
 ################################################################################
@@ -236,7 +236,7 @@ encuesta_ipm <- encuesta %>%
     fep
   ) %>% filter(!is.na(edad))
 
-saveRDS(encuesta_ipm, file = "Frecuentista_depto/COL/Data/encuesta_ipm.rds")
+saveRDS(encuesta_ipm, file = "Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
 
 
 

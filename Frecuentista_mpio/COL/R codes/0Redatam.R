@@ -26,7 +26,7 @@ redatam.variables(colombia, entName = "VIVIENDA")
 redatam.variables(colombia, entName = "PERSONA")
 
 CONTEOS <- redatam.query(colombia,
-                      "freq MUPIO.REDCODEN
+                         "freq MUPIO.REDCODEN
                       by VIVIENDA.ipm_Material
                       by VIVIENDA.ipm_Saneamiento
                       by VIVIENDA.ipm_Energia
@@ -37,7 +37,7 @@ CONTEOS <- redatam.query(colombia,
                       by CLASE.AREA
                       by PERSONA.P_SEXO
                       ",
-                      tot.omit = FALSE)
+                         tot.omit = FALSE)
 saveRDS(CONTEOS, file = "Frecuentista_mpio/COL/Data/CONTEOS2.rds")
 rm(list = "$table1")
 #CONTEOS <-  readRDS(file = "Frecuentista_mpio/COL/Data/CONTEOS2.rds")
@@ -92,3 +92,46 @@ censo_mrp <- CONTEOS2 %>%
 sum(censo_mrp$n)
 
 saveRDS(censo_mrp, "Frecuentista_mpio/COL/Data/censo_ipm2.rds")
+
+#############################################################
+# Tasa de desoscupacion
+#############################################################
+
+OCUPACION <- redatam.query(colombia,
+                           "freq MUPIO.REDCODEN by PERSONA.PET",
+                           tot.omit = FALSE)
+
+OCUPACION2 <- OCUPACION %>%
+  filter(!PET2_label %in% c("__tot__", "No especificado", "__na__") &
+           !is.na(REDCODEN1_value) )
+
+
+group_by(OCUPACION2, PET2_value, PET2_label) %>% summarise(n = sum(value))
+
+
+OCUPACION2 <- OCUPACION2 %>% transmute(
+  mpio = str_pad(
+    string = REDCODEN1_value,
+    width = 5,
+    pad = "0"
+  ),
+  ocupados = ifelse(PET2_value %in% c(1), 1, 0),
+  desocupados = ifelse(PET2_value %in% c(2), 1, 0),
+  value
+) %>% group_by(mpio, ocupados, desocupados) %>%
+  summarise(value = sum(value), .groups = "drop")
+
+
+tabla <-
+  pivot_wider(
+    OCUPACION2,
+    names_from = c("ocupados", "desocupados"),
+    values_from = value,
+    names_prefix = c("ocupados")
+  )
+
+tasa_desocupacion <- tabla %>%
+  transmute(mpio,
+            tasa_desocupacion = ocupados0_1/sum(ocupados0_1 + ocupados1_0 ))
+
+saveRDS(tasa_desocupacion, "Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")

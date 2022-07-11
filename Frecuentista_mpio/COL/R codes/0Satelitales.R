@@ -27,7 +27,7 @@ library(magrittr)
 ### Loading datasets: EH and Population census ###
 ####################################################
 tasa_desocupacion <-
-  readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
+  readRDS("Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")
 #######################################
 ### configuración inicial de Python ###
 #######################################
@@ -47,8 +47,8 @@ rgee::ee_Initialize(drive = T)
 ###################################################
 
 ## revisando COLentina
-COL <- read_sf("Frecuentista_depto/COL/ShapeDeptoCOL/depto.shp") %>% 
-  mutate(depto = DPTO, nombre = NOMBRE_DPT) 
+COL <- read_sf("Frecuentista_mpio/COL/ShapeDeptoCOL/dv_Municipio.shp") %>% 
+  mutate(mpio = COD_DANE, nombre = NOM_MUNICI) 
 
 ###################
 ### Luminosidad ###
@@ -58,15 +58,14 @@ luces = ee$ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS") %>%
   ee$ImageCollection$filterDate("2013-01-01", "2014-01-01") %>%
   ee$ImageCollection$map(function(x) x$select("stable_lights")) %>%
   ee$ImageCollection$toBands()
-ee_print(luces)
 
-COL_luces <- map(unique(COL$depto),
+COL_luces <- map(unique(COL$mpio),
                  ~tryCatch(ee_extract(
                    x = luces,
-                   y = COL["depto"] %>% filter(depto == .x),
+                   y = COL["mpio"] %>% filter(mpio == .x),
                    ee$Reducer$mean(),
                    sf = FALSE
-                 ) %>% mutate(depto = .x),  error = function(e)data.frame(depto = .x)))
+                 ) %>% mutate(mpio = .x),  error = function(e)data.frame(depto = .x)))
 
 COL_luces %<>% bind_rows()
 
@@ -80,13 +79,13 @@ tiposuelo = ee$ImageCollection("COPERNICUS/Landcover/100m/Proba-V-C3/Global") %>
   ee$ImageCollection$toBands()
 ee_print(tiposuelo)
 
-COL_urbano_cultivo <- map(unique(COL$depto),
+COL_urbano_cultivo <- map(unique(COL$mpio),
                  ~tryCatch(ee_extract(
                    x = tiposuelo,
-                   y = COL["depto"] %>% filter(depto == .x),
+                   y = COL["mpio"] %>% filter(mpio == .x),
                    ee$Reducer$mean(),
                    sf = FALSE
-                 ) %>% mutate(depto = .x),  error = function(e)data.frame(depto = .x)))
+                 ) %>% mutate(mpio = .x),  error = function(e)data.frame(depto = .x)))
 
 COL_urbano_cultivo %<>% bind_rows()
 
@@ -99,4 +98,4 @@ tasa_desocupacion %<>%
   full_join(COL_urbano_cultivo, by = c("mpio" = "depto"))
 
 
-saveRDS(tasa_desocupacion, "Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
+saveRDS(tasa_desocupacion, "Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")
