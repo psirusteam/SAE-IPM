@@ -87,7 +87,7 @@ COL_urbano_cultivo <- map(unique(COL$mpio),
                    sf = FALSE
                  ) %>% mutate(mpio = .x),  error = function(e)data.frame(depto = .x)))
 
-COL_urbano_cultivo %<>% bind_rows()
+  COL_urbano_cultivo %<>% bind_rows()
 
 ###############
 ### Guardar ###

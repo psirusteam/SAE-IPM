@@ -21,8 +21,15 @@ library(srvyr)
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
 encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
+upms <- readRDS("Frecuentista_depto/COL/Data/upm_dpto_2018.rds")
+encuesta <- readRDS("Frecuentista_depto/COL/Data/encuesta2018.rds")
+# Agregando upms y estratos ------------------------------------------------------
+encuesta %<>% left_join(upms,
+                         by = c("directorio" = "DIRECTORIO",
+                                "secuencia_p" = "SECUENCIA_P",
+                                "orden"))
 
-# Agregando encuesta ------------------------------------------------------
+
 
 diseno <- as_survey_design_(.data = encuesta_ipm, 
                             ids = ~1,
