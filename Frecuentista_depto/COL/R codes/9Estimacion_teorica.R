@@ -33,69 +33,10 @@ library(furrr)
 library(tidyr)
 library(tibble)
 select <- dplyr::select
-source("Frecuentista_depto/Funciones/funciones_mrp.R",
+source("Frecuentista_depto/0Funciones/funciones_mrp.R",
        encoding = "UTF-8")
-
-fipm <- function(data_MC_boot){
-  iter_ipm_boot <-  pmap(as.list(data_MC_boot),
-                         function(
-    depto,n,
-    ipm_Material,
-    ipm_Saneamiento,
-    ipm_Energia,
-    ipm_Internet,
-    ipm_Agua,
-    ipm_Hacinamiento,
-    prob_boot_educacion,
-    prob_boot_empleo
-                         ) {
-                           y_empleo =  rbinom(n, 1, prob = prob_boot_empleo)
-                           y_educacion =  rbinom(n, 1, prob = prob_boot_educacion)
-                           ipm <- 0.1 * (
-                             ipm_Material+
-                               ipm_Saneamiento+
-                               ipm_Energia+
-                               ipm_Internet+
-                               ipm_Agua+
-                               ipm_Hacinamiento) +
-                             0.2 * (y_educacion +   y_empleo) 
-                           
-                           ipm_dummy <- ifelse(ipm < 0.4, 0, 1) 
-                           mean(ipm_dummy)
-                         })
-  
-  data_MC_boot$ipm <- unlist(iter_ipm_boot) 
-  
-  data_MC_boot %>% group_by(depto) %>%
-    summarise(ipm = sum((n*ipm))/sum(n))
-}
-
-modelo <- function(y_si, setdata) {
-  setdata$y_si <- setdata[[y_si]]
-  setdata$y_no <- setdata$n - setdata[[y_si]]
-  cat("Modelo para ", y_si, "\n")
-  glmer(
-    cbind(y_si, y_no) ~ (1 | depto) +
-      edad +
-      area +
-      ipm_Material+
-      ipm_Hacinamiento+
-      ipm_Agua+
-      ipm_Saneamiento +
-      ipm_Energia + 
-      ipm_Internet +
-      sexo  + tasa_desocupacion +
-      F182013_stable_lights + 
-      X2016_crops.coverfraction +
-      X2016_urban.coverfraction  ,
-    family = binomial(link = "logit"),
-    data = setdata,
-  )
-}
-
-
-
-
+source("Frecuentista_depto/0Funciones/aux_ipm.R",
+       encoding = "UTF-8")
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
 
 memory.limit(250000000)
@@ -259,35 +200,32 @@ encuesta_MC %<>%
 encuesta_MC <- inner_join(encuesta_MC, 
                             statelevel_predictors_df,
                             by = c("depto"))
-  plan(multisession, workers = 2)
+plan(multisession, workers = 2)
   
-  fit_MC <- future_map(
+fit_MC <- future_map(
     setNames(c("No_educacion", "No_empleo"),
              c("fit_educion_MC", "fit_emplo_MC")),
     ~ modelo(y_si = .x, setdata = encuesta_MC)
   )
   
-
-    
-  
-  poststrat_temp$prob_educacion <- predict(
+poststrat_temp$prob_educacion <- predict(
     fit_MC$fit_educion_MC,
     newdata = poststrat_df,
     type = "response",
     allow.new.levels = TRUE
   )
   
-  poststrat_temp$prob_empleo <- predict(
+poststrat_temp$prob_empleo <- predict(
     fit_MC$fit_emplo_MC,
     newdata = poststrat_df,
     type = "response",
     allow.new.levels = TRUE
   )
 
-    poststrat_temp %<>% mutate_at(vars(matches("ipm_")), as.numeric) 
+poststrat_temp %<>% mutate_at(vars(matches("ipm_")), as.numeric) 
   
   
-  poststrat_temp %<>% mutate(k =  0.1 * (
+poststrat_temp %<>% mutate(k =  0.1 * (
     ipm_Material+
       ipm_Saneamiento+
       ipm_Energia+
@@ -295,9 +233,10 @@ encuesta_MC <- inner_join(encuesta_MC,
       ipm_Agua+
       ipm_Hacinamiento),
       delta = 0.4)
-  alpha = 0.2
+
+alpha = 0.2
   
-  temp <- poststrat_temp %>% 
+temp <- poststrat_temp %>% 
     mutate(depto,n, 
            Z1 = ifelse( (delta - k) <= 0 , 1, 0),
            
@@ -318,9 +257,13 @@ encuesta_MC <- inner_join(encuesta_MC,
     summarise(EZd = sum(Ez)/sum(n)) %>% 
     transmute(depto, EZd) %>% inner_join(ipm_censo) 
 
-  plot(temp$EZd,temp$ipm_depto)
-  abline(a = 0,b=1)
+temp %>% mutate(diff = abs(EZd-ipm_depto)) %>% arrange(desc(diff))
+
+plot(temp$EZd,temp$ipm_depto)
+abline(a = 0,b=1)
   
-  
+openxlsx::write.xlsx(x = temp,
+  file = "Frecuentista_depto/COL/Output/Tablas_resultado_teorico/IPM_teorico_vs_MC.xlsx")
+
   
   
