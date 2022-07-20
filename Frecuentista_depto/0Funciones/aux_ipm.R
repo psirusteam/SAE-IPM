@@ -27,36 +27,36 @@ modelo <- function(y_si, setdata) {
 
 
 # Calculo del ipm global
-aux_ipm <- function(data_MC_boot){
+aux_ipm <- function(data_MC_boot) {
   iter_ipm_boot <-  pmap(as.list(data_MC_boot),
-                         function(
-    depto,n,
-    ipm_Material,
-    ipm_Saneamiento,
-    ipm_Energia,
-    ipm_Internet,
-    ipm_Agua,
-    ipm_Hacinamiento,
-    prob_boot_educacion,
-    prob_boot_empleo
-                         ) {
+                         function(depto,
+                                  n,
+                                  ipm_Material,
+                                  ipm_Saneamiento,
+                                  ipm_Energia,
+                                  ipm_Internet,
+                                  ipm_Agua,
+                                  ipm_Hacinamiento,
+                                  prob_boot_educacion,
+                                  prob_boot_empleo) {
                            y_empleo =  rbinom(n, 1, prob = prob_boot_empleo)
                            y_educacion =  rbinom(n, 1, prob = prob_boot_educacion)
                            ipm <- 0.1 * (
-                             ipm_Material+
-                               ipm_Saneamiento+
-                               ipm_Energia+
-                               ipm_Internet+
-                               ipm_Agua+
-                               ipm_Hacinamiento) +
-                             0.2 * (y_educacion +   y_empleo) 
+                             ipm_Material +
+                               ipm_Saneamiento +
+                               ipm_Energia +
+                               ipm_Internet +
+                               ipm_Agua +
+                               ipm_Hacinamiento
+                           ) +
+                             0.2 * (y_educacion +   y_empleo)
                            
-                           ipm_dummy <- ifelse(ipm < 0.4, 0, 1) 
+                           ipm_dummy <- ifelse(ipm < 0.4, 0, 1)
                            mean(ipm_dummy)
                          })
   
-  data_MC_boot$ipm <- unlist(iter_ipm_boot) 
+  data_MC_boot$ipm <- unlist(iter_ipm_boot)
   
   data_MC_boot %>% group_by(depto) %>%
-    summarise(ipm = sum((n*ipm))/sum(n))
+    summarise(ipm = sum((n * ipm)) / sum(n))
 }

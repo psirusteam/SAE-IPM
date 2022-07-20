@@ -19,36 +19,36 @@ library(RColorBrewer)
 library(maptools)
 library(tmaptools)
 
-source("Frecuentista_depto/0Funciones/funciones_mrp.R", encoding = "UTF-8")
+source("Frecuentista_mpio/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 # Loading data ------------------------------------------------------------
-# ipm_censo <- readRDS("Frecuentista_depto/COL/data/censo_completo_ipm.rds")
-ipm_censo <- readRDS("Frecuentista_depto/COL/data/censo_ipm2.rds")
-ipm_eduacion <- readRDS("Frecuentista_depto/COL/data/ipm_educacion.rds") %>% 
-  mutate(ipm_educacion_estimado_MC2 = 1-ipm_educacion_estimado_MC )
-ipm_empleo <- readRDS("Frecuentista_depto/COL/data/ipm_empleo.rds")
-ipm_estimado_MC <- readRDS("Frecuentista_depto/COL/data/ipm_MC.rds")
+# ipm_censo <- readRDS("Frecuentista_mpio/COL/data/completo_ipm.rds")
+ipm_censo <- readRDS("Frecuentista_mpio/COL/data/censo_ipm2.rds")
+ipm_eduacion <- readRDS("Frecuentista_mpio/COL/data/ipm_educacion.rds") 
+ipm_empleo <- readRDS("Frecuentista_mpio/COL/data/ipm_empleo.rds")
+ipm_estimado_MC <- readRDS("Frecuentista_mpio/COL/data/ipm_MC.rds")
 
-ipm_censo %<>% group_by(depto) %>% 
+ipm_censo %<>% group_by(mpio) %>% 
   summarise(ipm_Material = weighted.mean(ipm_Material, n),
             ipm_Saneamiento = weighted.mean(ipm_Saneamiento, n),
             ipm_Energia = weighted.mean(ipm_Energia, n),
             ipm_Internet = weighted.mean(ipm_Internet, n),
             ipm_Agua = weighted.mean(ipm_Agua, n),
             ipm_Hacinamiento = weighted.mean(ipm_Hacinamiento, n)) %>% 
-  data.frame() %>% inner_join(ipm_eduacion, by = "depto") %>% 
-  inner_join(ipm_empleo, by = "depto") %>% 
-  inner_join(ipm_estimado_MC, by = "depto")
+  data.frame() %>% inner_join(ipm_eduacion, by = "mpio") %>% 
+  inner_join(ipm_empleo, by = "mpio") %>% 
+  inner_join(ipm_estimado_MC, by = "mpio")
 
 
 
 ## Leer Shape del pais
 ShapeSAE <-
-  read_sf("Frecuentista_depto/COL/ShapeDeptoCOL/depto.shp") %>%
-  rename(depto = DPTO)
+  read_sf("Frecuentista_mpio/COL/ShapeDeptoCOL/dv_Municipio.shp") %>%
+  rename(mpio = COD_DANE,
+         nombre = NOM_MUNICI)
 ###############################################################################
 # Colombia
 P1_ingresolp <- tm_shape(ShapeSAE %>%
-                           left_join(ipm_censo,  by = "depto"))
+                           left_join(ipm_censo,  by = "mpio"))
 
 brks_ipm <- c(0,.2, .4,.6,.8, 1)
 tmap_options(check.and.fix = TRUE)
@@ -56,13 +56,35 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_estimado_MC",
     breaks = brks_ipm,
-    title = "IPM-SAE",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout( 
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm.pdf",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm.jpeg",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm.pdf",
   width = 6920,
   height = 4080,
   asp = 0
@@ -72,29 +94,76 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Agua",
     breaks = brks_ipm,
-    title = "Censo Agua",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Water)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_agua.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_agua.pdf",
   width = 6920,
   height = 4080,
   asp = 0
 )
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_agua.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_agua.jpeg",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
 ###############################################################################
 Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_educacion_estimado_MC",
     breaks = brks_ipm,
-    title = "Educacion-SAE",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI-SAE (Education)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/Sae_ipm_educacion.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_educacion.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/Sae_ipm_educacion.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/Sae_ipm_educacion.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -105,13 +174,36 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_empleo_estimado_MC",
     breaks = brks_ipm,
-    title = "Empleo y aseguramiento\n en salud SAE",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI-SAE (Employment)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Empleo.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/ipm_Empleo.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Empleo.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Empleo.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -121,13 +213,36 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Energia",
     breaks = brks_ipm,
-    title = "IPM (Energía)",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Energy)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Energía.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_Energía.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Energía.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Energía.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -137,13 +252,34 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Hacinamiento",
     breaks = brks_ipm,
-    title = "IPM (Hacinamiento)",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Overcrowding)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
 
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Hacinamiento.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_Hacinamiento.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Hacinamiento.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Hacinamiento.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -153,13 +289,35 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Internet",
     breaks = brks_ipm,
-    title = "IPM (Internet)",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Internet)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Internet.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_Internet.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Internet.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_Internet.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -169,13 +327,35 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Material",
     breaks = brks_ipm,
-    title = "IPM (Material)",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Construction material)",
+    palette = "YlOrRd",
+    colorNA = "white"
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_material.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_material.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_material.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_material.jpeg",
   width = 6920,
   height = 4080,
   asp = 0
@@ -185,13 +365,37 @@ Mapa_ing <-
   P1_ingresolp + tm_polygons(
     "ipm_Saneamiento",
     breaks = brks_ipm,
-    title = "IPM (Saneamiento)",
-    palette = "YlOrRd"
-  ) + tm_layout(asp = 0)
+    title = "MPI (Sanitation)",
+    
+  ) + tm_layout(
+    legend.only = FALSE,
+    legend.height = -0.5,
+    legend.width = -0.5,
+    asp = 1.5,
+    legend.text.size = 3,
+    legend.title.size = 3)
+
+# tmap_save(
+#   Mapa_ing,
+#   "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_saneamiento.pdf",
+#   width = 6920,
+#   height = 4080,
+#   asp = 0
+# )
+
 
 tmap_save(
   Mapa_ing,
-  "Frecuentista_depto/COL/Output/Censo_ipm_saneamiento.pdf",
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_saneamiento.png",
+  width = 6920,
+  height = 4080,
+  asp = 0
+)
+
+
+tmap_save(
+  Mapa_ing,
+  "Frecuentista_mpio/COL/Output/Plot_Municipio/ipm_saneamiento.jpeg",
   width = 6920,
   height = 4080,
   asp = 0

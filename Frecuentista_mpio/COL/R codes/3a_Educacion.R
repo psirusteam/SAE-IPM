@@ -19,14 +19,14 @@ library(rstanarm)
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
-tasa_desocupados <- readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
+encuesta_ipm <- readRDS("Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
+tasa_desocupados <- readRDS("Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")
 
 # Agregando encuesta ------------------------------------------------------
 
 statelevel_predictors_df <- tasa_desocupados
 
-byAgrega <- c("depto", "area", "sexo", "edad",
+byAgrega <- c("mpio", "area", "sexo", "edad",
               "ipm_Material",
               "ipm_Hacinamiento",
               "ipm_Agua",
@@ -43,22 +43,22 @@ encuesta_df_agg <-
   mutate_at(all_of(byAgrega), as.character)
 
 encuesta_df_agg <- inner_join(encuesta_df_agg, statelevel_predictors_df,
-                              by = c("depto"))
+                              by = c("mpio"))
 
 
 #--- Fit in stan_glmer ---#
 
 fit <- glmer(
-  cbind(no_educacion, educacion) ~  (1 | depto) +
+  cbind(no_educacion, educacion) ~  (1 | mpio) +
    edad +
         area +
         # anoest +
         # etnia +
-        # depto:area +
-        # depto:etnia +
-        # depto:sexo +
-        # depto:edad +
-        # depto:anoest +
+        # mpio:area +
+        # mpio:etnia +
+        # mpio:sexo +
+        # mpio:edad +
+        # mpio:anoest +
         # area:etnia +
         # area:sexo +
         # area:edad +
@@ -84,8 +84,7 @@ fit <- glmer(
 )
 
 
-
-saveRDS(fit, file = "Frecuentista_depto/COL/Data/fit_freq_educacion.rds")
+saveRDS(fit, file = "Frecuentista_mpio/COL/Data/fit_freq_educacion.rds")
 
 
 

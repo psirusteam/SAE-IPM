@@ -17,20 +17,21 @@ library(tidyverse)
 library(rstan)
 library(rstanarm)
 library(bayesplot)
-source("Frecuentista_depto_boot_editado/0Funciones/funciones_mrp.R", encoding = "UTF-8")
+library(furrr)
+source("Frecuentista_mpio/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-fit_educacion <- readRDS( file = "Frecuentista_depto_boot_editado/COL/Data/fit_freq_educacion.rds")
-fit_empleo <- readRDS( file = "Frecuentista_depto_boot_editado/COL/Data/fit_freq_empleo.rds")
+fit_educacion <- readRDS( file = "Frecuentista_mpio/COL/Data/fit_freq_educacion.rds")
+fit_empleo <- readRDS( file = "Frecuentista_mpio/COL/Data/fit_freq_empleo.rds")
 
-encuesta_ipm <- readRDS("Frecuentista_depto_boot_editado/COL/Data/encuesta_ipm.rds")
-censo_ipm <- readRDS("Frecuentista_depto_boot_editado/COL/Data/censo_ipm2.rds") 
-tasa_desocupados <- readRDS("Frecuentista_depto_boot_editado/COL/Data/tasa_desocupacion.rds")
+encuesta_ipm <- readRDS("Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
+censo_ipm <- readRDS("Frecuentista_mpio/COL/Data/censo_ipm2.rds") 
+tasa_desocupados <- readRDS("Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")
 
 # Agregando encuesta ------------------------------------------------------
 statelevel_predictors_df <- tasa_desocupados
-byAgrega <- c("depto", "area", "sexo", "edad",
+byAgrega <- c("mpio", "area", "sexo", "edad",
               "ipm_Material",
               "ipm_Hacinamiento",
               "ipm_Agua",
@@ -56,7 +57,7 @@ poststrat_df$prob_empleo <- predict(
 )
 
 poststrat_MC <- poststrat_df %>% data.frame() %>% 
-  dplyr::select(depto, n,matches("prob|ipm_") ) %>% 
+  dplyr::select(mpio, n,matches("prob|ipm_") ) %>% 
   tibble()
 
 poststrat_MC %<>% mutate_at(vars(matches("ipm_")), as.numeric) 
@@ -64,7 +65,7 @@ poststrat_MC %<>% mutate_at(vars(matches("ipm_")), as.numeric)
 fipm <- function(){
 iter_ipm2 <-  pmap(as.list(poststrat_MC),
        function(
-       depto,n,
+       mpio,n,
        ipm_Material,
        ipm_Saneamiento,
        ipm_Energia,
@@ -91,16 +92,23 @@ mean(ipm_dummy)
 
 poststrat_MC$ipm <- unlist(iter_ipm2) 
 
-poststrat_MC %>% group_by(depto) %>%
+poststrat_MC %>% group_by(mpio) %>%
 summarise(ipm = sum((n*ipm))/sum(n))
 }
 
-ipm_MC <- replicate(100,fipm())
+plan(multisession, workers = 4)
+ipm_MC <- furrr::future_imap(1:100,~fipm(),.progress = TRUE)
 
-ipm_estimado <- map_df(1:ncol(ipm_MC), function(x) data.frame(t(ipm_MC)[x,])) %>%
-group_by(depto) %>% summarise(ipm_estimado_MC = mean(ipm))
+# ipm_MC <- replicate(100,fipm())
+# 
+# ipm_estimado <- map_df(1:ncol(ipm_MC), function(x) data.frame(t(ipm_MC)[x,])) %>%
+# group_by(mpio) %>% summarise(ipm_estimado_MC = mean(ipm))
+
+ipm_estimado <-
+  ipm_MC %>% bind_rows() %>% 
+  group_by(mpio) %>% summarise(ipm_estimado_MC = mean(ipm))
 
 saveRDS(ipm_estimado, 
-    file = "Frecuentista_depto_boot_editado/COL/Data/ipm_MC.rds")
+    file = "Frecuentista_mpio/COL/Data/ipm_MC.rds")
 
 

@@ -18,19 +18,20 @@ library(rstan)
 library(rstanarm)
 library(bayesplot)
 library(purrr)
-source("Frecuentista_depto/0Funciones/funciones_mrp.R", encoding = "UTF-8")
+library(furrr)
+source("Frecuentista_mpio/0Funciones/funciones_mrp.R", encoding = "UTF-8")
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-fit_empleo <- readRDS( file = "Frecuentista_depto/COL/Data/fit_freq_empleo.rds")
+fit_empleo <- readRDS( file = "Frecuentista_mpio/COL/Data/fit_freq_empleo.rds")
 
-encuesta_ipm <- readRDS("Frecuentista_depto/COL/Data/encuesta_ipm.rds")
-censo_ipm <- readRDS("Frecuentista_depto/COL/Data/censo_ipm2.rds") 
-tasa_desocupados <- readRDS("Frecuentista_depto/COL/Data/tasa_desocupacion.rds")
+encuesta_ipm <- readRDS("Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
+censo_ipm <- readRDS("Frecuentista_mpio/COL/Data/censo_ipm2.rds") 
+tasa_desocupados <- readRDS("Frecuentista_mpio/COL/Data/tasa_desocupacion.rds")
 
 # Agregando encuesta ------------------------------------------------------
 statelevel_predictors_df <- tasa_desocupados
-byAgrega <- c("depto", "area", "sexo", "edad",
+byAgrega <- c("mpio", "area", "sexo", "edad",
               "ipm_Material",
               "ipm_Hacinamiento",
               "ipm_Agua",
@@ -50,7 +51,7 @@ poststrat_df$prob_empleo <- predict(
 )
 
 poststrat_MC <- poststrat_df %>% data.frame() %>% 
-  dplyr::select(depto, n,matches("prob") ) %>% 
+  dplyr::select(mpio, n,matches("prob") ) %>% 
   tibble()
 
 
@@ -59,29 +60,33 @@ poststrat_MC %>% mutate(
   empleo_MC = map2_dbl(n,prob_empleo, function(ni, prob_e){
     y_educacion =  rbinom(ni, 1, prob = prob_e) 
     mean(y_educacion)
-  })) %>% group_by(depto) %>%
+  })) %>% group_by(mpio) %>%
     summarise(empleo_MC = sum((n*empleo_MC))/sum(n))    
 }
 
+plan(multisession, workers = 4)
+empleo_MC <- furrr::future_imap(1:100,~MC_empleo(),.progress = TRUE)
+#empleo_MC <- replicate(100,MC_empleo())
 
-empleo_MC <- replicate(100,MC_empleo())
+# ipm_empleo <- map_df(1:ncol(empleo_MC), function(x) data.frame(t(empleo_MC)[x,])) %>%
+# group_by(mpio) %>% summarise(ipm_empleo_estimado_MC = mean(empleo_MC))
 
-ipm_empleo <- map_df(1:ncol(empleo_MC), function(x) data.frame(t(empleo_MC)[x,])) %>%
-group_by(depto) %>% summarise(ipm_empleo_estimado_MC = mean(empleo_MC))
-
+ipm_empleo <- empleo_MC %>% bind_rows() %>% 
+  group_by(mpio) %>% 
+  summarise(ipm_empleo_estimado_MC = mean(empleo_MC))
 
 
 saveRDS(ipm_empleo, 
-    file = "Frecuentista_depto/COL/Data/ipm_empleo.rds")
+    file = "Frecuentista_mpio/COL/Data/ipm_empleo.rds")
 
 diseno_empleo <- encuesta_ipm %>%  as_survey_design(weights = fep)
 
-estimacion_dir <- diseno_empleo %>% group_by(depto) %>%
+estimacion_dir <- diseno_empleo %>% group_by(mpio) %>%
   summarise(empleo = survey_mean(ipm_Empleo_Aseguramiento)) %>% 
-  select(-empleo_se)
+  dplyr::select(-empleo_se)
 
 
-ipm_empleo <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_empleo.rds")
+ipm_empleo <- readRDS(file = "Frecuentista_mpio/COL/Data/ipm_empleo.rds")
 
 
 estimacion_dir <- full_join(estimacion_dir,ipm_empleo)
@@ -89,4 +94,4 @@ plot(estimacion_dir$empleo, estimacion_dir$ipm_empleo_estimado_MC)
 abline(b=1, a = 0, col = 2)
 
 openxlsx::write.xlsx(x = estimacion_dir,
- file = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/empleo_dir_sae.xlsx")
+ file = "Frecuentista_mpio/COL/Output/Comparando_dir_censo_sae/empleo_dir_sae.xlsx")
