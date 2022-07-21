@@ -96,8 +96,8 @@ poststrat_MC %>% group_by(mpio) %>%
 summarise(ipm = sum((n*ipm))/sum(n))
 }
 
-plan(multisession, workers = 4)
-ipm_MC <- furrr::future_imap(1:100,~fipm(),.progress = TRUE)
+plan(multisession, workers = 2)
+ipm_MC <- furrr::future_imap(1:10,~fipm(),.progress = TRUE)
 
 # ipm_MC <- replicate(100,fipm())
 # 

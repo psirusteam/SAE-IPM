@@ -111,10 +111,9 @@ encuesta_agg <- encuesta %>%
   mutate_at(all_of(byAgrega), as.character)
 
 ##### Iniciando el boot 
+ii= 1
+for(ii in 1:100){
 
-for(ii in 2:100){
-
-  
 ud <- udm %>%  mutate(
     udi_educacion = rnorm(1:n(), 0, sd = sqrt(var_u_educacion)),
     udi_empleo = rnorm(1:n(), 0, sd = sqrt(var_u_empleo))
@@ -198,9 +197,9 @@ encuesta_boot_agg %>% group_by(mpio) %>%
 encuesta_boot_agg %<>%
   group_by_at(all_of(byAgrega)) %>%
   summarise(n = n(),
-            No_educacion = sum(1-y_educacion),
+            No_educacion = sum(y_educacion),
             Educacion = n - No_educacion,
-            No_empleo = sum(1-y_empleo),
+            No_empleo = sum(y_empleo),
             Empleo = n - No_empleo,
             .groups = "drop")
 
@@ -225,6 +224,12 @@ fit_MC <- future_imap(
   ~ modelo(y_si = .x, setdata = encuesta_boot_agg),
   .progress = TRUE
 )
+## Validar coefcientes 
+ # fit_MC$fit_educion_MC
+ # fit_educacion
+ # fit_MC$fit_emplo_MC
+ # fit_empleo
+
 
 
 poststrat_temp$prob_boot_educacion <- predict(

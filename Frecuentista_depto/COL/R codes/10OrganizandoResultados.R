@@ -40,7 +40,7 @@ select <- dplyr::select
 ## Estimacion directa de las dimensiones educacion, empleo y ipm
 Estimacion_dir <- readRDS(
   file = "Frecuentista_depto/COL/Data/Educacion_Empleo_IPM_dir.rds") %>% 
-  rename_at(vars(Educacion:IPM_se), ~paste0("Dir_",.))
+  rename_at(vars(Educacion:IPM_cv), ~paste0("Dir_",.))
 
 # Estimacion montecarlo para las dimensiones educacion, empleo y ipm
 
@@ -80,11 +80,90 @@ smce_ipm <-
 Estimacion_smce <-full_join(smce_empleo, smce_educacion) %>%
   full_join(smce_ipm)
 
-##### Organizando el excel 
+############################################################
+##### Validaciones 
+############################################################
 Estimacion <- full_join(Estimacion_dir,Estimacion_MC) %>% 
   full_join(Estimacion_smce) 
 
-Estimacion %>%
+plot(Estimacion$Dir_Educacion, Estimacion$sae_MC_Educacion)
+abline(b=1,a=0, col = "red")
+
+plot(Estimacion$Dir_Empleo, Estimacion$sae_MC_Empleo)
+abline(b=1,a=0, col = "red")
+
+plot(Estimacion$Dir_IPM, Estimacion$sae_MC_IPM)
+abline(b=1,a=0, col = "red")
+
+
+Estimacion %>% select(depto,nd, Dir_Empleo, sae_MC_Empleo) %>% 
+  gather(key = variable, value = "value",-depto,-nd) %>% 
+ggplot(data = .) +
+  geom_jitter(aes(
+    x = fct_reorder2(depto, depto, nd),
+    y = value,
+    color = variable
+  ), size = 2.5,width = 0.3) +
+  scale_color_manual(
+    breaks = c("Dir_Empleo", "sae_MC_Empleo"),
+    values = c("red", "blue")
+  ) +
+  theme_bw(20) +
+  labs(x = "depto", y = "", color = "")
+
+
+Estimacion %>% select(matches("empleo")) %>% arrange((smce_empleo))
+Estimacion %>% select(matches("empleo")) %>% arrange(desc(smce_empleo))
+
+Estimacion %>% select(depto,nd, Dir_Educacion, sae_MC_Educacion) %>% 
+  gather(key = variable, value = "value",-depto,-nd) %>% 
+  ggplot(data = .) +
+  geom_jitter(aes(
+    x = fct_reorder2(depto, depto, nd),
+    y = value,
+    color = variable
+  ), size = 2.5,width = 0.3) +
+  scale_color_manual(
+    breaks = c("Dir_Educacion", "sae_MC_Educacion"),
+    values = c("red", "blue")
+  ) +
+  theme_bw(20) +
+  labs(x = "depto", y = "", color = "")
+
+
+Estimacion %>% select(matches("educacion")) %>% arrange((smce_educacion))
+Estimacion %>% select(matches("educacion")) %>% arrange(desc(smce_educacion))
+
+
+
+Estimacion %>% select(depto,nd, Dir_IPM, sae_MC_IPM) %>% 
+  gather(key = variable, value = "value",-depto,-nd) %>% 
+  ggplot(data = .) +
+  geom_jitter(aes(
+    x = fct_reorder2(depto, depto, nd),
+    y = value,
+    color = variable
+  ), size = 2.5,width = 0.3) +
+  scale_color_manual(
+    breaks = c("Dir_IPM", "sae_MC_IPM"),
+    values = c("red", "blue")
+  ) +
+  theme_bw(20) +
+  labs(x = "depto", y = "", color = "")
+
+
+Estimacion %>% select(matches("IPM")) %>% 
+  filter(!is.na(Dir_IPM)) %>% 
+  arrange((smce_IPM)) 
+
+Estimacion %>% select(matches("IPM")) %>% 
+  filter(!is.na(Dir_IPM)) %>% 
+  arrange(desc(smce_IPM)) 
+
+##############################################################
+## Exportando resultados
+##############################################################
+Estimacion %<>%
   mutate(
     Educacion_cv = (smce_educacion / sae_MC_Educacion) * 100,
     Empleo_cv = (smce_empleo / sae_MC_Empleo) * 100,
@@ -95,6 +174,17 @@ Estimacion %>%
     Empleo_LimS = sae_MC_Empleo + 1.96 * smce_empleo,
     IPM_LimI = sae_MC_IPM - 1.96 * smce_IPM,
     IPM_LimS = sae_MC_IPM + 1.96 * smce_IPM
-  ) %>% 
-  openxlsx::write.xlsx(
+  ) 
+
+#############################################################
+## plot cv
+ 
+plot(Estimacion$Dir_Educacion_cv*100, Estimacion$Educacion_cv)
+abline(b=1,a=0, col = "red")
+plot(Estimacion$Dir_Empleo_cv*100, Estimacion$Empleo_cv)
+abline(b=1,a=0, col = "red")
+plot(Estimacion$Dir_IPM_cv*100, Estimacion$IPM_cv)
+abline(b=1,a=0, col = "red")
+
+openxlsx::write.xlsx(x = Estimacion,
     file = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/Estimacion_depto.xlsx")

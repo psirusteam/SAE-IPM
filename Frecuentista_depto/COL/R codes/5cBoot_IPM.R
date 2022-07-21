@@ -112,7 +112,7 @@ encuesta_agg <- encuesta %>%
 
 ##### Iniciando el boot 
 
-for(ii in 4:100){
+for(ii in 1:100){
 
   
 ud <- udm %>%  mutate(
@@ -198,9 +198,9 @@ encuesta_boot_agg %>% group_by(depto) %>%
 encuesta_boot_agg %<>%
   group_by_at(all_of(byAgrega)) %>%
   summarise(n = n(),
-            No_educacion = sum(1-y_educacion),
+            No_educacion = sum(y_educacion),
             Educacion = n - No_educacion,
-            No_empleo = sum(1-y_empleo),
+            No_empleo = sum(y_empleo),
             Empleo = n - No_empleo,
             .groups = "drop")
 
@@ -268,14 +268,14 @@ cat(paste0(rep("-", 60), collapse = ""),"\n")
 
 
 ## leer estimacion MC del IPM  
-ipm_MC <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_MC.rds")
-
-
-list.files("Frecuentista_depto/COL/Data/iter_IPM_BOOT_MC/",full.names = TRUE
-) %>% 
-  map_df(~readRDS(.x) ) %>% 
-  mutate(diff = ipm_boot_estimado - ipm_boot) %>% 
-  group_by(depto) %>% summarise(smce = sqrt(mean(diff^2))) %>% 
-  inner_join(ipm_MC) %>% 
-  openxlsx::write.xlsx(
-    file = "Frecuentista_depto/COL/Output/smce_MC.xlsx")
+# ipm_MC <- readRDS(file = "Frecuentista_depto/COL/Data/ipm_MC.rds")
+# 
+# 
+# list.files("Frecuentista_depto/COL/Data/iter_IPM_BOOT_MC/",full.names = TRUE
+# ) %>% 
+#   map_df(~readRDS(.x) ) %>% 
+#   mutate(diff = ipm_boot_estimado - ipm_boot) %>% 
+#   group_by(depto) %>% summarise(smce = sqrt(mean(diff^2))) %>% 
+#   inner_join(ipm_MC) %>% 
+#   openxlsx::write.xlsx(
+#     file = "Frecuentista_depto/COL/Output/smce_MC.xlsx")

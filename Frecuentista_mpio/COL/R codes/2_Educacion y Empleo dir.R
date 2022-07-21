@@ -4,7 +4,7 @@
 # Lectura y preparación de las bases de datos           #
 # Autor: Stalyn Guerrero & Andrés Gutiérrez             #
 #########################################################
-rm(list =ls())
+rm(list = ls())
 
 # Loading required libraries ----------------------------------------------
 
@@ -18,33 +18,43 @@ library(rstan)
 library(rstanarm)
 library(survey)
 library(srvyr)
+select <- dplyr::select
 # Loading data ------------------------------------------------------------
 memory.limit(10000000000000)
-encuesta_ipm <- readRDS("Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
-upms <- readRDS("Frecuentista_mpio/COL/Data/upm_dpto_2018.rds")
-encuesta <- readRDS("Frecuentista_mpio/COL/Data/encuesta2018.rds")
-# # Agregando upms y estratos ------------------------------------------------------
-# encuesta %<>% left_join(upms,
-#                          by = c("directorio" = "DIRECTORIO",
-#                                 "secuencia_p" = "SECUENCIA_P",
-#                                 "orden"))
+encuesta_ipm <-
+  readRDS("Frecuentista_mpio/COL/Data/encuesta_ids.rds")
 
 
+diseno <- as_survey_design_(
+  .data = encuesta_ipm,
+  ids = ~ upm,
+  weights = ~ fep,
+  strata = ~ estrato,
+  nest = TRUE
+)
 
-diseno <- as_survey_design_(.data = encuesta_ipm, 
-                            ids = ~1,
-                            weights = ~fep, 
-                            nest = TRUE 
-                              )
+options(survey.lonely.psu = "adjust")
+## Estimación directa por mpio
 
+diseno %<>% mutate(
+  IPM = 0.1 * (
+    ipm_Material +
+      ipm_Saneamiento +
+      ipm_Energia +
+      ipm_Internet +
+      ipm_Agua +
+      ipm_Hacinamiento
+  ) +
+    0.2 * (ipm_educacion +   ipm_Empleo_Aseguramiento),
+  IPM = ifelse(IPM >= 0.4, 1, 0)
+)
 
-Estimacion_dir <- diseno %>% group_by(mpio) %>% 
-  summarise(Educacion = survey_mean(ipm_educacion),
-            Empleo = survey_mean(ipm_Empleo_Aseguramiento))
+Estimacion_dir <- diseno %>% group_by(mpio) %>%
+  summarise(
+    nd = unweighted(n()),
+    Educacion = survey_mean(ipm_educacion, vartype = c("cv")),
+    Empleo = survey_mean(ipm_Empleo_Aseguramiento, vartype = c("cv")),
+    IPM = survey_mean(IPM,vartype = c("cv")))
 
 saveRDS(Estimacion_dir,
-file = "Frecuentista_mpio/COL/Output/Educacion_y_Empleo_dir.rds")          
-
-
-
-
+        file = "Frecuentista_mpio/COL/data/Educacion_Empleo_IPM_dir.rds")

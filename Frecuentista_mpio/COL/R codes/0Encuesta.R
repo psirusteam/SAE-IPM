@@ -39,7 +39,7 @@ memory.limit(250000000)
 ################################################################################
 ###----------------------------- Loading datasets ---------------------------###
 ################################################################################
-## Leer encuesta
+# # Leer encuesta
 # encuesta_temp <- read_dta("Z:/BC/COL_2018N1.dta")
 # 
 # encuesta <- read_dta("Z:/BG/col18n1/col18n1.dta")
@@ -238,6 +238,9 @@ encuesta_ipm <- encuesta %>%
 
 saveRDS(encuesta_ipm, file = "Frecuentista_mpio/COL/Data/encuesta_ipm.rds")
 
+
+#################################################################
+saveRDS(encuesta_ipm, file = "Frecuentista_mpio/COL/Data/encuesta_ids.rds")
 
 
 
