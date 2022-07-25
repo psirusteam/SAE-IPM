@@ -32,6 +32,7 @@ library(purrr)
 library(furrr)
 library(tidyr)
 library(tibble)
+library(tidyverse)
 select <- dplyr::select
 
 ################################################################################
