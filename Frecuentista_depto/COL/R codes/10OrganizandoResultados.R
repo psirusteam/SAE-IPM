@@ -87,15 +87,20 @@ Estimacion_smce <-full_join(smce_empleo, smce_educacion) %>%
 Estimacion <- full_join(Estimacion_dir,Estimacion_MC) %>% 
   full_join(Estimacion_smce) 
 
+png(filename = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/Educacion.png")
 plot(Estimacion$Dir_Educacion, Estimacion$sae_MC_Educacion)
 abline(b=1,a=0, col = "red")
+dev.off()
 
+png(filename = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/Empleo.png")
 plot(Estimacion$Dir_Empleo, Estimacion$sae_MC_Empleo)
 abline(b=1,a=0, col = "red")
+dev.off()
 
+png(filename = "Frecuentista_depto/COL/Output/Comparando_dir_censo_sae/Ipm.png")
 plot(Estimacion$Dir_IPM, Estimacion$sae_MC_IPM)
 abline(b=1,a=0, col = "red")
-
+dev.off()
 
 Estimacion %>% select(depto,nd, Dir_Empleo, sae_MC_Empleo) %>% 
   gather(key = variable, value = "value",-depto,-nd) %>% 
