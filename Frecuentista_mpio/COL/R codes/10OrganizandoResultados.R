@@ -192,5 +192,11 @@ abline(b=1,a=0, col = "red")
 plot(Estimacion$Dir_IPM_cv*100, Estimacion$IPM_cv)
 abline(b=1,a=0, col = "red")
 
+Estimacion %<>% mutate(
+  Dir_Educacion_cv = Dir_Educacion_cv * 100,
+  Dir_Empleo_cv = Dir_Empleo_cv * 100,
+  Dir_IPM_cv = Dir_IPM_cv * 100
+)
+
 openxlsx::write.xlsx(x = Estimacion,
     file = "Frecuentista_mpio/COL/Output/Comparando_dir_censo_sae/Estimacion_mpio.xlsx")
