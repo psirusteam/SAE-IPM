@@ -1,0 +1,51 @@
+---
+title: "Respuesta correo 18082022"
+author: "Stalyn Guerrero"
+date: '2022-08-18'
+output: word_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Estimada Alejandra, recibe un cordial saludo.
+A continuación, encuentras nuestras respuestas abajo.
+Saludo, AG.
+
+1.  Efectivamente, la columna asociada al CV del estimador directo en las tablas del archivo en Excel no estaba en porcentaje.
+    Las hemos actualizado y ya están en el repositorio de GitHub actualizadas.
+
+2.  De acuerdo, Valle del Cauca es un buen ejemplo.
+    Vamos a generar gráficos municipales de este departamento para las 8 variables (SAE y censales), y con esto podrás tener mejores elementos para la narrativa de esta ilustración departamental.
+
+3a.
+Para la estimación puntual, estamos usando 100 simulaciones de Monte Carlo (ver código 4aPrediccion_Censo_educacion.R, 4aPrediccion_Censo_empleo.R y 4cPrediccion_Censo_IPM.R).
+
+3b.
+Para la estimación del MSE estamos utilizando ***20*** simulaciones de Monte Carlo en cada una de las ***100*** iteraciones BootStrap.
+
+4.  Sí, vamos a generar un mapa de los CVs del MPI final.
+
+5a.
+A continuación las estadísticas descriptivas de los tamaños poblacionales en el Censo
+
+5b.
+A continuación, las estadísticas descriptivas de los tamaños muestrales en la encuesta.
+
+6.  Hemos generado las siguientes figuras:
+
+    6a. Una figura conteniendo seis mapas de COL a nivel municipal censales de las seis dimensiones conocidas con una sola escala.
+
+    6b. Una figura conteniendo dos mapas SAE de COL a nivel municipal de las dos dimensiones que se predijeron con una sola escala.
+
+    6c. Una figura conteniendo un mapa SAE de COL a nivel municipal del IPM final.
+
+    6d. Una figura conteniendo un mapa de los CV SAE de COL a nivel municipal del IPM final.
+
+    6e. Una figura conteniendo ocho mapas del Valle del Cauca a nivel municipal de las ocho dimensiones con una sola escala.
+
+    6f. Una figura conteniendo un mapa del Valle del Cauca a nivel municipal del IPM final.
