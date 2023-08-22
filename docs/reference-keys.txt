@@ -1,0 +1,7 @@
+introducción
+índice-de-pobreza-multidimensional
+ejemplo
+estimación-del-modelo-de-unidad-para-variables-binarias
+estimación-de-pi_di
+estimación-puntual-del-índice-de-pobreza-multidimensional-ipm
+aplicación-índice-de-pobreza-multidimensional-en-colombia.
