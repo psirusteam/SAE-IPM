@@ -1,7 +1,15 @@
+tab:unnamed-chunk-11
+tab:unnamed-chunk-12
+tab:unnamed-chunk-13
+tab:unnamed-chunk-14
+tab:unnamed-chunk-15
+tab:unnamed-chunk-17
+tab:unnamed-chunk-22
 introducción
 índice-de-pobreza-multidimensional
 ejemplo
 estimación-del-modelo-de-unidad-para-variables-binarias
-estimación-de-pi_di
+estimación-de-pik_di
+pedicción-de-los-hard-estimates
 estimación-puntual-del-índice-de-pobreza-multidimensional-ipm
-aplicación-índice-de-pobreza-multidimensional-en-colombia.
+ejemplo-aplicación-de-la-metodología.

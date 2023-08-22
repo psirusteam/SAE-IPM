@@ -149,10 +149,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="3" data-path="estimación-del-modelo-de-unidad-para-variables-binarias.html"><a href="estimación-del-modelo-de-unidad-para-variables-binarias.html"><i class="fa fa-check"></i><b>3</b> Estimación del modelo de unidad para variables Binarias</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="estimación-de-pi_di.html"><a href="estimación-de-pi_di.html"><i class="fa fa-check"></i><b>3.1</b> Estimación de <span class="math inline">\(\pi_{di}\)</span></a></li>
-<li class="chapter" data-level="3.2" data-path="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><a href="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><i class="fa fa-check"></i><b>3.2</b> Estimación Puntual del Índice de Pobreza Multidimensional (IPM)</a></li>
+<li class="chapter" data-level="3.1" data-path="estimación-de-pik_di.html"><a href="estimación-de-pik_di.html"><i class="fa fa-check"></i><b>3.1</b> Estimación de <span class="math inline">\(\pi^{k}_{di}\)</span></a></li>
+<li class="chapter" data-level="3.2" data-path="pedicción-de-los-hard-estimates.html"><a href="pedicción-de-los-hard-estimates.html"><i class="fa fa-check"></i><b>3.2</b> Pedicción de los Hard estimates</a></li>
+<li class="chapter" data-level="3.3" data-path="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><a href="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><i class="fa fa-check"></i><b>3.3</b> Estimación Puntual del Índice de Pobreza Multidimensional (IPM)</a></li>
+<li class="chapter" data-level="3.4" data-path="ejemplo-aplicación-de-la-metodología..html"><a href="ejemplo-aplicación-de-la-metodología..html"><i class="fa fa-check"></i><b>3.4</b> Ejemplo: Aplicación de la metodología.</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="aplicación-índice-de-pobreza-multidimensional-en-colombia..html"><a href="aplicación-índice-de-pobreza-multidimensional-en-colombia..html"><i class="fa fa-check"></i><b>4</b> Aplicación: Índice de Pobreza Multidimensional en Colombia.</a></li>
 <li class="divider"></li>
 <li><a Censo </a></li>
 
@@ -189,7 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="ejemplo.html#cb2-5" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="ejemplo.html#cb2-6" tabindex="-1"></a><span class="fu">colnames</span>(M_dummy)<span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;y&quot;</span>,<span class="dv">1</span><span class="sc">:</span>K)</span>
 <span id="cb2-7"><a href="ejemplo.html#cb2-7" tabindex="-1"></a><span class="fu">rownames</span>(M_dummy)<span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;P&quot;</span>,<span class="dv">1</span><span class="sc">:</span>N)</span></code></pre></div>
-<table class="table table-striped" style="font-size: 15px; ">
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -518,7 +519,7 @@ P10
 <span id="cb3-2"><a href="ejemplo.html#cb3-2" tabindex="-1"></a>q <span class="ot">&lt;-</span> M_dummy <span class="sc">%*%</span> w  <span class="co"># Vector q de ponderaciones por dimensiones</span></span>
 <span id="cb3-3"><a href="ejemplo.html#cb3-3" tabindex="-1"></a>Indicadora <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(q <span class="sc">&gt;</span> <span class="fl">0.4</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
 <span id="cb3-4"><a href="ejemplo.html#cb3-4" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(M_dummy, <span class="at">q =</span> q, Indicadora) </span></code></pre></div>
-<table class="table table-striped" style="font-size: 15px; ">
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -959,7 +960,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/psirusteam/2021ASDA/IPM_V01.qmd",
+"link": "https://github.com/psirusteam/2021ASDA/01_Metodologia_IPM.qmd",
 "text": "Edit"
 },
 "history": {

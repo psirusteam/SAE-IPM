@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="ejemplo.html"/>
-<link rel="next" href="estimación-de-pi_di.html"/>
+<link rel="next" href="estimación-de-pik_di.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -149,10 +149,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="3" data-path="estimación-del-modelo-de-unidad-para-variables-binarias.html"><a href="estimación-del-modelo-de-unidad-para-variables-binarias.html"><i class="fa fa-check"></i><b>3</b> Estimación del modelo de unidad para variables Binarias</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="estimación-de-pi_di.html"><a href="estimación-de-pi_di.html"><i class="fa fa-check"></i><b>3.1</b> Estimación de <span class="math inline">\(\pi_{di}\)</span></a></li>
-<li class="chapter" data-level="3.2" data-path="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><a href="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><i class="fa fa-check"></i><b>3.2</b> Estimación Puntual del Índice de Pobreza Multidimensional (IPM)</a></li>
+<li class="chapter" data-level="3.1" data-path="estimación-de-pik_di.html"><a href="estimación-de-pik_di.html"><i class="fa fa-check"></i><b>3.1</b> Estimación de <span class="math inline">\(\pi^{k}_{di}\)</span></a></li>
+<li class="chapter" data-level="3.2" data-path="pedicción-de-los-hard-estimates.html"><a href="pedicción-de-los-hard-estimates.html"><i class="fa fa-check"></i><b>3.2</b> Pedicción de los Hard estimates</a></li>
+<li class="chapter" data-level="3.3" data-path="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><a href="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html"><i class="fa fa-check"></i><b>3.3</b> Estimación Puntual del Índice de Pobreza Multidimensional (IPM)</a></li>
+<li class="chapter" data-level="3.4" data-path="ejemplo-aplicación-de-la-metodología..html"><a href="ejemplo-aplicación-de-la-metodología..html"><i class="fa fa-check"></i><b>3.4</b> Ejemplo: Aplicación de la metodología.</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="aplicación-índice-de-pobreza-multidimensional-en-colombia..html"><a href="aplicación-índice-de-pobreza-multidimensional-en-colombia..html"><i class="fa fa-check"></i><b>4</b> Aplicación: Índice de Pobreza Multidimensional en Colombia.</a></li>
 <li class="divider"></li>
 <li><a Censo </a></li>
 
@@ -185,7 +186,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Los métodos bayesianos también se pueden utilizar para ajustar modelos mixtos logit Bernoulli. Uno de los métodos más comunes es el algoritmo de Markov Chain Monte Carlo (MCMC). Este algoritmo genera muestras de los parámetros del modelo a partir de su distribución posterior, que es la distribución de los parámetros dada la evidencia.</p>
 <p>Otro método bayesiano para ajustar modelos mixtos logit Bernoulli es el enfoque de máxima verosimilitud aproximada (MAP). Este enfoque se basa en la idea de encontrar los parámetros del modelo que maximizan la verosimilitud de los datos, suponiendo que los parámetros siguen una distribución a priori.</p>
 <p>Los métodos bayesianos tienen varias ventajas sobre los métodos clásicos para ajustar modelos mixtos logit Bernoulli. En primer lugar, los métodos bayesianos pueden incorporar información previa sobre los parámetros del modelo, lo que puede mejorar la precisión de las estimaciones. En segundo lugar, los métodos bayesianos pueden proporcionar intervalos de credivilidad para los parámetros del modelo, que pueden ser utilizados para hacer inferencias sobre el modelo. En tercer lugar, los métodos bayesianos pueden ser utilizados para generar predicciones del modelo, que pueden ser utilizadas para tomar decisiones.</p>
-<p>Sin embargo, los métodos bayesianos también tienen algunas desventajas. Por ejemplo, los métodos bayesianos pueden ser más sensibles a la elección de la distribución a previas, lo que puede dificultar la obtención de estimaciones precisas. Para evitar, eso en nuestro ejercicio se hará uso de distribuciones previas no informativas.</p>
+<p>Sin embargo, los métodos bayesianos también tienen algunas desventajas. Por ejemplo, los métodos bayesianos pueden ser más sensibles a la elección de la distribución a previas, lo que puede dificultar la obtención de estimaciones precisas. Para evitar, eso en nuestro ejercicio se hará uso de distribuciones previas no informativas, es decir, podemos definir distribuciones previas</p>
+<p><span class="math display">\[
+\begin{eqnarray*}
+\beta_m &amp; \sim   &amp; N(0, 10000)\\
+\sigma^2_u &amp;\sim &amp; IG(0.0001,0.0001)
+\end{eqnarray*}
+\]</span>
+El modelo se debe estimar para cada una de las dimensiones.</p>
 </div>
             </section>
 
@@ -193,7 +201,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="ejemplo.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="estimación-de-pi_di.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="estimación-de-pik_di.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -224,7 +232,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/psirusteam/2021ASDA/IPM_V01.qmd",
+"link": "https://github.com/psirusteam/2021ASDA/01_Metodologia_IPM.qmd",
 "text": "Edit"
 },
 "history": {

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>3.3 Estimación Puntual del Índice de Pobreza Multidimensional (IPM) | Metodología bayesiana de estimación desagregada para cualquier IPM</title>
+  <title>3.1 Estimación de \(\pi^{k}_{di}\) | Metodología bayesiana de estimación desagregada para cualquier IPM</title>
   <meta name="description" content="Metodología bayesiana de estimación del IPM" />
   <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="3.3 Estimación Puntual del Índice de Pobreza Multidimensional (IPM) | Metodología bayesiana de estimación desagregada para cualquier IPM" />
+  <meta property="og:title" content="3.1 Estimación de \(\pi^{k}_{di}\) | Metodología bayesiana de estimación desagregada para cualquier IPM" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Metodología bayesiana de estimación del IPM" />
   <meta name="github-repo" content="psirusteam/HHS-Handbook" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="3.3 Estimación Puntual del Índice de Pobreza Multidimensional (IPM) | Metodología bayesiana de estimación desagregada para cualquier IPM" />
+  <meta name="twitter:title" content="3.1 Estimación de \(\pi^{k}_{di}\) | Metodología bayesiana de estimación desagregada para cualquier IPM" />
   
   <meta name="twitter:description" content="Metodología bayesiana de estimación del IPM" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="pedicción-de-los-hard-estimates.html"/>
-<link rel="next" href="ejemplo-aplicación-de-la-metodología..html"/>
+<link rel="prev" href="estimación-del-modelo-de-unidad-para-variables-binarias.html"/>
+<link rel="next" href="pedicción-de-los-hard-estimates.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -174,58 +174,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Estimación Puntual del Índice de Pobreza Multidimensional (IPM)<a href="estimación-puntual-del-índice-de-pobreza-multidimensional-ipm.html#estimación-puntual-del-índice-de-pobreza-multidimensional-ipm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Supongamos que el Índice de Pobreza Multidimensional está compuesto por <span class="math inline">\(K\)</span> dimensiones o indicadores para cada individuo <span class="math inline">\(i\)</span> en el censo. El procedimiento propuesto para estimar el IPM es el siguiente:</p>
-<ol style="list-style-type: decimal">
-<li><p>Utilice los datos de la muestra para ajustar un modelo logit Bernoulli a nivel de unidad para cada indicador. Esto se logra mediante el uso del algoritmo de Markov Chain Monte Carlo (MCMC) con <span class="math inline">\(L\)</span> iteraciones.</p></li>
-<li><p>Para cada dimensión <span class="math inline">\(k\)</span> a la cual se le para ajustó un modelo logit Bernoulli a nivel de unidad con <span class="math inline">\(L\)</span> iteraciones, realice la predicción de los valores <span class="math inline">\(\hat{y}^{k}_{di}\)</span> para cada individuo en el censo. Esto generará <span class="math inline">\(L\)</span> realizaciones aleatorias de <span class="math inline">\(\hat{y}^{k}_{di}\)</span>.</p></li>
-<li><p>Denotemos como <span class="math inline">\(\hat{y}_{di}^{kl}\)</span> a la <span class="math inline">\(l\)</span>-ésima realización aleatoria de la dimensión <span class="math inline">\(k\)</span> para el individuo <span class="math inline">\(i\)</span> en el dominio <span class="math inline">\(d\)</span>. Calculamos <span class="math inline">\(q_{di}^{l} = \sum_{k=1}^{K} w_k \cdot y_{di}^{kl}\)</span>. Luego, podemos calcular <span class="math inline">\(H_d^{l}\)</span>, <span class="math inline">\(A_d^{l}\)</span> y <span class="math inline">\(IPM_{d}^{l}\)</span> utilizando las ecuaciones:</p></li>
-</ol>
+<div id="estimación-de-pik_di" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Estimación de <span class="math inline">\(\pi^{k}_{di}\)</span><a href="estimación-de-pik_di.html#estimación-de-pik_di" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La estimación de <span class="math inline">\(\pi^{k}_{di}\)</span> refleja la probabilidad de que una unidad específica <span class="math inline">\(i\)</span> en el dominio <span class="math inline">\(d\)</span> obtenga el valor 1 en la dimensión <span class="math inline">\(k\)</span>. Para llevar a cabo esta estimación, seguimos el siguiente procedimiento:</p>
 <p><span class="math display">\[
-      H_d^{l} = \frac{1}{N_d} \sum_{i=1}^{N_d} I\left( q_{di}^{l} &gt; z \right),
+\bar{Y}^{k}_d = \pi^{k}_d = \frac{1}{N_d} \sum_{i=1}^{N_d} y^{k}_{di}
 \]</span></p>
+<p>Aquí, <span class="math inline">\(y^{k}_{di}\)</span> puede tomar los valores 0 ó 1, representando la ausencia (o no) de una característica específica. Ahora, podemos dividir la suma en dos partes: <span class="math inline">\(s_d\)</span>, que representa las unidades observadas en una muestra, y <span class="math inline">\(s_d^c\)</span>, que son las unidades no observados. Por lo tanto,</p>
 <p><span class="math display">\[
-A_d^{l} = \frac{1}{N_dK} \sum_{i=1}^{N_d} \sum_{k=1}^{K} q_{di}^{l}
-\]</span></p>
-<p>y</p>
-<p><span class="math display">\[
-IPM_{d}^{l} = H_{d}^{l} \times A_{d}^{l}
-\]</span></p>
-<ol start="4" style="list-style-type: decimal">
-<li>La estimación puntual de <span class="math inline">\(H_d\)</span>, <span class="math inline">\(A_{d}\)</span> y <span class="math inline">\(IPM_{d}\)</span> en cada área pequeña <span class="math inline">\(d\)</span> se calcula tomando el promedio sobre cada una de las <span class="math inline">\(L\)</span> iteraciones:</li>
-</ol>
-<p><span class="math display">\[
-    \hat{H}_d = \frac{1}{L}\sum_{l=1}^{L}H_d^l,
-\]</span></p>
-<p><span class="math display">\[
-        \hat{A}_d = \frac{1}{L}\sum_{l=1}^{L}A_d^l
+\begin{equation*}
+\bar{Y}^{k}_d = \pi^{k}_d =  \frac{1}{N_d}\left(\sum_{s_d}y^{k}_{di} + \sum_{s^c_d}y^{k}_{di} \right)
+\end{equation*}
 \]</span>
-y<br />
-<span class="math display">\[
-        \widehat{IPM}_d = \frac{1}{L}\sum_{l=1}^{L}IPM_d^l
-\]</span></p>
-<ol start="5" style="list-style-type: decimal">
-<li>Dada que el modelo se estimó usando el algoritmo MCMC, es posible tener la estimación del error de estimación, de esta forma:</li>
-</ol>
+Ahora, suponga que mediante un modelo de unidad es posible realizar la predicción de <span class="math inline">\(y^{k}_{di}\)</span> para las unidades no observadas. De esta manera, el estimador de <span class="math inline">\(\pi^{k}_d\)</span> se expresa como:</p>
 <p><span class="math display">\[
-  \widehat{Var}(\hat{H}_d) = \frac{1}{L}\sum_{l=1}^{L}\left( H^{l}_{d} -\hat{H}_d \right)^2,
+\hat{\pi}^{k}_d = \frac{1}{N_d}\left( \sum_{s_d}y^{k}_{di} + \sum_{s^c_d}\hat{y}^{k}_{di} \right)
 \]</span></p>
+<p>Donde,</p>
+<p><span class="math display">\[\hat{y}^{k}_{di}=E_{\mathscr{M}}\left(y^{k}_{di}\mid\boldsymbol{x}_{d},\boldsymbol{\beta}\right)\]</span></p>
+<p>Aquí, <span class="math inline">\(\mathscr{M}\)</span> hace referencia a la medida de probabilidad inducida por el modelo. Sin embargo, en la práctica, individualizar a las unidades observadas y no observadas en una encuesta de hogares puede ser difícil. Por lo tanto, una alternativa es realizar la predicción <span class="math inline">\(\hat{y}^{k}_{di}\)</span> para todas las observaciones en el universo. De esta manera, la estimación <span class="math inline">\(\hat{\pi}^{k}_d\)</span> se simplifica a:</p>
 <p><span class="math display">\[
-  \widehat{Var}(\hat{A}_d) = \frac{1}{L}\sum_{l=1}^{L}\left( A^{l}_{d} -\hat{A}_d \right)^2
-\]</span>
-y</p>
-<p><span class="math display">\[
-  \widehat{Var}(\widehat{IPM}_d) = \frac{1}{L}\sum_{l=1}^{L}\left( IPM_d^{l} -\widehat{IPM}_d \right)^2
+\hat{\pi}^{k}_d = \frac{1}{N_d}\sum_{i=1}^{N_d}\hat{y}^{k}_{di}
 \]</span></p>
+<p>Este enfoque permite estimar la probabilidad <span class="math inline">\(\pi^{k}_d\)</span> en el dominio <span class="math inline">\(d\)</span> en la dimensión <span class="math inline">\(k\)</span> utilizando predicciones y datos disponibles en lugar de contar con información individual detallada para todos los casos.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="pedicción-de-los-hard-estimates.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="ejemplo-aplicación-de-la-metodología..html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="estimación-del-modelo-de-unidad-para-variables-binarias.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="pedicción-de-los-hard-estimates.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

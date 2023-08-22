@@ -1,0 +1,89 @@
+```{r setup, include=FALSE, message=FALSE, error=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE
+)
+
+tba <- function(dat, cap = NA){
+  kable(dat,
+      format = "html", digits =  4,
+      caption = cap) %>% 
+     kable_styling(bootstrap_options = "striped", full_width = F)%>%
+         kable_classic(full_width = F, html_font = "Arial Narrow")
+}
+```
+
+# Aplicación: Índice de Pobreza Multidimensional en Colombia. 
+
+Nos centramos en la incidencia de la pobreza multidimensional descrito previamente. En este caso, requerimos $K = 8$ indicadores que se miden como privaciones: $y_{di}^{k} = 1$ si la persona tiene la privación y $y_{di}^{k} = 0$ si la persona no ha tenido la privación.
+
+El índice requiere información para cada individuo $i = 1, \ldots, N_d$ en los dominios $d = 1, \ldots, D$, donde $N_d$ denota el tamaño de la población del dominio $d$.
+
+La función indicadora $I(\cdot)$ es igual a 1 cuando se cumple la condición $q_{di} > z$. Para este estudio, utilizamos el valor de 0.4 para $z$, es decir, $I(\cdot)$ es igual a 1 cuando $q_{di} > 0.4$. $q_{di}$ es una cantidad ponderada que considera los $K = 8$ indicadores que conforman el índice. El valor de $q_{di}$ el dominio $d$ se calcula como:
+  
+$$
+  q_{di} = 0.1\sum_{k=1}^{6}y_{di}^{k} +  0.2(y_{di}^{7} + y_{di}^{8})
+$$
+  
+  Donde: 
+  a. $y_{di}^{1}$ = Privación en material de construcción de la vivienda
+
+b. $y_{di}^{2}$ = Hacinamiento en el hogar. 
+
+c. $y_{di}^{3}$ = Privación de acceso al agua potable. 
+
+d. $y_{di}^{4}$ = Privación en saneamiento.
+
+e. $y_{di}^{5}$ = Acceso al servicio energía eléctrica. 
+
+f. $y_{di}^{6}$ = Acceso al servicio de internet.
+
+g. $y_{di}^{7}$ = Privación de la educación. 
+
+h. $y_{di}^{8}$ = Privación del empleo y la protección social.  
+
+Note que, la primera parte de la suma considera los indicadores de las dimensiones de vivienda, agua y saneamiento, energía y conectividad. La segunda parte, los indicadores de las dimensiones de educación y empleo y protección social. 
+
+Los datos de la encuesta y el censo han sido preparados previamente, la información sobre la cual realizaremos la predicción corresponde a Colombia en el 2019 
+
+```{r, eval=FALSE}
+encuesta_ipm <-
+  saveRDS("Modelo_bayes_HxA/COL/Data/encuesta_COL.rds")
+statelevel_predictors_df <-
+  readRDS("Modelo_bayes_HxA/COL/Data/statelevel_predictors_df_dam2.rds")
+
+byAgrega <- c("depto",
+              "mpio",
+              "area",
+              "sexo",
+              "etnia",
+              "anoest",
+              "edad",
+              "condact3")
+```
+
+Agregando la información para los municipios de Colomabia para los indicadores que conformarán el IPM
+
+```{r}
+names_ipm <- grep(pattern = "ipm", names(encuesta_ipm),value = TRUE)
+
+encuesta_df <- map(setNames(names_ipm,names_ipm),
+    function(y){
+  encuesta_ipm$temp <- encuesta_ipm[[y]]
+  encuesta_ipm %>% 
+  group_by_at(all_of(byAgrega)) %>%
+  summarise(n = n(),
+            yno = sum(temp),
+            ysi = n - yno, .groups = "drop") %>% 
+    inner_join(statelevel_predictors_df,
+                              by = c("depto","mpio"))
+})
+
+  
+```
+
+
+
+
