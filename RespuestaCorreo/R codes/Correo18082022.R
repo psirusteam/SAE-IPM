@@ -54,7 +54,8 @@ library(RColorBrewer)
 library(maptools)
 library(tmaptools)
 
-source("Frecuentista_mpio/0Funciones/funciones_mrp.R", encoding = "UTF-8")
+source("Frecuentista_mpio/0Funciones/funciones_mrp.R",
+       encoding = "UTF-8")
 # Loading data ------------------------------------------------------------
 ipm_censo <- readRDS("Frecuentista_mpio/COL/data/censo_ipm2.rds")
 ipm_eduacion <- readRDS("Frecuentista_mpio/COL/data/ipm_educacion.rds") 
@@ -79,7 +80,7 @@ ShapeSAE <-
   read_sf("Frecuentista_mpio/COL/ShapeDeptoCOL/dv_Municipio.shp") %>%
   rename(mpio = COD_DANE,
          nombre = NOM_MUNICI)
-ShapeSAE %<>% filter(NOM_DEPART == "VALLE DEL CAUCA")
+ ShapeSAE %<>% filter(NOM_DEPART == "VALLE DEL CAUCA")
 ###############################################################################
 # Colombia
 ipm_censo %<>% gather(key = "Dimension", value = "Value", -mpio)
@@ -93,60 +94,216 @@ labels <- c(
 "ipm_Hacinamiento"           = "Overcrowding"        ,
 "ipm_educacion_estimado_MC"  = "Unfinished education",
 "ipm_empleo_estimado_MC"     = "Employment and social protection",
-"ipm_estimado_MC"            = "MPI")
+"ipm_estimado_MC"            = "Incidence of multidimensional poverty")
 
 ipm_censo %<>% mutate(Dimension2 = dplyr::recode(Dimension , !!!labels) )
 
-ipm_censo_temp <- ipm_censo %>% 
-  filter(!Dimension %in% c("ipm_estimado_MC",
-                           "ipm_empleo_estimado_MC",
-                           "ipm_educacion_estimado_MC"))
+ipm_censo_temp <- ipm_censo 
 
 tmap_options(check.and.fix = TRUE)
-P1_maps <- tm_shape(ShapeSAE %>%
-                           left_join(ipm_censo_temp,  by = "mpio") %>% 
-                      filter(!is.na(Dimension2)))
-brks_ipm <- c(0,.2, .4,.6,.8, 1)
-Mapa_ing <-
-  P1_maps + tm_polygons(
-    "Value",
-    breaks = brks_ipm,
-    title = "Value",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) + tm_layout( #legend.outside.position =  "bottom",
-                 #legend.outside.size = -0.1,
-                  panel.label.size = 6,
-                 legend.only = FALSE,
-                 legend.text.size = 9,
-                 legend.title.size = 9, 
-                 ) +
-  tm_facets(by = "Dimension2")
-Mapa_ing
-    
+
+brks_ipm <- c(0, .2, .4, .6, .8, 1) 
+temp_dinms <- ipm_censo_temp %>% split(.$Dimension2) %>% 
+  map(~ShapeSAE %>%
+        left_join(.x,  by = "mpio") %>%
+        filter(!is.na(Dimension2)) %>% tm_shape())
+
+Mapa_ing<- list()
+ii <- "Unfinished education"
+for(ii in names(temp_dinms)) {
+  Mapa_ing[[ii]] <-  temp_dinms[[ii]] +
+    tm_polygons(
+      "Value",
+      breaks = brks_ipm,
+      title = "",
+      palette = grey.colors(5,rev = TRUE),
+      colorNA = "white",
+      
+    ) +
+    tm_layout(
+      legend.show = TRUE,
+      # Oculta la leyenda
+      main.title = ii,
+      main.title.position = c("center", "top"),
+      main.title.fontfamily = "Arial",
+      main.title.size = 1,  # Tamaño del texto del título
+      main.title.fontface = "bold",  # Aplicar negrita al título
+      legend.text.size = 1,  # Tamaño del texto de la leyenda
+      legend.title.fontfamily = "Arial",  # Cambiar el tipo de letra de la leyenda
+      legend.title.fontface = "bold",  # Aplicar negrita a la leyenda
+      legend.text.fontface = "bold",
+      legend.text.fontfamily = "Arial",
+      legend.position = c(-0,0.65)
+    ) 
+  tmap_save(
+    Mapa_ing[[ii]],
+    paste0("RespuestaCorreo/Output/",ii,".jpeg"),
+    width = 2000,
+    height = 1500,
+    asp = 0
+  )
+  
+  tmap_save(
+    Mapa_ing[[ii]],
+    paste0("RespuestaCorreo/Output/",ii,".png"),
+    width = 2000,
+    height = 1500,
+    asp = 0
+  )
+  
+  # tmap_save(
+  #   Mapa_ing[[ii]],
+  #   paste0("RespuestaCorreo/Output/",ii,".png"),
+  #   width = 2500,
+  #   height = 1500,
+  #   asp = 0
+  # )
+  
+  }
+
+sel_dims <- c(
+"Employment and social protection",
+"Lack of drinking water",          
+"Lack of electricity",             
+"Lack of internet service",        
+"Lack of sanitation",
+"Overcrowding"
+)
+x11()  
+paso <- tmap_arrange(Mapa_ing[sel_dims],nrow = 2, asp = NA) 
+
 tmap_save(
-  Mapa_ing,
-  "RespuestaCorreo/Output/6a.jpeg",
-  width = 6920*3,
-  height = 4080*3,
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","Valle del Cauca",".jpeg"),
+  width = 3000,
+  height = 2500,
   asp = 0
 )
 
 tmap_save(
-  Mapa_ing,
-  "RespuestaCorreo/Output/6a.pdf",
-  width = 6920*3,
-  height = 4080*3,
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","Valle del Cauca",".png"),
+  width = 3000,
+  height = 2500,
+  asp = 0
+)
+
+
+sel_dims2 <- c("Unfinished education",
+     "Employment and social protection", 
+     "Incidence of multidimensional poverty")
+x11()  
+paso <- tmap_arrange(Mapa_ing[sel_dims2],nrow = 2, asp = NA) 
+
+tmap_save(
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","Valle del Cauca_2",".png"),
+  width = 3000,
+  height = 2500,
   asp = 0
 )
 
 tmap_save(
-  Mapa_ing,
-  "RespuestaCorreo/Output/6a.png",
-  width = 6920*3,
-  height = 4080*3,
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","Valle del Cauca_2",".jpeg"),
+  width = 3000,
+  height = 2500,
   asp = 0
 )
+
+
+#####################################################################
+
+ShapeSAE <-
+  read_sf("Frecuentista_mpio/COL/ShapeDeptoCOL/dv_Municipio.shp") %>%
+  rename(mpio = COD_DANE,
+         nombre = NOM_MUNICI)
+
+###############################################################################
+# Colombia
+temp_dinms <- ipm_censo_temp %>% split(.$Dimension2) %>% 
+  map(~ShapeSAE %>%
+        left_join(.x,  by = "mpio") %>%
+        filter(!is.na(Dimension2)) %>% tm_shape())
+
+Mapa_ing<- list()
+ii <- "Unfinished education"
+for(ii in names(temp_dinms)) {
+  Mapa_ing[[ii]] <-  temp_dinms[[ii]] +
+    tm_polygons(
+      "Value",
+      breaks = brks_ipm,
+      title = "",
+      palette = grey.colors(5,rev = TRUE),
+      colorNA = "white",
+      
+    ) +
+    tm_layout(
+      legend.show = TRUE,
+      # Oculta la leyenda
+      main.title = ii,
+      main.title.position = c("center", "top"),
+      main.title.fontfamily = "Arial",
+      main.title.size = 1,  # Tamaño del texto del título
+      main.title.fontface = "bold",  # Aplicar negrita al título
+      legend.text.size = 1,  # Tamaño del texto de la leyenda
+      legend.title.fontfamily = "Arial",  # Cambiar el tipo de letra de la leyenda
+      legend.title.fontface = "bold",  # Aplicar negrita a la leyenda
+      legend.text.fontface = "bold",
+      legend.text.fontfamily = "Arial",
+      legend.position = c(-0,0.80)
+    ) 
+  tmap_save(
+    Mapa_ing[[ii]],
+    paste0("RespuestaCorreo/Output/",ii,"_COL.jpeg"),
+    width = 1500,
+    height = 2000,
+    asp = 0
+  )
+  
+  tmap_save(
+    Mapa_ing[[ii]],
+    paste0("RespuestaCorreo/Output/",ii,"_COL.png"),
+    width = 1500,
+    height = 2000,
+    asp = 0
+  )
+  
+  # tmap_save(
+  #   Mapa_ing[[ii]],
+  #   paste0("RespuestaCorreo/Output/",ii,".png"),
+  #   width = 2500,
+  #   height = 1500,
+  #   asp = 0
+  # )
+  
+}
+
+
+x11()  
+paso <- tmap_arrange(Mapa_ing[sel_dims],nrow = 2, asp = NA) 
+
+tmap_save(
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","COL",".png"),
+  width = 2500,
+  height = 3000,
+  asp = 0
+)
+
+x11()  
+paso <- tmap_arrange(Mapa_ing[sel_dims2],nrow = 2, asp = NA) 
+
+tmap_save(
+  paso,
+  paste0("RespuestaCorreo/Output/Mosaico_","Valle del Cauca_2",".png"),
+  width = 3000,
+  height = 2500,
+  asp = 0
+)
+
+
+
 
 
 # 6b. Una figura conteniendo dos mapas SAE de COL a nivel municipal de las dos dimensiones que se predijeron con una sola escala.
@@ -258,28 +415,39 @@ censo_CV_temp <- censo_CV %>% select(mpio, IPM_cv) %>% rename( "MPI (CV)" = IPM_
 P1_maps <- tm_shape(ShapeSAE %>%
                       left_join(censo_CV_temp,  by = "mpio") %>% 
                       filter(!is.na(`MPI (CV)`)))
+
+brks_ipm <- c(0, 5,10,15,20) 
 Mapa_ing <-
   P1_maps + tm_polygons(
     "MPI (CV)",
-   breaks = c(0, 1,1.5, 2,3,5,15),
-    title = "Value",
-    palette = "BuGn",
-    colorNA = "white"
-  ) + tm_layout( #legend.outside.position =  "bottom",
-    #legend.outside.size = -0.1,
-    panel.label.size = 6,
-    legend.only = FALSE,
-    legend.text.size = 9,
-    legend.title.size = 9, 
-  )
-
+    breaks = brks_ipm,
+    title = "CV",
+    palette = grey.colors(4,rev = TRUE),
+    colorNA = "white",
+    
+  ) +
+  tm_layout(
+    legend.show = TRUE,
+    # Oculta la leyenda
+    main.title = "",
+    main.title.position = c("center", "top"),
+    main.title.fontfamily = "Arial",
+    main.title.size = 1,  # Tamaño del texto del título
+    main.title.fontface = "bold",  # Aplicar negrita al título
+    legend.text.size = 1,  # Tamaño del texto de la leyenda
+    legend.title.fontfamily = "Arial",  # Cambiar el tipo de letra de la leyenda
+    legend.title.fontface = "bold",  # Aplicar negrita a la leyenda
+    legend.text.fontface = "bold",
+    legend.text.fontfamily = "Arial",
+    legend.position = c(-0,0.85)
+  ) 
 Mapa_ing
 
 tmap_save(
   Mapa_ing,
-  "RespuestaCorreo/Output/6d.jpeg",
-  width = 6920*3,
-  height = 4080*3,
+  "RespuestaCorreo/Output/Figure5.jpeg",
+  width = 3000,
+  height = 2500,
   asp = 0
 )
 
