@@ -71,6 +71,7 @@ $$
 El IPM combina los componentes $H$ y $A$. 
 
 ### Ejemplo  
+
 Para ilustrar el cálculo del Índice de Pobreza Multidimensional (IPM), empleamos el conjunto de datos simulados a continuación.
 
 Consideremos un escenario con diez observaciones ($N = 10$), a las cuales se les han asignado ocho dimensiones distintas ($K = 8$). Estas dimensiones están ponderadas de acuerdo con el vector $w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)$.
