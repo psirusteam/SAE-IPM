@@ -549,70 +549,61 @@ ipm_dam_sexo <- estime_IPM(poststrat = censo_ipm,
 tba(ipm_dam_sexo, "Estimaciones por departamento y sexo")
 ```
 
-# Mapa del IPM por municipio de Colombia
+## Estimaciones por dimension del IPM 
+Dado que el Índice de Pobreza Multidimensional (IPM) está compuesto por diversas dimensiones, resulta fundamental analizar cada una de estas dimensiones de manera individual. Esto permite comprender la naturaleza compleja y multifacética de la pobreza, lo cual a su vez posibilita diseñar estrategias de reducción efectivas. Esta aproximación garantiza una toma de decisiones fundamentada, la distribución eficiente de recursos y un impacto más profundo en la mejora de las condiciones de vida de las personas vulnerables. En este contexto, los "hard estimates" previamente obtenidos para cada dimensión resultan esenciales para obtener las estimaciones correspondientes a cada una de ellas.
 
-Dado que los municipios son otro nivel de desagregción, es posible realizar un mapa municipal para $H$, $A$ e $IPM$. Para realizar el proceso, previamente se guardaron las estimaciones necesarias en un archivo _.rds_ el cual usaremos a continuación:
-
-```{r, echo=TRUE, eval=FALSE}
-library(sf)
-library(tmap)
-estimado_ipm <- readRDS(file = "Modelo_bayes_HxA/COL/Data/estimado_ipm.rds")
-ShapeSAE <- read_sf("Modelo_bayes_HxA/COL/Shape/COL_dam2.shp")
-
-brks_H <- c(0, 0.2 ,0.4, .6, 0.8,  1)
-brks_ipm <- c(0,0.01 ,0.04, .07, 0.1,  0.15, 0.25)
-brks_A <- c(0,0.04 ,0.05, .06,  0.07,.1)
-
-maps3 <- tm_shape(ShapeSAE %>%
-                    left_join(estimado_ipm$dam2,  by = "dam2"))
-
+El proceso de cálculo se basa en una media ponderada y se aplica a la dimensión de **Hacinamiento**, siguiendo una lógica similar para las demás dimensiones del IPM.
+```{r, echo=FALSE}
+epred_mat_hacinamiento_dummy <- readRDS("Modelo_bayes_HxA/COL/Data/epred_mat_hacinamiento_dummy.rds")
 ```
 
-Para crear los mapas se usa la siguiente sintaxis 
 
-```{r, echo=TRUE, eval=FALSE}
-
-Mapa_H <-
-  maps3 + tm_polygons(
-    "H",
-    breaks = brks_H,
-    title = "H",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-
-Mapa_A <-
-  maps3 + tm_polygons(
-    "A",
-    breaks = brks_A,
-    title = "A",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-Mapa_ipm <-
-  maps3 + tm_polygons(
-    "ipm",
-    breaks = brks_ipm,
-    title = "IPM",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-
-
-Mapas <- tmap_arrange(Mapa_H, Mapa_A, Mapa_ipm)
-
-tmap_save(
-  Mapas,
-  "Modelo_bayes_HxA/COL/Output/COL_IPM.jpeg",
-  width = 6920,
-  height = 4080,
-  asp = 0
+```{r}
+n_filtered <- censo_ipm$n
+epred_mat_filtered <- epred_mat_hacinamiento_dummy
+mrp_estimates <- epred_mat_filtered %*% n_filtered / sum(n_filtered)
+datos <- data.frame(
+  estimate = mean(mrp_estimates),
+  estimate_se = sd(mrp_estimates)
 )
+```
+
+```{r, echo=FALSE}
+tba(datos, "Estimaciones nacional para  Hacinamiento")
+```
+
+Con el objetivo de agilizar el proceso de calculo se define crea la función **agregado_dim_ipm** que hace los cálculos. La forma de uso es la siguiente. 
+
+```{r,}
+source("Modelo_bayes_HxA/0funciones/agregado_dim_ipm.r")
+datos_dam_haci <- agregado_dim_ipm(poststrat = censo_ipm,
+           epredmat = epred_mat_hacinamiento_dummy,
+           byMap = "dam")
 
 ```
 
 
-```{r echo=FALSE,out.height="400%",fig.align='center'}
-knitr::include_graphics("Modelo_bayes_HxA/COL/Output/COL_IPM.jpeg")
+```{r, echo=FALSE}
+tba(datos_dam_haci, "Estimaciones por departamento para Hacinamiento")
 ```
+
+El resultado por municipio y para todas las dimensiones se muestra en la siguiente tabla
+```{r, echo=FALSE}
+temp_estimate_mpio <- readRDS("Modelo_bayes_HxA/COL/data/temp_estimate_mpio.rds")
+
+temp <- spread(temp_estimate_mpio %>% select(-estimate_se),
+       key = "Indicador",value = "estimate") %>% 
+  head(10)
+tba(temp, cap = "Estimacion puntual por municipio y dimension")
+```
+
+
+```{r, echo=FALSE}
+temp <- spread(temp_estimate_mpio %>% select(-estimate),
+       key = "Indicador",value = "estimate_se") %>% 
+  rename_if(is.numeric, .funs = function(x)paste0(x,"_se")) %>% head(10)
+tba(temp, cap = "Error de estimacion por municipio y dimension")
+
+```
+
 
