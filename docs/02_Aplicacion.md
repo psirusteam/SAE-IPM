@@ -2195,67 +2195,487 @@ ipm_dam_sexo <- estime_IPM(poststrat = censo_ipm,
 </tbody>
 </table>
 
-# Mapa del IPM por municipio de Colombia
+## Estimaciones por dimension del IPM 
+Dado que el Índice de Pobreza Multidimensional (IPM) está compuesto por diversas dimensiones, resulta fundamental analizar cada una de estas dimensiones de manera individual. Esto permite comprender la naturaleza compleja y multifacética de la pobreza, lo cual a su vez posibilita diseñar estrategias de reducción efectivas. Esta aproximación garantiza una toma de decisiones fundamentada, la distribución eficiente de recursos y un impacto más profundo en la mejora de las condiciones de vida de las personas vulnerables. En este contexto, los "hard estimates" previamente obtenidos para cada dimensión resultan esenciales para obtener las estimaciones correspondientes a cada una de ellas.
 
-Dado que los municipios son otro nivel de desagregción, es posible realizar un mapa municipal para $H$, $A$ e $IPM$. Para realizar el proceso, previamente se guardaron las estimaciones necesarias en un archivo _.rds_ el cual usaremos a continuación:
+El proceso de cálculo se basa en una media ponderada y se aplica a la dimensión de **Hacinamiento**, siguiendo una lógica similar para las demás dimensiones del IPM.
 
 
-```r
-library(sf)
-library(tmap)
-estimado_ipm <- readRDS(file = "Modelo_bayes_HxA/COL/Data/estimado_ipm.rds")
-ShapeSAE <- read_sf("Modelo_bayes_HxA/COL/Shape/COL_dam2.shp")
-
-brks_H <- c(0, 0.2 ,0.4, .6, 0.8,  1)
-brks_ipm <- c(0,0.01 ,0.04, .07, 0.1,  0.15, 0.25)
-brks_A <- c(0,0.04 ,0.05, .06,  0.07,.1)
-
-maps3 <- tm_shape(ShapeSAE %>%
-                    left_join(estimado_ipm$dam2,  by = "dam2"))
-```
-
-Para crear los mapas se usa la siguiente sintaxis 
 
 
 ```r
-Mapa_H <-
-  maps3 + tm_polygons(
-    "H",
-    breaks = brks_H,
-    title = "H",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-
-Mapa_A <-
-  maps3 + tm_polygons(
-    "A",
-    breaks = brks_A,
-    title = "A",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-Mapa_ipm <-
-  maps3 + tm_polygons(
-    "ipm",
-    breaks = brks_ipm,
-    title = "IPM",
-    palette = "YlOrRd",
-    colorNA = "white"
-  ) 
-
-
-Mapas <- tmap_arrange(Mapa_H, Mapa_A, Mapa_ipm)
-
-tmap_save(
-  Mapas,
-  "Modelo_bayes_HxA/COL/Output/COL_IPM.jpeg",
-  width = 6920,
-  height = 4080,
-  asp = 0
+n_filtered <- censo_ipm$n
+epred_mat_filtered <- epred_mat_hacinamiento_dummy
+mrp_estimates <- epred_mat_filtered %*% n_filtered / sum(n_filtered)
+datos <- data.frame(
+  estimate = mean(mrp_estimates),
+  estimate_se = sd(mrp_estimates)
 )
 ```
 
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>(\#tab:unnamed-chunk-41)Estimaciones nacional para  Hacinamiento</caption>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> estimate_se </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 0.213 </td>
+   <td style="text-align:right;"> 0.0187 </td>
+  </tr>
+</tbody>
+</table>
 
-<img src="Modelo_bayes_HxA/COL/Output/COL_IPM.jpeg" width="3460" height="400%" style="display: block; margin: auto;" />
+Con el objetivo de agilizar el proceso de calculo se define crea la función **agregado_dim_ipm** que hace los cálculos. La forma de uso es la siguiente. 
+
+
+```r
+source("Modelo_bayes_HxA/0funciones/agregado_dim_ipm.r")
+datos_dam_haci <- agregado_dim_ipm(poststrat = censo_ipm,
+           epredmat = epred_mat_hacinamiento_dummy,
+           byMap = "dam")
+```
+
+
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>(\#tab:unnamed-chunk-43)Estimaciones por departamento para Hacinamiento</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> dam </th>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> estimate_se </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 05 </td>
+   <td style="text-align:right;"> 0.1459 </td>
+   <td style="text-align:right;"> 0.0399 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 08 </td>
+   <td style="text-align:right;"> 0.3660 </td>
+   <td style="text-align:right;"> 0.0671 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 11 </td>
+   <td style="text-align:right;"> 0.1204 </td>
+   <td style="text-align:right;"> 0.0792 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 13 </td>
+   <td style="text-align:right;"> 0.3635 </td>
+   <td style="text-align:right;"> 0.0513 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 15 </td>
+   <td style="text-align:right;"> 0.1550 </td>
+   <td style="text-align:right;"> 0.0226 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 17 </td>
+   <td style="text-align:right;"> 0.1199 </td>
+   <td style="text-align:right;"> 0.0300 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 18 </td>
+   <td style="text-align:right;"> 0.2599 </td>
+   <td style="text-align:right;"> 0.0431 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 19 </td>
+   <td style="text-align:right;"> 0.2437 </td>
+   <td style="text-align:right;"> 0.0239 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 20 </td>
+   <td style="text-align:right;"> 0.4038 </td>
+   <td style="text-align:right;"> 0.0456 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 23 </td>
+   <td style="text-align:right;"> 0.4052 </td>
+   <td style="text-align:right;"> 0.0297 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 25 </td>
+   <td style="text-align:right;"> 0.2021 </td>
+   <td style="text-align:right;"> 0.0324 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 27 </td>
+   <td style="text-align:right;"> 0.2264 </td>
+   <td style="text-align:right;"> 0.0304 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 41 </td>
+   <td style="text-align:right;"> 0.1828 </td>
+   <td style="text-align:right;"> 0.0353 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 44 </td>
+   <td style="text-align:right;"> 0.5007 </td>
+   <td style="text-align:right;"> 0.0293 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 47 </td>
+   <td style="text-align:right;"> 0.4352 </td>
+   <td style="text-align:right;"> 0.0447 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 50 </td>
+   <td style="text-align:right;"> 0.1698 </td>
+   <td style="text-align:right;"> 0.0456 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 52 </td>
+   <td style="text-align:right;"> 0.2445 </td>
+   <td style="text-align:right;"> 0.0260 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 54 </td>
+   <td style="text-align:right;"> 0.2869 </td>
+   <td style="text-align:right;"> 0.0475 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 63 </td>
+   <td style="text-align:right;"> 0.1112 </td>
+   <td style="text-align:right;"> 0.0380 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 66 </td>
+   <td style="text-align:right;"> 0.1094 </td>
+   <td style="text-align:right;"> 0.0307 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 68 </td>
+   <td style="text-align:right;"> 0.1795 </td>
+   <td style="text-align:right;"> 0.0290 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 70 </td>
+   <td style="text-align:right;"> 0.3869 </td>
+   <td style="text-align:right;"> 0.0378 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 73 </td>
+   <td style="text-align:right;"> 0.1977 </td>
+   <td style="text-align:right;"> 0.0399 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 76 </td>
+   <td style="text-align:right;"> 0.1183 </td>
+   <td style="text-align:right;"> 0.0296 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:right;"> 0.2794 </td>
+   <td style="text-align:right;"> 0.1271 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 85 </td>
+   <td style="text-align:right;"> 0.2657 </td>
+   <td style="text-align:right;"> 0.1240 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 86 </td>
+   <td style="text-align:right;"> 0.2891 </td>
+   <td style="text-align:right;"> 0.1251 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 88 </td>
+   <td style="text-align:right;"> 0.2337 </td>
+   <td style="text-align:right;"> 0.1115 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 91 </td>
+   <td style="text-align:right;"> 0.3269 </td>
+   <td style="text-align:right;"> 0.1379 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 94 </td>
+   <td style="text-align:right;"> 0.3595 </td>
+   <td style="text-align:right;"> 0.1331 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 95 </td>
+   <td style="text-align:right;"> 0.2962 </td>
+   <td style="text-align:right;"> 0.1332 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 97 </td>
+   <td style="text-align:right;"> 0.3603 </td>
+   <td style="text-align:right;"> 0.1465 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 99 </td>
+   <td style="text-align:right;"> 0.3506 </td>
+   <td style="text-align:right;"> 0.1457 </td>
+  </tr>
+</tbody>
+</table>
+
+El resultado por municipio y para todas las dimensiones se muestra en la siguiente tabla
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>(\#tab:unnamed-chunk-44)Estimacion puntual por municipio y dimension</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> dam2 </th>
+   <th style="text-align:right;"> Agua </th>
+   <th style="text-align:right;"> Educacion </th>
+   <th style="text-align:right;"> Empleo </th>
+   <th style="text-align:right;"> Energia </th>
+   <th style="text-align:right;"> Hacinamienot </th>
+   <th style="text-align:right;"> Internet </th>
+   <th style="text-align:right;"> Material </th>
+   <th style="text-align:right;"> Saneamiento </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 05001 </td>
+   <td style="text-align:right;"> 0.0111 </td>
+   <td style="text-align:right;"> 0.6114 </td>
+   <td style="text-align:right;"> 0.4378 </td>
+   <td style="text-align:right;"> 0.2092 </td>
+   <td style="text-align:right;"> 0.1492 </td>
+   <td style="text-align:right;"> 0.3530 </td>
+   <td style="text-align:right;"> 0.0018 </td>
+   <td style="text-align:right;"> 0.0002 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05002 </td>
+   <td style="text-align:right;"> 0.0878 </td>
+   <td style="text-align:right;"> 0.7534 </td>
+   <td style="text-align:right;"> 0.6730 </td>
+   <td style="text-align:right;"> 0.8434 </td>
+   <td style="text-align:right;"> 0.1874 </td>
+   <td style="text-align:right;"> 0.8642 </td>
+   <td style="text-align:right;"> 0.0220 </td>
+   <td style="text-align:right;"> 0.0006 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05004 </td>
+   <td style="text-align:right;"> 0.1545 </td>
+   <td style="text-align:right;"> 0.6651 </td>
+   <td style="text-align:right;"> 0.6529 </td>
+   <td style="text-align:right;"> 0.6855 </td>
+   <td style="text-align:right;"> 0.1672 </td>
+   <td style="text-align:right;"> 0.7496 </td>
+   <td style="text-align:right;"> 0.0348 </td>
+   <td style="text-align:right;"> 0.0088 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05021 </td>
+   <td style="text-align:right;"> 0.1118 </td>
+   <td style="text-align:right;"> 0.6935 </td>
+   <td style="text-align:right;"> 0.6364 </td>
+   <td style="text-align:right;"> 0.5681 </td>
+   <td style="text-align:right;"> 0.1645 </td>
+   <td style="text-align:right;"> 0.6947 </td>
+   <td style="text-align:right;"> 0.0257 </td>
+   <td style="text-align:right;"> 0.0084 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05030 </td>
+   <td style="text-align:right;"> 0.1277 </td>
+   <td style="text-align:right;"> 0.6637 </td>
+   <td style="text-align:right;"> 0.6509 </td>
+   <td style="text-align:right;"> 0.6012 </td>
+   <td style="text-align:right;"> 0.1591 </td>
+   <td style="text-align:right;"> 0.6944 </td>
+   <td style="text-align:right;"> 0.0252 </td>
+   <td style="text-align:right;"> 0.0090 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05031 </td>
+   <td style="text-align:right;"> 0.0044 </td>
+   <td style="text-align:right;"> 0.7257 </td>
+   <td style="text-align:right;"> 0.7231 </td>
+   <td style="text-align:right;"> 0.6380 </td>
+   <td style="text-align:right;"> 0.1800 </td>
+   <td style="text-align:right;"> 0.8681 </td>
+   <td style="text-align:right;"> 0.0208 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05034 </td>
+   <td style="text-align:right;"> 0.2021 </td>
+   <td style="text-align:right;"> 0.7032 </td>
+   <td style="text-align:right;"> 0.7013 </td>
+   <td style="text-align:right;"> 0.7456 </td>
+   <td style="text-align:right;"> 0.1279 </td>
+   <td style="text-align:right;"> 0.7300 </td>
+   <td style="text-align:right;"> 0.0051 </td>
+   <td style="text-align:right;"> 0.0148 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05036 </td>
+   <td style="text-align:right;"> 0.1418 </td>
+   <td style="text-align:right;"> 0.7144 </td>
+   <td style="text-align:right;"> 0.6728 </td>
+   <td style="text-align:right;"> 0.6601 </td>
+   <td style="text-align:right;"> 0.1688 </td>
+   <td style="text-align:right;"> 0.7502 </td>
+   <td style="text-align:right;"> 0.0350 </td>
+   <td style="text-align:right;"> 0.0110 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05038 </td>
+   <td style="text-align:right;"> 0.1785 </td>
+   <td style="text-align:right;"> 0.7516 </td>
+   <td style="text-align:right;"> 0.7048 </td>
+   <td style="text-align:right;"> 0.7464 </td>
+   <td style="text-align:right;"> 0.1723 </td>
+   <td style="text-align:right;"> 0.7921 </td>
+   <td style="text-align:right;"> 0.0395 </td>
+   <td style="text-align:right;"> 0.0125 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05040 </td>
+   <td style="text-align:right;"> 0.1297 </td>
+   <td style="text-align:right;"> 0.7391 </td>
+   <td style="text-align:right;"> 0.6809 </td>
+   <td style="text-align:right;"> 0.6273 </td>
+   <td style="text-align:right;"> 0.1910 </td>
+   <td style="text-align:right;"> 0.7343 </td>
+   <td style="text-align:right;"> 0.0316 </td>
+   <td style="text-align:right;"> 0.0084 </td>
+  </tr>
+</tbody>
+</table>
+
+
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>(\#tab:unnamed-chunk-45)Error de estimacion por municipio y dimension</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> dam2 </th>
+   <th style="text-align:right;"> Agua_se </th>
+   <th style="text-align:right;"> Educacion_se </th>
+   <th style="text-align:right;"> Empleo_se </th>
+   <th style="text-align:right;"> Energia_se </th>
+   <th style="text-align:right;"> Hacinamienot_se </th>
+   <th style="text-align:right;"> Internet_se </th>
+   <th style="text-align:right;"> Material_se </th>
+   <th style="text-align:right;"> Saneamiento_se </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 05001 </td>
+   <td style="text-align:right;"> 0.0214 </td>
+   <td style="text-align:right;"> 0.0855 </td>
+   <td style="text-align:right;"> 0.1035 </td>
+   <td style="text-align:right;"> 0.0858 </td>
+   <td style="text-align:right;"> 0.0906 </td>
+   <td style="text-align:right;"> 0.1019 </td>
+   <td style="text-align:right;"> 0.0050 </td>
+   <td style="text-align:right;"> 0.0015 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05002 </td>
+   <td style="text-align:right;"> 0.0651 </td>
+   <td style="text-align:right;"> 0.0666 </td>
+   <td style="text-align:right;"> 0.0802 </td>
+   <td style="text-align:right;"> 0.0579 </td>
+   <td style="text-align:right;"> 0.0851 </td>
+   <td style="text-align:right;"> 0.0570 </td>
+   <td style="text-align:right;"> 0.0333 </td>
+   <td style="text-align:right;"> 0.0044 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05004 </td>
+   <td style="text-align:right;"> 0.1985 </td>
+   <td style="text-align:right;"> 0.0731 </td>
+   <td style="text-align:right;"> 0.1011 </td>
+   <td style="text-align:right;"> 0.2171 </td>
+   <td style="text-align:right;"> 0.0880 </td>
+   <td style="text-align:right;"> 0.1489 </td>
+   <td style="text-align:right;"> 0.0564 </td>
+   <td style="text-align:right;"> 0.0296 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05021 </td>
+   <td style="text-align:right;"> 0.1391 </td>
+   <td style="text-align:right;"> 0.0774 </td>
+   <td style="text-align:right;"> 0.1169 </td>
+   <td style="text-align:right;"> 0.2357 </td>
+   <td style="text-align:right;"> 0.0887 </td>
+   <td style="text-align:right;"> 0.1695 </td>
+   <td style="text-align:right;"> 0.0403 </td>
+   <td style="text-align:right;"> 0.0305 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05030 </td>
+   <td style="text-align:right;"> 0.1605 </td>
+   <td style="text-align:right;"> 0.0686 </td>
+   <td style="text-align:right;"> 0.1013 </td>
+   <td style="text-align:right;"> 0.2299 </td>
+   <td style="text-align:right;"> 0.0761 </td>
+   <td style="text-align:right;"> 0.1632 </td>
+   <td style="text-align:right;"> 0.0403 </td>
+   <td style="text-align:right;"> 0.0318 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05031 </td>
+   <td style="text-align:right;"> 0.0113 </td>
+   <td style="text-align:right;"> 0.0658 </td>
+   <td style="text-align:right;"> 0.0848 </td>
+   <td style="text-align:right;"> 0.0817 </td>
+   <td style="text-align:right;"> 0.0712 </td>
+   <td style="text-align:right;"> 0.0540 </td>
+   <td style="text-align:right;"> 0.0279 </td>
+   <td style="text-align:right;"> 0.0009 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05034 </td>
+   <td style="text-align:right;"> 0.0704 </td>
+   <td style="text-align:right;"> 0.0657 </td>
+   <td style="text-align:right;"> 0.0782 </td>
+   <td style="text-align:right;"> 0.0655 </td>
+   <td style="text-align:right;"> 0.0629 </td>
+   <td style="text-align:right;"> 0.0688 </td>
+   <td style="text-align:right;"> 0.0134 </td>
+   <td style="text-align:right;"> 0.0258 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05036 </td>
+   <td style="text-align:right;"> 0.1821 </td>
+   <td style="text-align:right;"> 0.0632 </td>
+   <td style="text-align:right;"> 0.1005 </td>
+   <td style="text-align:right;"> 0.2244 </td>
+   <td style="text-align:right;"> 0.0826 </td>
+   <td style="text-align:right;"> 0.1467 </td>
+   <td style="text-align:right;"> 0.0459 </td>
+   <td style="text-align:right;"> 0.0383 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05038 </td>
+   <td style="text-align:right;"> 0.2192 </td>
+   <td style="text-align:right;"> 0.0764 </td>
+   <td style="text-align:right;"> 0.1244 </td>
+   <td style="text-align:right;"> 0.2052 </td>
+   <td style="text-align:right;"> 0.0870 </td>
+   <td style="text-align:right;"> 0.1464 </td>
+   <td style="text-align:right;"> 0.0598 </td>
+   <td style="text-align:right;"> 0.0484 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 05040 </td>
+   <td style="text-align:right;"> 0.1553 </td>
+   <td style="text-align:right;"> 0.0732 </td>
+   <td style="text-align:right;"> 0.0994 </td>
+   <td style="text-align:right;"> 0.2243 </td>
+   <td style="text-align:right;"> 0.0812 </td>
+   <td style="text-align:right;"> 0.1558 </td>
+   <td style="text-align:right;"> 0.0408 </td>
+   <td style="text-align:right;"> 0.0278 </td>
+  </tr>
+</tbody>
+</table>
+
 

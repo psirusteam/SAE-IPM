@@ -12,6 +12,10 @@ tab:unnamed-chunk-32
 tab:unnamed-chunk-34
 tab:unnamed-chunk-36
 tab:unnamed-chunk-38
+tab:unnamed-chunk-41
+tab:unnamed-chunk-43
+tab:unnamed-chunk-44
+tab:unnamed-chunk-45
 introducción
 índice-de-pobreza-multidimensional
 ejemplo
@@ -27,4 +31,6 @@ definiendo-los-hard-estimates
 calculando-q_dil-y-ileft-q_dil-z-right
 estimación-de-h-a-e-ipm
 estimaciones-desagregadas-del-ipm
+estimaciones-por-dimension-del-ipm
 mapa-del-ipm-por-municipio-de-colombia
+mapa-municipal-por-dimensión-del-ipm

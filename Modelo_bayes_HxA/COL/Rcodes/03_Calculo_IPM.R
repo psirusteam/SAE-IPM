@@ -50,6 +50,8 @@ chain_q  <- 0.1 * (
   0.2 * (epred_mat_educacion_dummy +
            epred_mat_empleo_dummy)
 
+saveRDS(chain_q, "Modelo_bayes_HxA/COL/Data/chain_q.rds")
+
 chain_Indicadora <- chain_q
 
 chain_Indicadora[chain_Indicadora <= 0.4] <- 0
@@ -161,5 +163,29 @@ for(ii in 1:length(hojas)) {
 
 saveWorkbook(wb, file = "Modelo_bayes_HxA/COL/Output/estimacion_ipm.xlsx",
              overwrite = TRUE)
+
+
+############ Estimaciones por dimension del IPM #####################
+
+temp_epred_mat <- list(
+  Material = epred_mat_material_dummy,
+  Hacinamienot =    epred_mat_hacinamiento_dummy ,
+  Agua =  epred_mat_agua_dummy, 
+  Saneamiento =  epred_mat_saneamiento_dummy, 
+  Energia = epred_mat_energia_dummy ,
+  Internet = epred_mat_internet_dummy,
+  Educacion = epred_mat_educacion_dummy , 
+  Empleo =  epred_mat_empleo_dummy)
+
+
+
+temp_estimate_mpio <- map_df(temp_epred_mat,
+                             function(dummy) {
+                               agregado_dim_ipm(poststrat = censo_ipm,
+                                                epredmat = dummy,
+                                                byMap = "dam2") 
+                             }, .id = "Indicador")
+
+saveRDS(temp_estimate_mpio, "Modelo_bayes_HxA/COL/data/temp_estimate_mpio.rds")
 
 
