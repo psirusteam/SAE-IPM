@@ -6,7 +6,7 @@ new_session: yes
 rmd_files: [
   "index.Rmd",
   "01_Metodologia_IPM.qmd",
-  #"02_Aplicacion.qmd"
+  "02_Aplicacion.qmd"
 
 ]
 

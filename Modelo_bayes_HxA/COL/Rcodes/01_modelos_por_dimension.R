@@ -19,7 +19,7 @@ library(furrr)
 ################################################################################
 # Lectura de base de datos
 ################################################################################
-encuesta_ipm <- saveRDS("Modelo_bayes_HxA/COL/Data/encuesta_COL.rds") 
+encuesta_ipm <- readRDS("Modelo_bayes_HxA/COL/Data/encuesta_COL.rds") 
 statelevel_predictors_df <-
   readRDS("Modelo_bayes_HxA/COL/Data/statelevel_predictors_df_dam2.rds") 
 

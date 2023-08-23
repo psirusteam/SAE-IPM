@@ -1,7 +1,7 @@
 --- 
 title: "Metodología bayesiana de estimación desagregada para cualquier IPM"
 author: "Andrés Gutiérrez^[Experto Regional en Estadísticas Sociales - Comisión Económica para América Latina y el Caribe (CEPAL) -  andres.gutierrez@cepal.org], Stalyn Guerrero^[Consultor - Comisión Económica para América Latina y el Caribe (CEPAL), guerrerostalyn@gmail.com]"
-date: "2023-08-22"
+date: "2023-08-23"
 documentclass: book
 # bibliography: [CEPAL.bib]
 biblio-style: apalike
