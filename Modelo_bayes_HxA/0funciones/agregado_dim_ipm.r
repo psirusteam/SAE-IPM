@@ -24,14 +24,7 @@ agregado_dim_ipm <-
      # NA y NS/NR                                                       #
      ############################# NOTA #################################
       ")
-      if(!is.null(ponde_Benchmarking)){
-        cat("
-     ####################### IMPORTANTE #################################
-     # Para todas las tablas con escolaridad la estimación no es exacta #
-     # dado que se omiten los conteos con NA y NS/NR, en caso de ser    #
-     # incluidos la estimación es exacta.                               #
-     ###################### IMPORTANTE ##################################
-     \n")}
+      
     }
     
     ## Estimado los mrp

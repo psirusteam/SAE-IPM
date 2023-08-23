@@ -18,7 +18,7 @@ library(magrittr)
 library(furrr)
 library(openxlsx)
 source("Modelo_bayes_HxA/0funciones/Estimar_ipm.R")
-
+source("Modelo_bayes_HxA/0funciones/agregado_dim_ipm.r")
 ################################################################################
 # Lectura de base de datos
 ################################################################################
@@ -50,7 +50,7 @@ chain_q  <- 0.1 * (
   0.2 * (epred_mat_educacion_dummy +
            epred_mat_empleo_dummy)
 
-saveRDS(chain_q, "Modelo_bayes_HxA/COL/Data/chain_q.rds")
+# saveRDS(chain_q, "Modelo_bayes_HxA/COL/Data/chain_q.rds")
 
 chain_Indicadora <- chain_q
 
@@ -89,6 +89,48 @@ estime_IPM(poststrat = censo_ipm,
            byMap = "dam2", 
            n_dim = 8) %>% data.frame()
 
+###################################################
+## Resultado por dimensiones ######################
+###################################################
+epred_mat_dim <- list(
+  Material = epred_mat_material_dummy,
+  Hacinamienot =    epred_mat_hacinamiento_dummy ,
+  Agua =  epred_mat_agua_dummy, 
+  Saneamiento =  epred_mat_saneamiento_dummy, 
+  Energia = epred_mat_energia_dummy ,
+  Internet = epred_mat_internet_dummy,
+  Educacion = epred_mat_educacion_dummy , 
+  Empleo =  epred_mat_empleo_dummy)
+
+aux_agregado <- function(dat, byx = NULL, censo) {
+  temp_estimate <- map_df(dat,
+                          function(dummy) {
+                            agregado_dim_ipm(poststrat = censo,
+                                             epredmat = dummy,
+                                             byMap = byx)
+                          }, .id = "Indicador")
+  
+  inner_join(
+    spread(
+      temp_estimate %>% select(-estimate_se),
+      key = "Indicador",
+      value = "estimate"
+    ),
+    spread(
+      temp_estimate %>% select(-estimate),
+      key = "Indicador",
+      value = "estimate_se"
+    ) %>%
+      rename_if(
+        is.numeric,
+        .funs = function(x)
+          paste0(x, "_se")
+      )
+  )
+  
+}
+
+#############################################################
 
 by_agrega  <- c("dam", "dam2",  "area",
                 "sexo",  "edad",  "etnia",
@@ -96,25 +138,35 @@ by_agrega  <- c("dam", "dam2",  "area",
 
 estimado_ipm1 <-map(by_agrega, function(xby){
   
-estime_IPM(poststrat = censo_ipm,
+paso_ipm <- estime_IPM(poststrat = censo_ipm,
            chain_q,
            byMap = xby, 
            n_dim = 8) %>% data.frame()
+
+paso_dim <- aux_agregado(epred_mat_dim, xby, censo_ipm) %>% data.frame()
+
+inner_join(paso_dim,paso_ipm)
+
 })
 
 names(estimado_ipm1) <- by_agrega
 
+
 by_agrega2 <- t(combn(by_agrega[-c(1:2)], 2)) %>% cbind("dam")
 
-estimado_ipm2 <-map(1:nrow(by_agrega2), function(ii){
+estimado_ipm2 <- map(1:nrow(by_agrega2), function(ii) {
+  paso_ipm <- estime_IPM(poststrat = censo_ipm,
+                         chain_q,
+                         byMap = by_agrega2[ii, ],
+                         n_dim = 8) %>% data.frame()
   
-  estime_IPM(poststrat = censo_ipm,
-             chain_q,
-             byMap = by_agrega2[ii,], 
-             n_dim = 8) %>% data.frame()
+  paso_dim <-
+    aux_agregado(epred_mat_dim, by_agrega2[ii, ], censo_ipm) %>% data.frame()
+  
+  inner_join(paso_dim, paso_ipm)
 })
 
-names(estimado_ipm2) <- apply(by_agrega2,1,paste0,collapse = "_")
+names(estimado_ipm2) <- apply(by_agrega2, 1, paste0, collapse = "_")
 
 estimado_ipm <- c(estimado_ipm1, estimado_ipm2) 
 saveRDS(estimado_ipm, file = "Modelo_bayes_HxA/COL/Data/estimado_ipm.rds")
@@ -123,7 +175,7 @@ saveRDS(estimado_ipm, file = "Modelo_bayes_HxA/COL/Data/estimado_ipm.rds")
 wb <- createWorkbook()
 hojas <- names(estimado_ipm)
 ## Creando la hoja del índice. 
-addWorksheet(wb, "Índice")
+addWorksheet(wb, "Indice")
 ## Creando la tablas de índice 
 datos <- data.frame(Orden = 1:length(hojas),
                     Titulo = NA)
@@ -131,7 +183,7 @@ datos <- data.frame(Orden = 1:length(hojas),
 writeDataTable(
   wb = wb,
   x = datos,
-  sheet = "Índice",
+  sheet = "Indice",
   rowNames = FALSE,
   tableStyle = "TableStyleLight9"
 )
@@ -148,7 +200,7 @@ for(ii in 1:length(hojas)) {
   ## agregando el nombre de la hoja al índice
   writeFormula(
     wb,
-    "Índice",
+    "Indice",
     startRow = 1 + ii,
     startCol = 2,
     x = makeHyperlinkString(
@@ -163,7 +215,7 @@ for(ii in 1:length(hojas)) {
 
 saveWorkbook(wb, file = "Modelo_bayes_HxA/COL/Output/estimacion_ipm.xlsx",
              overwrite = TRUE)
-
+openxlsx::openXL("Modelo_bayes_HxA/COL/Output/estimacion_ipm.xlsx")
 
 ############ Estimaciones por dimension del IPM #####################
 
