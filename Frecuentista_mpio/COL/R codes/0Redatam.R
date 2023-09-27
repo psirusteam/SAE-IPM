@@ -127,7 +127,8 @@ tabla <-
     OCUPACION2,
     names_from = c("ocupados", "desocupados"),
     values_from = value,
-    names_prefix = c("ocupados")
+    names_prefix = c("ocupados"),
+    values_fill = 0
   )
 
 tasa_desocupacion <- tabla %>%

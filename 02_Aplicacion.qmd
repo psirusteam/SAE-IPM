@@ -31,7 +31,7 @@ Nos centramos en la incidencia de la pobreza multidimensional descrito previamen
 
 El índice requiere información para cada individuo $i = 1, \ldots, N_d$ en los dominios $d = 1, \ldots, D$, donde $N_d$ denota el tamaño de la población del dominio $d$.
 
-La función indicadora $I(\cdot)$ es igual a 1 cuando se cumple la condición $q_{di} > z$. Para este estudio, utilizamos el valor de 0.4 para $z$, es decir, $I(\cdot)$ es igual a 1 cuando $q_{di} > 0.4$. $q_{di}$ es una cantidad ponderada que considera los $K = 8$ indicadores que conforman el índice. El valor de $q_{di}$ el dominio $d$ se calcula como:
+La función indicadora $I(\cdot)$ es igual a 1 cuando se cumple la condición $q_{di} > z$. Para este estudio, utilizamos el valor de 0.4 para $z$, es decir, $I(\cdot)$ es igual a 1 cuando $q_{di} \ge 0.4$. $q_{di}$ es una cantidad ponderada que considera los $K = 8$ indicadores que conforman el índice. El valor de $q_{di}$ el dominio $d$ se calcula como:
   
 $$
   q_{di} = 0.1\sum_{k=1}^{6}y_{di}^{k} +  0.2(y_{di}^{7} + y_{di}^{8})
@@ -446,7 +446,7 @@ saveRDS(epred_mat_saneamiento_dummy, "Modelo_bayes_HxA/COL/Data/epred_mat_saneam
 
 ```
 
-## Calculando $q_{di}^{l}$ y $I\left( q_{di}^{l} > z \right)$ 
+## Calculando $q_{di}^{l}$, $I\left( q_{di}^{l} > z \right)$ y $c_{di}^{l}\left(z\right)$
 
 Dado que los hard estimates fueron organizados en matrices, el calculo de $q^{l}_{id}$ es una simple operación matricial la cual se muestra a continuación 
 ```{r, eval=FALSE}
@@ -470,15 +470,24 @@ chain_q <- readRDS("Modelo_bayes_HxA/COL/Data/chain_q.rds")
 Ahora, es posible tener el calculo de $I\left( q_{di}^{l} > z \right)$, tomando como umbral $z=0.4$. 
 
 ```{r, eval=TRUE}
-chain_Indicadora <- chain_q
-chain_Indicadora[chain_Indicadora <= 0.4] <- 0
-chain_Indicadora[chain_Indicadora != 0] <- 1
+chain_Ind <- chain_q
+chain_Ind[chain_Ind <= 0.4] <- 0
+chain_Ind[chain_Ind != 0] <- 1
+```
+
+seguidamente calculamos $c_{di}^{l}\left(z\right)$ 
+
+```{r}
+chain_ci <- matrix(0,nrow = nrow(chain_q), ncol = ncol(chain_q))
+chain_ci[chain_Ind == 1] <- chain_q[chain_Ind == 1]
+
 ```
 
 
 ```{r, eval=TRUE}
-datos<-data.frame(chain_q[1:10,1:5], chain_Indicadora[1:10,1:5])
-colnames(datos) <- c(paste0("q",1:5), paste0("Ind",1:5))
+datos<-data.frame(t(chain_q[1:5,1:10]), t(chain_Ind[1:5,1:10]), t(chain_ci[1:5,1:10]),
+                  N = censo_ipm$n[1:10] )
+colnames(datos) <- c(paste0("q",1:5), paste0("Ind",1:5),paste0("c",1:5),"N")
 tba(datos, "Cadenas obtenidas")
 ```
 
@@ -486,18 +495,27 @@ tba(datos, "Cadenas obtenidas")
 Para este proceso debemos realizar sumas ponderadas, dado que cada registro de la base de datos representa  un grupo de observaciones con las mismas características.  
 
 ```{r}
-D <- rowSums(chain_Indicadora*censo_ipm$n)
-Q <- rowSums(chain_q*censo_ipm$n)
-chain_H =  D/sum(censo_ipm$n)
-chain_A = Q/((sum(censo_ipm$n))*8)
-chain_IPM <- (D*Q)/((sum(censo_ipm$n)^2)*8)
+numIPM <- t(chain_ci) %>%
+  as.data.frame() %>%
+  mutate_all(~ . * censo_ipm$n) %>%
+  as.matrix()
+
+chain_N <- t(chain_Ind) %>%
+  as.data.frame() %>%
+  mutate_all(~ . * censo_ipm$n) %>%
+  as.matrix()
+
+
+IPM_l <- colSums(numIPM)/sum(censo_ipm$n)
+Nz_l <- colSums(chain_N)
+H_l <- Nz_l/sum(censo_ipm$n)
+A_l <- colSums(numIPM)/Nz_l
 ```
 
 ```{r, echo=FALSE}
-datos_chain <- data.frame(chain_H = chain_H[1:5], 
-                          chain_A = chain_A[1:5], 
-                          chain_IPM = chain_IPM[1:5])
-rownames(datos_chain) <- paste0("l = ", 1:5)
+datos_chain <- data.frame(IPM_l,Nz_l,H_l,A_l,HA_l = H_l*A_l) %>% 
+  slice(1:10)
+rownames(datos_chain) <- paste0("l = ", 1:10)
 tba(datos_chain, "l-iteraciones")
 ```
 
@@ -505,12 +523,12 @@ tba(datos_chain, "l-iteraciones")
 Por último se realiza las estimaciones puntuales y varianza para $H$, $A$ y $IPM$, esto es:  
 
 ```{r}
-estimacion <- data.frame(H = mean(chain_H),
-           H_sd = sd(chain_H),
-           A = mean(chain_A),
-           A_sd = sd(chain_A),
-           IPM = mean(chain_IPM),
-           IPM_sd = sd(chain_IPM))
+estimacion <- data.frame(H = mean(H_l),
+           H_sd = sd(H_l),
+           A = mean(A_l),
+           A_sd = sd(A_l),
+           IPM = mean(IPM_l),
+           IPM_sd = sd(IPM_l))
 ```
 
 
@@ -524,9 +542,10 @@ Para realizar las estimaciones desagregadas se desarrollo una función que facil
 ```{r}
 source("Modelo_bayes_HxA/0funciones/Estimar_ipm.R")
 ipm_dam <- estime_IPM(poststrat = censo_ipm,
-           chain_q,
-           byMap = "dam", 
-           n_dim = 8) %>% data.frame()
+                      chain_ci = chain_ci,
+                      chain_ind = chain_ind,
+           byMap = "dam"
+           ) %>% data.frame()
 ```
 
 
@@ -538,10 +557,24 @@ Otra estimación desagregada que es posible obtener es la combinación por depar
 
 
 ```{r}
-ipm_dam_sexo <- estime_IPM(poststrat = censo_ipm,
-           chain_q,
-           byMap = c("dam", "sexo"), 
-           n_dim = 8) %>% data.frame()
+ipm_dam_sexo <- estime_IPM(
+  poststrat = censo_ipm,
+  chain_ci = chain_ci,
+  chain_ind = chain_ind,
+  byMap = c("dam", "sexo")
+) %>% data.frame()
+```
+
+
+```{r,eval=FALSE, echo=FALSE}
+ipm_mpio <- estime_IPM(
+  poststrat = censo_ipm,
+  chain_ci = chain_ci,
+  chain_ind = chain_ind,
+  byMap = "dam2"
+) %>% data.frame()
+
+saveRDS(ipm_mpio,"Modelo_bayes_HxA/COL/Data/estimado_ipm.rds")
 ```
 
 

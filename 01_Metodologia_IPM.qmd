@@ -18,14 +18,24 @@ tba <- function(dat, cap = NA){
 
 # Índice de Pobreza Multidimensional
 
-El Índice de Pobreza Multidimensional (IPM) es una medida que captura la pobreza desde múltiples dimensiones. Se calcula utilizando ponderaciones y umbrales en función de diferentes variables o indicadores que reflejan aspectos diversos de la calidad de vida.Los componentes del IPM de describen a continuación:  
+El Índice de Pobreza Multidimensional (IPM) es una medida que captura la pobreza desde múltiples dimensiones. Se calcula utilizando ponderaciones y umbrales en función de diferentes variables o indicadores que reflejan aspectos diversos de la calidad de vida.
 
-1.    Headcount Ratio (H)
+Ahora el IPM es un caso particular de la metodología de la tasa de pobreza ajustada FGT (Foster, Greer y Thorbecke, 1984) de medidas de pobreza unidimensionales. Al igual que cada medida FGT se puede ver como la media de un vector apropiado construido a partir de los datos originales y censurado usando la línea de pobreza, la tasa de pobreza ajustada es la media del vector de puntuación de privación censurado. 
 
-   Este componente mide la proporción de personas que están privadas en al menos una de las dimensiones consideradas. Matemáticamente, $H$ se calcula como la proporción entre el número de personas privadas y la población total:
 $$
-      H = \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} > z \right)
+IPM = \frac{1}{N}\sum_{i=1}^{N}c_i(z)
 $$
+
+donde,  $N$ es el número de individuos u hogares en la población y $c_i(z)$ es el puntaje de privación censurado de la observación $i$ que esta dado como: 
+
+$$
+c_{i}\left(z\right)=\begin{cases}
+q_i & \text{si } q_i\ge z\\
+0 & \text{si } q < z
+\end{cases}
+$$
+
+
 con 
 $$
       q_i =  \sum_{k=1}^{K} w_k \cdot y_{i}^{k}  
@@ -33,21 +43,32 @@ $$
 
 Donde:
 
-  -   $N$ es el número de individuos u hogares en la población. 
   -   $K$ es el número de dimensiones o indicadores de la privación.
   -   $w_k$ es el ponderador asociado a la dimensión $k$.
   -   $y_{i}^{k}$ es una variable binaria que toma el valor $1$ si el individuo $i$ esta privado  en la dimensión $k$ y $0$ en el caso contrario. 
   -   $z$ es el umbral para considerar a alguien con multiples privaciones.
+
+Una segunda forma de ver  es en términos de índices parciales, es decir, medidas que proporcionan información básica sobre un solo aspecto de la pobreza. A continuación vemos cada uno de estos componentes:
   
- 
+
+1.    Headcount Ratio (H)
+
+   Este componente mide la proporción de personas que están privadas en al menos una de las dimensiones consideradas. Matemáticamente, $H$ se calcula como la proporción entre el número de personas privadas y la población total:
+   
+$$
+H = \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} \ge z \right)= \frac{N\left(z\right)}{N}
+$$
+
+donde $N\left(z\right) =  \sum_{i=1}^{N} I\left( q_{i} \ge z \right)$
 
 2.    Intensity of Deprivation (A) 
 
 Este componente mide la intensidad o gravedad promedio de la privación entre aquellos que están privados. Matemáticamente, $A$ se calcula como el promedio de los indicadoras $y_{i}^{k}$ para aquellos hogares o personas que están privados:   
   
 $$ 
-A = \frac{1}{NK} \sum_{i=1}^{N} \sum_{k=1}^{K} q_i = \frac{1}{N} \sum_{i=1}^{N} \bar{q_i}  
+A=\sum_{i=1}^{N}\frac{c_{i}\left(z\right)}{N\left(z\right)}  
 $$
+
 
 Luego, el Índice de Pobreza Multidimensional (IPM) se expresa como:
 
@@ -57,27 +78,20 @@ $$
 reemplazando las $H$ y $A$ por sus respectivas ecuaciones se tiene que: 
 
 $$
-IPM =\left[ \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} > z \right) \right] \left[  \frac{1}{NK} \sum_{i=1}^{N} \sum_{k=1}^{K} q_i  \right]
-$$
-de donde se sigue 
-
-$$
-IPM = \frac{1}{N^2K} \left[\sum_{i=1}^{N} I\left( q_{i} > z \right) \right] \left[ \sum_{i=1}^{N} \sum_{k=1}^{K} q_i  \right]
+IPM=\frac{N\left(z\right)}{N}\times\sum_{i=1}^{N}\frac{c_{i}\left(z\right)}{N\left(z\right)}=\frac{1}{N}\sum_{i=1}^{N}c_{i}\left(z\right)
 $$
 
-
-El IPM combina los componentes $H$ y $A$. 
 
 ## Ejemplo  
 Para ilustrar el cálculo del Índice de Pobreza Multidimensional (IPM), empleamos el conjunto de datos simulados a continuación.
 
-Consideremos un escenario con diez observaciones ($N = 10$), a las cuales se les han asignado ocho dimensiones distintas ($K = 8$). Estas dimensiones están ponderadas de acuerdo con el vector $w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)$.
+Consideremos un escenario con diez observaciones ($N = 10$), a las cuales se les han asignado nueve dimensiones distintas ($K = 9$). Estas dimensiones están ponderadas de acuerdo con el vector $w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2)$.
 
 ```{r}
 # Definición de parámetros
-K <- 8  # Número de dimensiones
+K <- 9  # Número de dimensiones
 N <- 10 # Número de personas
-w <- c(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)  # Ponderaciones para cada dimensión
+w <- c(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2)  # Ponderaciones para cada dimensión
 ```
 
 A continuación se realiza la simulación de la matriz de variables dicótomicas para las diez persona respondientes 
@@ -100,33 +114,33 @@ tba(M_dummy)
 
 A continuación se realiza el calculo de H y A usando las ecuaciones dadas previamente. 
 ```{r, eval=TRUE}
-# Cálculo de H y A utilizando el vector q
 q <- M_dummy %*% w  # Vector q de ponderaciones por dimensiones
-Indicadora <- ifelse(q > 0.4,1,0)
-datos <- data.frame(M_dummy, q = q, Indicadora) 
+Indicadora <- ifelse(q >= 0.4,1,0)
+c_i <- ifelse(Indicadora == 1, q,0)   
+datos <- data.frame(M_dummy, q_i = q, Ind_i = Indicadora, c_i) 
 ```
 
 ```{r, echo=FALSE}
 tba(datos)
 ```
+Para obtener el $IPM$ procedemos así 
 
-Para obtener la primera parte de la ecuación hacemos la suma de la indicadora, es decir:  
-```{r, eval=TRUE}
-D <- sum(Indicadora)
-D
+```{r}
+IPM = mean(datos$c_i)
 ```
-El segundo elemento del IPM se obtiene al sumar los $q_i$ 
+Los componentes $H$ y $A$ los se obtienen así: 
 
-```{r, eval=TRUE}
-Q <- sum(q)
-Q
-```
-Luego, el IPM se obtiene como: 
+```{r}
+Nz = sum(datos$Ind_i)
+H = Nz/N
+A = sum(datos$c_i)/Nz
 
-```{r, eval=TRUE}
-IPM <- (D * Q)/((N^2)*K)  # Cálculo del IPM
-IPM
 ```
+
+```{r}
+data.frame(A,H,HA = H*A, IPM) %>% tba()
+```
+
 
 #  Estimación del modelo de unidad para variables Binarias
 
@@ -210,18 +224,19 @@ Supongamos que el Índice de Pobreza Multidimensional está compuesto por $K$ di
   3. Denotemos como $\hat{y}_{di}^{kl}$ a la $l$-ésima realización aleatoria de la dimensión $k$ para el individuo $i$ en el dominio $d$. Calculamos $q_{di}^{l} = \sum_{k=1}^{K} w_k \cdot y_{di}^{kl}$. Luego, podemos calcular $H_d^{l}$,  $A_d^{l}$ y $IPM_{d}^{l}$ utilizando las ecuaciones:
 
 $$
-      H_d^{l} = \frac{1}{N_d} \sum_{i=1}^{N_d} I\left( q_{di}^{l} > z \right),
+IPM_{d}^{l} = \frac{1}{N_d}\sum_{i=1}^{N_{d}}c_{di}^{l}\left(z\right)
 $$
+
+$$
+H_d^{l}=\frac{1}{N_{d}}\sum_{i=1}^{N_{d}}I\left(q_{di}^{l}\ge z\right)=\frac{N_{d}^{l}\left(z\right)}{N_{d}}
+$$
+
+y
 
 $$ 
-A_d^{l} = \frac{1}{N_dK} \sum_{i=1}^{N_d} \sum_{k=1}^{K} q_{di}^{l}
+A_{d}^{l}=\sum_{i=1}^{N_{d}}\frac{c_{di}^{l}\left(z\right)}{N^{l}_{d}\left(z\right)}
 $$
 
-y 
-
-$$
-IPM_{d}^{l} = H_{d}^{l} \times A_{d}^{l}
-$$
 
    4. La estimación puntual de $H_d$,  $A_{d}$ y $IPM_{d}$ en cada área pequeña $d$ se calcula tomando el promedio sobre cada una de las $L$ iteraciones: 
     
@@ -257,21 +272,21 @@ $$
 
 Para ilustrar el cálculo del Índice de Pobreza Multidimensional (IPM), empleando el algoritmo MCMC empleamos el conjunto de datos simulados a continuación.
 
-Consideremos un escenario con diez unidades ($N = 10$), a las cuales se les han asignado ocho dimensiones distintas ($K = 8$). Estas dimensiones están ponderadas de acuerdo con el vector $w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)$.
+Consideremos un escenario con diez unidades ($N = 10$), a las cuales se les han asignado nueve dimensiones distintas ($K = 9$). Estas dimensiones están ponderadas de acuerdo con el vector $w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2)$.
 
 ```{r}
 # Definición de parámetros
-K <- 8  # Número de dimensiones
+K <- 9  # Número de dimensiones
 N <- 10 # Número de personas
-w <- c(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)  # Ponderaciones para cada dimensión
+w <- c(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2)  # Ponderaciones para cada dimensión
 ```
 
-A continuación se realiza la simulación de la matriz de variables dicótomicas para las diez unidades, para ello asumiremos que $\hat{\pi}^{k}_{di} =  (0.5, 0.2, 0.3, 0.4, 0.1, 0.9, 0.2, 0.7)$ que fueron estimados mediante modelos mixtos logit Bernoulli, Bayesiano con $L = 5$. Con las que se obtienes las siguientes matrices de Hard estimates
+A continuación se realiza la simulación de la matriz de variables dicótomicas para las diez unidades, para ello asumiremos que $\hat{\pi}^{k}_{di} =  (0.5, 0.2, 0.3, 0.4, 0.1, 0.9, 0.2, 0.7, 0.1)$ que fueron estimados mediante modelos mixtos logit Bernoulli, Bayesiano con $L = 5$. Con las que se obtienes las siguientes matrices de Hard estimates
 
 ```{r}
 set.seed(1234)
 library(purrr)
-pi_di = c(0.5, 0.2, 0.3, 0.4, 0.1, 0.9, 0.2, 0.7)
+pi_di = c(0.5, 0.2, 0.3, 0.4, 0.1, 0.9, 0.2, 0.7,0.1)
 # Generación de datos simulados
 
 ## Iteración 1 
@@ -283,7 +298,8 @@ data_1 <- data.frame(
   y5 = as.numeric(rbernoulli(n = N, p= pi_di[5])),
   y6 = as.numeric(rbernoulli(n = N, p= pi_di[6])),
   y7 = as.numeric(rbernoulli(n = N, p= pi_di[7])),
-  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8]))
+  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8])),
+  y9 = as.numeric(rbernoulli(n = N, p= pi_di[9]))
 )
 rownames(data_1)<- paste0("P",1:N)
 ```
@@ -306,7 +322,8 @@ data_2 <- data.frame(
   y5 = as.numeric(rbernoulli(n = N, p= pi_di[5])),
   y6 = as.numeric(rbernoulli(n = N, p= pi_di[6])),
   y7 = as.numeric(rbernoulli(n = N, p= pi_di[7])),
-  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8]))
+  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8])),
+  y9 = as.numeric(rbernoulli(n = N, p= pi_di[9]))
 )
 rownames(data_2)<- paste0("P",1:N)
 tba(data_2, "Iteración (l=2)")
@@ -323,7 +340,8 @@ data_3 <- data.frame(
   y5 = as.numeric(rbernoulli(n = N, p= pi_di[5])),
   y6 = as.numeric(rbernoulli(n = N, p= pi_di[6])),
   y7 = as.numeric(rbernoulli(n = N, p= pi_di[7])),
-  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8]))
+  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8])),
+  y9 = as.numeric(rbernoulli(n = N, p= pi_di[9]))
 )
 rownames(data_3)<- paste0("P",1:N)
 tba(data_3, "Iteración (l=3)")
@@ -340,7 +358,8 @@ data_4 <- data.frame(
   y5 = as.numeric(rbernoulli(n = N, p= pi_di[5])),
   y6 = as.numeric(rbernoulli(n = N, p= pi_di[6])),
   y7 = as.numeric(rbernoulli(n = N, p= pi_di[7])),
-  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8]))
+  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8])),
+  y9 = as.numeric(rbernoulli(n = N, p= pi_di[9]))
 )
 rownames(data_4)<- paste0("P",1:N)
 tba(data_4, "Iteración (l=4)")
@@ -357,14 +376,15 @@ data_5 <- data.frame(
   y5 = as.numeric(rbernoulli(n = N, p= pi_di[5])),
   y6 = as.numeric(rbernoulli(n = N, p= pi_di[6])),
   y7 = as.numeric(rbernoulli(n = N, p= pi_di[7])),
-  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8]))
+  y8 = as.numeric(rbernoulli(n = N, p= pi_di[8])),
+  y9 = as.numeric(rbernoulli(n = N, p= pi_di[9]))
 )
 rownames(data_5)<- paste0("P",1:N)
 tba(data_5, "Iteración (l=5)")
 ```
 
 
-A continuación se realiza el calculo de $q^l_i$ y $I\left( q_{i}^{l} > z \right)$ usando las ecuaciones dadas previamente y $z=0.4$. 
+A continuación se realiza el calculo de $q^l_i$,  $I\left( q_{i}^{l} > z \right)$ y $c_{i}^{l}\left(z\right)$ usando las ecuaciones dadas previamente y $z=0.4$. 
 
 ```{r, eval=TRUE}
 # Vector q de ponderaciones por dimensiones
@@ -374,35 +394,37 @@ q3 <- as.matrix(data_3) %*% w
 q4 <- as.matrix(data_4) %*% w  
 q5 <- as.matrix(data_5) %*% w  
 
-Indicadora1 <- ifelse(q1 > 0.4,1,0)
-Indicadora2 <- ifelse(q2 > 0.4,1,0)
-Indicadora3 <- ifelse(q3 > 0.4,1,0)
-Indicadora4 <- ifelse(q4 > 0.4,1,0)
-Indicadora5 <- ifelse(q5 > 0.4,1,0)
+Ind1 <- ifelse(q1 >= 0.4,1,0)
+Ind2 <- ifelse(q2 >= 0.4,1,0)
+Ind3 <- ifelse(q3 >= 0.4,1,0)
+Ind4 <- ifelse(q4 >= 0.4,1,0)
+Ind5 <- ifelse(q5 >= 0.4,1,0)
 
-datos <- data.frame(q1,q2,q3,q4,q5, 
-                    Indicadora1,Indicadora2,Indicadora3, Indicadora4,Indicadora5) 
+c1 <- ifelse(Ind1 == 1,q1,0)
+c2 <- ifelse(Ind2 == 1,q2,0)
+c3 <- ifelse(Ind3 == 1,q3,0)
+c4 <- ifelse(Ind4 == 1,q4,0)
+c5 <- ifelse(Ind5 == 1,q5,0)
+
+
+datos <- data.frame(q1, q2, q3, q4, q5,
+                    Ind1, Ind2, Ind3, Ind4, Ind5, c1, c2, c3, c4, c5) 
 ```
 
 ```{r, echo=FALSE}
-tba(datos, "Iteración (l=1)")
+tba(datos)
 ```
 
-Ahora se calcula $H^l$, $A^l$ y $IPM^l$, esto es:  
+Ahora se calcula  $IPM^l$ , $H^l$ y  $A^l$, esto es:  
 
-```{r, eval=TRUE}
-H_l <- colSums(datos[,6:10])/N
-H_l
-```
-
-```{r, eval=TRUE}
-A_l <- colSums(datos[,1:5])/(N*K)
-A_l
-```
-
-```{r, eval=TRUE}
-IPM_l <- as.numeric(H_l*A_l)
-IPM_l
+```{r}
+IPM_l <- colMeans(datos[,11:15])
+Nz_l <- colSums(datos[,6:10])
+H_l <- Nz_l/N
+A_l <- colSums(datos[,11:15])/Nz_l
+tab_l <- data.frame(IPM_l, Nz_l, H_l, A_l, HA_l =  H_l*A_l) 
+rownames(tab_l) <- paste0("l = ", 1:nrow(tab_l))
+tba(tab_l)
 ```
 
 Por último se realiza el calculo de las estimaciones puntuales y su varianza para $H$, $A$ y $IPM$, esto es:  
