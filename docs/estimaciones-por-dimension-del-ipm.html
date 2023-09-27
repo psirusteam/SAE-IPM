@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2023-08-23" />
+<meta name="date" content="2023-09-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="definiendo-de-los-modelos-en-stan..html"><a href="definiendo-de-los-modelos-en-stan..html"><i class="fa fa-check"></i><b>4.1</b> Definiendo de los modelos en Stan.</a></li>
 <li class="chapter" data-level="4.2" data-path="proceso-para-la-predicción-pi_dikl.html"><a href="proceso-para-la-predicción-pi_dikl.html"><i class="fa fa-check"></i><b>4.2</b> Proceso para la predicción <span class="math inline">\(\pi_{di}^{kl}\)</span></a></li>
 <li class="chapter" data-level="4.3" data-path="definiendo-los-hard-estimates.html"><a href="definiendo-los-hard-estimates.html"><i class="fa fa-check"></i><b>4.3</b> Definiendo los hard estimates</a></li>
-<li class="chapter" data-level="4.4" data-path="calculando-q_dil-y-ileft-q_dil-z-right.html"><a href="calculando-q_dil-y-ileft-q_dil-z-right.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span> y <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span></a></li>
+<li class="chapter" data-level="4.4" data-path="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><a href="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span>, <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span> y <span class="math inline">\(c_{di}^{l}\left(z\right)\)</span></a></li>
 <li class="chapter" data-level="4.5" data-path="estimación-de-h-a-e-ipm.html"><a href="estimación-de-h-a-e-ipm.html"><i class="fa fa-check"></i><b>4.5</b> Estimación de <span class="math inline">\(H\)</span>, <span class="math inline">\(A\)</span> e <span class="math inline">\(IPM\)</span></a></li>
 <li class="chapter" data-level="4.6" data-path="estimaciones-desagregadas-del-ipm.html"><a href="estimaciones-desagregadas-del-ipm.html"><i class="fa fa-check"></i><b>4.6</b> Estimaciones desagregadas del IPM</a></li>
 <li class="chapter" data-level="4.7" data-path="estimaciones-por-dimension-del-ipm.html"><a href="estimaciones-por-dimension-del-ipm.html"><i class="fa fa-check"></i><b>4.7</b> Estimaciones por dimension del IPM</a></li>
@@ -192,16 +192,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.7</span> Estimaciones por dimension del IPM<a href="estimaciones-por-dimension-del-ipm.html#estimaciones-por-dimension-del-ipm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Dado que el Índice de Pobreza Multidimensional (IPM) está compuesto por diversas dimensiones, resulta fundamental analizar cada una de estas dimensiones de manera individual. Esto permite comprender la naturaleza compleja y multifacética de la pobreza, lo cual a su vez posibilita diseñar estrategias de reducción efectivas. Esta aproximación garantiza una toma de decisiones fundamentada, la distribución eficiente de recursos y un impacto más profundo en la mejora de las condiciones de vida de las personas vulnerables. En este contexto, los “hard estimates” previamente obtenidos para cada dimensión resultan esenciales para obtener las estimaciones correspondientes a cada una de ellas.</p>
 <p>El proceso de cálculo se basa en una media ponderada y se aplica a la dimensión de <strong>Hacinamiento</strong>, siguiendo una lógica similar para las demás dimensiones del IPM.</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="estimaciones-por-dimension-del-ipm.html#cb49-1" tabindex="-1"></a>n_filtered <span class="ot">&lt;-</span> censo_ipm<span class="sc">$</span>n</span>
-<span id="cb49-2"><a href="estimaciones-por-dimension-del-ipm.html#cb49-2" tabindex="-1"></a>epred_mat_filtered <span class="ot">&lt;-</span> epred_mat_hacinamiento_dummy</span>
-<span id="cb49-3"><a href="estimaciones-por-dimension-del-ipm.html#cb49-3" tabindex="-1"></a>mrp_estimates <span class="ot">&lt;-</span> epred_mat_filtered <span class="sc">%*%</span> n_filtered <span class="sc">/</span> <span class="fu">sum</span>(n_filtered)</span>
-<span id="cb49-4"><a href="estimaciones-por-dimension-del-ipm.html#cb49-4" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb49-5"><a href="estimaciones-por-dimension-del-ipm.html#cb49-5" tabindex="-1"></a>  <span class="at">estimate =</span> <span class="fu">mean</span>(mrp_estimates),</span>
-<span id="cb49-6"><a href="estimaciones-por-dimension-del-ipm.html#cb49-6" tabindex="-1"></a>  <span class="at">estimate_se =</span> <span class="fu">sd</span>(mrp_estimates)</span>
-<span id="cb49-7"><a href="estimaciones-por-dimension-del-ipm.html#cb49-7" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="estimaciones-por-dimension-del-ipm.html#cb42-1" tabindex="-1"></a>n_filtered <span class="ot">&lt;-</span> censo_ipm<span class="sc">$</span>n</span>
+<span id="cb42-2"><a href="estimaciones-por-dimension-del-ipm.html#cb42-2" tabindex="-1"></a>epred_mat_filtered <span class="ot">&lt;-</span> epred_mat_hacinamiento_dummy</span>
+<span id="cb42-3"><a href="estimaciones-por-dimension-del-ipm.html#cb42-3" tabindex="-1"></a>mrp_estimates <span class="ot">&lt;-</span> epred_mat_filtered <span class="sc">%*%</span> n_filtered <span class="sc">/</span> <span class="fu">sum</span>(n_filtered)</span>
+<span id="cb42-4"><a href="estimaciones-por-dimension-del-ipm.html#cb42-4" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb42-5"><a href="estimaciones-por-dimension-del-ipm.html#cb42-5" tabindex="-1"></a>  <span class="at">estimate =</span> <span class="fu">mean</span>(mrp_estimates),</span>
+<span id="cb42-6"><a href="estimaciones-por-dimension-del-ipm.html#cb42-6" tabindex="-1"></a>  <span class="at">estimate_se =</span> <span class="fu">sd</span>(mrp_estimates)</span>
+<span id="cb42-7"><a href="estimaciones-por-dimension-del-ipm.html#cb42-7" tabindex="-1"></a>)</span></code></pre></div>
 <table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-41">Tabla 4.8: </span>Estimaciones nacional para Hacinamiento
+<span id="tab:unnamed-chunk-43">Tabla 4.8: </span>Estimaciones nacional para Hacinamiento
 </caption>
 <thead>
 <tr>
@@ -225,13 +225,13 @@ estimate_se
 </tbody>
 </table>
 <p>Con el objetivo de agilizar el proceso de calculo se define crea la función <strong>agregado_dim_ipm</strong> que hace los cálculos. La forma de uso es la siguiente.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="estimaciones-por-dimension-del-ipm.html#cb50-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;Modelo_bayes_HxA/0funciones/agregado_dim_ipm.r&quot;</span>)</span>
-<span id="cb50-2"><a href="estimaciones-por-dimension-del-ipm.html#cb50-2" tabindex="-1"></a>datos_dam_haci <span class="ot">&lt;-</span> <span class="fu">agregado_dim_ipm</span>(<span class="at">poststrat =</span> censo_ipm,</span>
-<span id="cb50-3"><a href="estimaciones-por-dimension-del-ipm.html#cb50-3" tabindex="-1"></a>           <span class="at">epredmat =</span> epred_mat_hacinamiento_dummy,</span>
-<span id="cb50-4"><a href="estimaciones-por-dimension-del-ipm.html#cb50-4" tabindex="-1"></a>           <span class="at">byMap =</span> <span class="st">&quot;dam&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="estimaciones-por-dimension-del-ipm.html#cb43-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;Modelo_bayes_HxA/0funciones/agregado_dim_ipm.r&quot;</span>)</span>
+<span id="cb43-2"><a href="estimaciones-por-dimension-del-ipm.html#cb43-2" tabindex="-1"></a>datos_dam_haci <span class="ot">&lt;-</span> <span class="fu">agregado_dim_ipm</span>(<span class="at">poststrat =</span> censo_ipm,</span>
+<span id="cb43-3"><a href="estimaciones-por-dimension-del-ipm.html#cb43-3" tabindex="-1"></a>           <span class="at">epredmat =</span> epred_mat_hacinamiento_dummy,</span>
+<span id="cb43-4"><a href="estimaciones-por-dimension-del-ipm.html#cb43-4" tabindex="-1"></a>           <span class="at">byMap =</span> <span class="st">&quot;dam&quot;</span>)</span></code></pre></div>
 <table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-43">Tabla 4.9: </span>Estimaciones por departamento para Hacinamiento
+<span id="tab:unnamed-chunk-45">Tabla 4.9: </span>Estimaciones por departamento para Hacinamiento
 </caption>
 <thead>
 <tr>
@@ -615,7 +615,7 @@ estimate_se
 El resultado por municipio y para todas las dimensiones se muestra en la siguiente tabla
 <table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-44">Tabla 4.10: </span>Estimacion puntual por municipio y dimension
+<span id="tab:unnamed-chunk-46">Tabla 4.10: </span>Estimacion puntual por municipio y dimension
 </caption>
 <thead>
 <tr>
@@ -943,7 +943,7 @@ Saneamiento
 </table>
 <table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-45">Tabla 4.11: </span>Error de estimacion por municipio y dimension
+<span id="tab:unnamed-chunk-47">Tabla 4.11: </span>Error de estimacion por municipio y dimension
 </caption>
 <thead>
 <tr>

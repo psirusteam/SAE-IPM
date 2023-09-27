@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2023-08-23" />
+<meta name="date" content="2023-09-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="definiendo-de-los-modelos-en-stan..html"><a href="definiendo-de-los-modelos-en-stan..html"><i class="fa fa-check"></i><b>4.1</b> Definiendo de los modelos en Stan.</a></li>
 <li class="chapter" data-level="4.2" data-path="proceso-para-la-predicción-pi_dikl.html"><a href="proceso-para-la-predicción-pi_dikl.html"><i class="fa fa-check"></i><b>4.2</b> Proceso para la predicción <span class="math inline">\(\pi_{di}^{kl}\)</span></a></li>
 <li class="chapter" data-level="4.3" data-path="definiendo-los-hard-estimates.html"><a href="definiendo-los-hard-estimates.html"><i class="fa fa-check"></i><b>4.3</b> Definiendo los hard estimates</a></li>
-<li class="chapter" data-level="4.4" data-path="calculando-q_dil-y-ileft-q_dil-z-right.html"><a href="calculando-q_dil-y-ileft-q_dil-z-right.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span> y <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span></a></li>
+<li class="chapter" data-level="4.4" data-path="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><a href="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span>, <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span> y <span class="math inline">\(c_{di}^{l}\left(z\right)\)</span></a></li>
 <li class="chapter" data-level="4.5" data-path="estimación-de-h-a-e-ipm.html"><a href="estimación-de-h-a-e-ipm.html"><i class="fa fa-check"></i><b>4.5</b> Estimación de <span class="math inline">\(H\)</span>, <span class="math inline">\(A\)</span> e <span class="math inline">\(IPM\)</span></a></li>
 <li class="chapter" data-level="4.6" data-path="estimaciones-desagregadas-del-ipm.html"><a href="estimaciones-desagregadas-del-ipm.html"><i class="fa fa-check"></i><b>4.6</b> Estimaciones desagregadas del IPM</a></li>
 <li class="chapter" data-level="4.7" data-path="estimaciones-por-dimension-del-ipm.html"><a href="estimaciones-por-dimension-del-ipm.html"><i class="fa fa-check"></i><b>4.7</b> Estimaciones por dimension del IPM</a></li>
@@ -191,28 +191,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="definiendo-de-los-modelos-en-stan." class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> Definiendo de los modelos en Stan.<a href="definiendo-de-los-modelos-en-stan..html#definiendo-de-los-modelos-en-stan." class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para cada dimensión que compone el IPM se ajusta un modelo mixtos logit Bernoulli estimando mediante técnicas bayesiana. En este código se incluye el uso de la función <code>future_map</code> que permite procesar en paralelo cada modelo O puede compilar cada por separado, en nuestro caso se proceso cada modelo por separado.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="definiendo-de-los-modelos-en-stan..html#cb22-1" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
-<span id="cb22-2"><a href="definiendo-de-los-modelos-en-stan..html#cb22-2" tabindex="-1"></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>)</span>
-<span id="cb22-3"><a href="definiendo-de-los-modelos-en-stan..html#cb22-3" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="definiendo-de-los-modelos-en-stan..html#cb22-4" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">future_map</span>(encuesta_df, <span class="cf">function</span>(xdat){</span>
-<span id="cb22-5"><a href="definiendo-de-los-modelos-en-stan..html#cb22-5" tabindex="-1"></a><span class="fu">stan_glmer</span>(</span>
-<span id="cb22-6"><a href="definiendo-de-los-modelos-en-stan..html#cb22-6" tabindex="-1"></a>  <span class="fu">cbind</span>(yno, ysi) <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> mpio) <span class="sc">+</span></span>
-<span id="cb22-7"><a href="definiendo-de-los-modelos-en-stan..html#cb22-7" tabindex="-1"></a>    (<span class="dv">1</span> <span class="sc">|</span> depto) <span class="sc">+</span></span>
-<span id="cb22-8"><a href="definiendo-de-los-modelos-en-stan..html#cb22-8" tabindex="-1"></a>    edad <span class="sc">+</span></span>
-<span id="cb22-9"><a href="definiendo-de-los-modelos-en-stan..html#cb22-9" tabindex="-1"></a>    area <span class="sc">+</span></span>
-<span id="cb22-10"><a href="definiendo-de-los-modelos-en-stan..html#cb22-10" tabindex="-1"></a>    anoest <span class="sc">+</span></span>
-<span id="cb22-11"><a href="definiendo-de-los-modelos-en-stan..html#cb22-11" tabindex="-1"></a>    etnia <span class="sc">+</span></span>
-<span id="cb22-12"><a href="definiendo-de-los-modelos-en-stan..html#cb22-12" tabindex="-1"></a>    sexo <span class="sc">+</span> </span>
-<span id="cb22-13"><a href="definiendo-de-los-modelos-en-stan..html#cb22-13" tabindex="-1"></a>    tasa_desocupacion ,</span>
-<span id="cb22-14"><a href="definiendo-de-los-modelos-en-stan..html#cb22-14" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>),</span>
-<span id="cb22-15"><a href="definiendo-de-los-modelos-en-stan..html#cb22-15" tabindex="-1"></a>  <span class="at">data =</span> xdat,</span>
-<span id="cb22-16"><a href="definiendo-de-los-modelos-en-stan..html#cb22-16" tabindex="-1"></a>  <span class="at">cores =</span> <span class="dv">7</span>,</span>
-<span id="cb22-17"><a href="definiendo-de-los-modelos-en-stan..html#cb22-17" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">4</span>,</span>
-<span id="cb22-18"><a href="definiendo-de-los-modelos-en-stan..html#cb22-18" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">300</span></span>
-<span id="cb22-19"><a href="definiendo-de-los-modelos-en-stan..html#cb22-19" tabindex="-1"></a>)}, </span>
-<span id="cb22-20"><a href="definiendo-de-los-modelos-en-stan..html#cb22-20" tabindex="-1"></a><span class="at">.progress =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb22-21"><a href="definiendo-de-los-modelos-en-stan..html#cb22-21" tabindex="-1"></a></span>
-<span id="cb22-22"><a href="definiendo-de-los-modelos-en-stan..html#cb22-22" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span> fit, <span class="st">&quot;Data/fits_IPM.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="definiendo-de-los-modelos-en-stan..html#cb14-1" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb14-2"><a href="definiendo-de-los-modelos-en-stan..html#cb14-2" tabindex="-1"></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>)</span>
+<span id="cb14-3"><a href="definiendo-de-los-modelos-en-stan..html#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="definiendo-de-los-modelos-en-stan..html#cb14-4" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">future_map</span>(encuesta_df, <span class="cf">function</span>(xdat){</span>
+<span id="cb14-5"><a href="definiendo-de-los-modelos-en-stan..html#cb14-5" tabindex="-1"></a><span class="fu">stan_glmer</span>(</span>
+<span id="cb14-6"><a href="definiendo-de-los-modelos-en-stan..html#cb14-6" tabindex="-1"></a>  <span class="fu">cbind</span>(yno, ysi) <span class="sc">~</span> (<span class="dv">1</span> <span class="sc">|</span> mpio) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="definiendo-de-los-modelos-en-stan..html#cb14-7" tabindex="-1"></a>    (<span class="dv">1</span> <span class="sc">|</span> depto) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="definiendo-de-los-modelos-en-stan..html#cb14-8" tabindex="-1"></a>    edad <span class="sc">+</span></span>
+<span id="cb14-9"><a href="definiendo-de-los-modelos-en-stan..html#cb14-9" tabindex="-1"></a>    area <span class="sc">+</span></span>
+<span id="cb14-10"><a href="definiendo-de-los-modelos-en-stan..html#cb14-10" tabindex="-1"></a>    anoest <span class="sc">+</span></span>
+<span id="cb14-11"><a href="definiendo-de-los-modelos-en-stan..html#cb14-11" tabindex="-1"></a>    etnia <span class="sc">+</span></span>
+<span id="cb14-12"><a href="definiendo-de-los-modelos-en-stan..html#cb14-12" tabindex="-1"></a>    sexo <span class="sc">+</span> </span>
+<span id="cb14-13"><a href="definiendo-de-los-modelos-en-stan..html#cb14-13" tabindex="-1"></a>    tasa_desocupacion ,</span>
+<span id="cb14-14"><a href="definiendo-de-los-modelos-en-stan..html#cb14-14" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>),</span>
+<span id="cb14-15"><a href="definiendo-de-los-modelos-en-stan..html#cb14-15" tabindex="-1"></a>  <span class="at">data =</span> xdat,</span>
+<span id="cb14-16"><a href="definiendo-de-los-modelos-en-stan..html#cb14-16" tabindex="-1"></a>  <span class="at">cores =</span> <span class="dv">7</span>,</span>
+<span id="cb14-17"><a href="definiendo-de-los-modelos-en-stan..html#cb14-17" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb14-18"><a href="definiendo-de-los-modelos-en-stan..html#cb14-18" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">300</span></span>
+<span id="cb14-19"><a href="definiendo-de-los-modelos-en-stan..html#cb14-19" tabindex="-1"></a>)}, </span>
+<span id="cb14-20"><a href="definiendo-de-los-modelos-en-stan..html#cb14-20" tabindex="-1"></a><span class="at">.progress =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-21"><a href="definiendo-de-los-modelos-en-stan..html#cb14-21" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="definiendo-de-los-modelos-en-stan..html#cb14-22" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span> fit, <span class="st">&quot;Data/fits_IPM.rds&quot;</span>)</span></code></pre></div>
 <p>Terminado la compilación de los modelos después de realizar validaciones sobre esto, pasamos hacer las predicciones en el censo.</p>
 </div>
             </section>

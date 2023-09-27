@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2023-08-23" />
+<meta name="date" content="2023-09-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="definiendo-de-los-modelos-en-stan..html"><a href="definiendo-de-los-modelos-en-stan..html"><i class="fa fa-check"></i><b>4.1</b> Definiendo de los modelos en Stan.</a></li>
 <li class="chapter" data-level="4.2" data-path="proceso-para-la-predicción-pi_dikl.html"><a href="proceso-para-la-predicción-pi_dikl.html"><i class="fa fa-check"></i><b>4.2</b> Proceso para la predicción <span class="math inline">\(\pi_{di}^{kl}\)</span></a></li>
 <li class="chapter" data-level="4.3" data-path="definiendo-los-hard-estimates.html"><a href="definiendo-los-hard-estimates.html"><i class="fa fa-check"></i><b>4.3</b> Definiendo los hard estimates</a></li>
-<li class="chapter" data-level="4.4" data-path="calculando-q_dil-y-ileft-q_dil-z-right.html"><a href="calculando-q_dil-y-ileft-q_dil-z-right.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span> y <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span></a></li>
+<li class="chapter" data-level="4.4" data-path="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><a href="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span>, <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span> y <span class="math inline">\(c_{di}^{l}\left(z\right)\)</span></a></li>
 <li class="chapter" data-level="4.5" data-path="estimación-de-h-a-e-ipm.html"><a href="estimación-de-h-a-e-ipm.html"><i class="fa fa-check"></i><b>4.5</b> Estimación de <span class="math inline">\(H\)</span>, <span class="math inline">\(A\)</span> e <span class="math inline">\(IPM\)</span></a></li>
 <li class="chapter" data-level="4.6" data-path="estimaciones-desagregadas-del-ipm.html"><a href="estimaciones-desagregadas-del-ipm.html"><i class="fa fa-check"></i><b>4.6</b> Estimaciones desagregadas del IPM</a></li>
 <li class="chapter" data-level="4.7" data-path="estimaciones-por-dimension-del-ipm.html"><a href="estimaciones-por-dimension-del-ipm.html"><i class="fa fa-check"></i><b>4.7</b> Estimaciones por dimension del IPM</a></li>
@@ -190,32 +190,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="índice-de-pobreza-multidimensional" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Capítulo 2</span> Índice de Pobreza Multidimensional<a href="índice-de-pobreza-multidimensional.html#índice-de-pobreza-multidimensional" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>El Índice de Pobreza Multidimensional (IPM) es una medida que captura la pobreza desde múltiples dimensiones. Se calcula utilizando ponderaciones y umbrales en función de diferentes variables o indicadores que reflejan aspectos diversos de la calidad de vida.Los componentes del IPM de describen a continuación:</p>
-<ol style="list-style-type: decimal">
-<li>Headcount Ratio (H)</li>
-</ol>
-<p>Este componente mide la proporción de personas que están privadas en al menos una de las dimensiones consideradas. Matemáticamente, <span class="math inline">\(H\)</span> se calcula como la proporción entre el número de personas privadas y la población total:
-<span class="math display">\[
-      H = \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} &gt; z \right)
-\]</span>
-con
+<p>El Índice de Pobreza Multidimensional (IPM) es una medida que captura la pobreza desde múltiples dimensiones. Se calcula utilizando ponderaciones y umbrales en función de diferentes variables o indicadores que reflejan aspectos diversos de la calidad de vida.</p>
+<p>Ahora el IPM es un caso particular de la metodología de la tasa de pobreza ajustada FGT (Foster, Greer y Thorbecke, 1984) de medidas de pobreza unidimensionales. Al igual que cada medida FGT se puede ver como la media de un vector apropiado construido a partir de los datos originales y censurado usando la línea de pobreza, la tasa de pobreza ajustada es la media del vector de puntuación de privación censurado.</p>
+<p><span class="math display">\[
+IPM = \frac{1}{N}\sum_{i=1}^{N}c_i(z)
+\]</span></p>
+<p>donde, <span class="math inline">\(N\)</span> es el número de individuos u hogares en la población y <span class="math inline">\(c_i(z)\)</span> es el puntaje de privación censurado de la observación <span class="math inline">\(i\)</span> que esta dado como:</p>
+<p><span class="math display">\[
+c_{i}\left(z\right)=\begin{cases}
+q_i &amp; \text{si } q_i\ge z\\
+0 &amp; \text{si } q &lt; z
+\end{cases}
+\]</span></p>
+<p>con
 <span class="math display">\[
       q_i =  \sum_{k=1}^{K} w_k \cdot y_{i}^{k}  
 \]</span></p>
 <p>Donde:</p>
 <ul>
-<li><span class="math inline">\(N\)</span> es el número de individuos u hogares en la población.</li>
 <li><span class="math inline">\(K\)</span> es el número de dimensiones o indicadores de la privación.</li>
 <li><span class="math inline">\(w_k\)</span> es el ponderador asociado a la dimensión <span class="math inline">\(k\)</span>.</li>
 <li><span class="math inline">\(y_{i}^{k}\)</span> es una variable binaria que toma el valor <span class="math inline">\(1\)</span> si el individuo <span class="math inline">\(i\)</span> esta privado en la dimensión <span class="math inline">\(k\)</span> y <span class="math inline">\(0\)</span> en el caso contrario.</li>
 <li><span class="math inline">\(z\)</span> es el umbral para considerar a alguien con multiples privaciones.</li>
 </ul>
+<p>Una segunda forma de ver es en términos de índices parciales, es decir, medidas que proporcionan información básica sobre un solo aspecto de la pobreza. A continuación vemos cada uno de estos componentes:</p>
+<ol style="list-style-type: decimal">
+<li>Headcount Ratio (H)</li>
+</ol>
+<p>Este componente mide la proporción de personas que están privadas en al menos una de las dimensiones consideradas. Matemáticamente, <span class="math inline">\(H\)</span> se calcula como la proporción entre el número de personas privadas y la población total:</p>
+<p><span class="math display">\[
+H = \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} \ge z \right)= \frac{N\left(z\right)}{N}
+\]</span></p>
+<p>donde <span class="math inline">\(N\left(z\right) = \sum_{i=1}^{N} I\left( q_{i} \ge z \right)\)</span></p>
 <ol start="2" style="list-style-type: decimal">
 <li>Intensity of Deprivation (A)</li>
 </ol>
 <p>Este componente mide la intensidad o gravedad promedio de la privación entre aquellos que están privados. Matemáticamente, <span class="math inline">\(A\)</span> se calcula como el promedio de los indicadoras <span class="math inline">\(y_{i}^{k}\)</span> para aquellos hogares o personas que están privados:</p>
 <p><span class="math display">\[
-A = \frac{1}{NK} \sum_{i=1}^{N} \sum_{k=1}^{K} q_i = \frac{1}{N} \sum_{i=1}^{N} \bar{q_i}  
+A=\sum_{i=1}^{N}\frac{c_{i}\left(z\right)}{N\left(z\right)}  
 \]</span></p>
 <p>Luego, el Índice de Pobreza Multidimensional (IPM) se expresa como:</p>
 <p><span class="math display">\[
@@ -223,13 +235,8 @@ IPM = H \times A
 \]</span>
 reemplazando las <span class="math inline">\(H\)</span> y <span class="math inline">\(A\)</span> por sus respectivas ecuaciones se tiene que:</p>
 <p><span class="math display">\[
-IPM =\left[ \frac{1}{N} \sum_{i=1}^{N} I\left( q_{i} &gt; z \right) \right] \left[  \frac{1}{NK} \sum_{i=1}^{N} \sum_{k=1}^{K} q_i  \right]
-\]</span>
-de donde se sigue</p>
-<p><span class="math display">\[
-IPM = \frac{1}{N^2K} \left[\sum_{i=1}^{N} I\left( q_{i} &gt; z \right) \right] \left[ \sum_{i=1}^{N} \sum_{k=1}^{K} q_i  \right]
+IPM=\frac{N\left(z\right)}{N}\times\sum_{i=1}^{N}\frac{c_{i}\left(z\right)}{N\left(z\right)}=\frac{1}{N}\sum_{i=1}^{N}c_{i}\left(z\right)
 \]</span></p>
-<p>El IPM combina los componentes <span class="math inline">\(H\)</span> y <span class="math inline">\(A\)</span>.</p>
 </div>
             </section>
 

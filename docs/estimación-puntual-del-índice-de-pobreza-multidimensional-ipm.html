@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2023-08-23" />
+<meta name="date" content="2023-09-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="definiendo-de-los-modelos-en-stan..html"><a href="definiendo-de-los-modelos-en-stan..html"><i class="fa fa-check"></i><b>4.1</b> Definiendo de los modelos en Stan.</a></li>
 <li class="chapter" data-level="4.2" data-path="proceso-para-la-predicción-pi_dikl.html"><a href="proceso-para-la-predicción-pi_dikl.html"><i class="fa fa-check"></i><b>4.2</b> Proceso para la predicción <span class="math inline">\(\pi_{di}^{kl}\)</span></a></li>
 <li class="chapter" data-level="4.3" data-path="definiendo-los-hard-estimates.html"><a href="definiendo-los-hard-estimates.html"><i class="fa fa-check"></i><b>4.3</b> Definiendo los hard estimates</a></li>
-<li class="chapter" data-level="4.4" data-path="calculando-q_dil-y-ileft-q_dil-z-right.html"><a href="calculando-q_dil-y-ileft-q_dil-z-right.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span> y <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span></a></li>
+<li class="chapter" data-level="4.4" data-path="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><a href="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span>, <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span> y <span class="math inline">\(c_{di}^{l}\left(z\right)\)</span></a></li>
 <li class="chapter" data-level="4.5" data-path="estimación-de-h-a-e-ipm.html"><a href="estimación-de-h-a-e-ipm.html"><i class="fa fa-check"></i><b>4.5</b> Estimación de <span class="math inline">\(H\)</span>, <span class="math inline">\(A\)</span> e <span class="math inline">\(IPM\)</span></a></li>
 <li class="chapter" data-level="4.6" data-path="estimaciones-desagregadas-del-ipm.html"><a href="estimaciones-desagregadas-del-ipm.html"><i class="fa fa-check"></i><b>4.6</b> Estimaciones desagregadas del IPM</a></li>
 <li class="chapter" data-level="4.7" data-path="estimaciones-por-dimension-del-ipm.html"><a href="estimaciones-por-dimension-del-ipm.html"><i class="fa fa-check"></i><b>4.7</b> Estimaciones por dimension del IPM</a></li>
@@ -197,14 +197,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Denotemos como <span class="math inline">\(\hat{y}_{di}^{kl}\)</span> a la <span class="math inline">\(l\)</span>-ésima realización aleatoria de la dimensión <span class="math inline">\(k\)</span> para el individuo <span class="math inline">\(i\)</span> en el dominio <span class="math inline">\(d\)</span>. Calculamos <span class="math inline">\(q_{di}^{l} = \sum_{k=1}^{K} w_k \cdot y_{di}^{kl}\)</span>. Luego, podemos calcular <span class="math inline">\(H_d^{l}\)</span>, <span class="math inline">\(A_d^{l}\)</span> y <span class="math inline">\(IPM_{d}^{l}\)</span> utilizando las ecuaciones:</p></li>
 </ol>
 <p><span class="math display">\[
-      H_d^{l} = \frac{1}{N_d} \sum_{i=1}^{N_d} I\left( q_{di}^{l} &gt; z \right),
+IPM_{d}^{l} = \frac{1}{N_d}\sum_{i=1}^{N_{d}}c_{di}^{l}\left(z\right)
 \]</span></p>
 <p><span class="math display">\[
-A_d^{l} = \frac{1}{N_dK} \sum_{i=1}^{N_d} \sum_{k=1}^{K} q_{di}^{l}
+H_d^{l}=\frac{1}{N_{d}}\sum_{i=1}^{N_{d}}I\left(q_{di}^{l}\ge z\right)=\frac{N_{d}^{l}\left(z\right)}{N_{d}}
 \]</span></p>
 <p>y</p>
 <p><span class="math display">\[
-IPM_{d}^{l} = H_{d}^{l} \times A_{d}^{l}
+A_{d}^{l}=\sum_{i=1}^{N_{d}}\frac{c_{di}^{l}\left(z\right)}{N^{l}_{d}\left(z\right)}
 \]</span></p>
 <ol start="4" style="list-style-type: decimal">
 <li>La estimación puntual de <span class="math inline">\(H_d\)</span>, <span class="math inline">\(A_{d}\)</span> y <span class="math inline">\(IPM_{d}\)</span> en cada área pequeña <span class="math inline">\(d\)</span> se calcula tomando el promedio sobre cada una de las <span class="math inline">\(L\)</span> iteraciones:</li>

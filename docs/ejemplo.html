@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2023-08-23" />
+<meta name="date" content="2023-09-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1" data-path="definiendo-de-los-modelos-en-stan..html"><a href="definiendo-de-los-modelos-en-stan..html"><i class="fa fa-check"></i><b>4.1</b> Definiendo de los modelos en Stan.</a></li>
 <li class="chapter" data-level="4.2" data-path="proceso-para-la-predicción-pi_dikl.html"><a href="proceso-para-la-predicción-pi_dikl.html"><i class="fa fa-check"></i><b>4.2</b> Proceso para la predicción <span class="math inline">\(\pi_{di}^{kl}\)</span></a></li>
 <li class="chapter" data-level="4.3" data-path="definiendo-los-hard-estimates.html"><a href="definiendo-los-hard-estimates.html"><i class="fa fa-check"></i><b>4.3</b> Definiendo los hard estimates</a></li>
-<li class="chapter" data-level="4.4" data-path="calculando-q_dil-y-ileft-q_dil-z-right.html"><a href="calculando-q_dil-y-ileft-q_dil-z-right.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span> y <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span></a></li>
+<li class="chapter" data-level="4.4" data-path="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><a href="calculando-q_dil-ileft-q_dil-z-right-y-c_dilleftzright.html"><i class="fa fa-check"></i><b>4.4</b> Calculando <span class="math inline">\(q_{di}^{l}\)</span>, <span class="math inline">\(I\left( q_{di}^{l} &gt; z \right)\)</span> y <span class="math inline">\(c_{di}^{l}\left(z\right)\)</span></a></li>
 <li class="chapter" data-level="4.5" data-path="estimación-de-h-a-e-ipm.html"><a href="estimación-de-h-a-e-ipm.html"><i class="fa fa-check"></i><b>4.5</b> Estimación de <span class="math inline">\(H\)</span>, <span class="math inline">\(A\)</span> e <span class="math inline">\(IPM\)</span></a></li>
 <li class="chapter" data-level="4.6" data-path="estimaciones-desagregadas-del-ipm.html"><a href="estimaciones-desagregadas-del-ipm.html"><i class="fa fa-check"></i><b>4.6</b> Estimaciones desagregadas del IPM</a></li>
 <li class="chapter" data-level="4.7" data-path="estimaciones-por-dimension-del-ipm.html"><a href="estimaciones-por-dimension-del-ipm.html"><i class="fa fa-check"></i><b>4.7</b> Estimaciones por dimension del IPM</a></li>
@@ -191,11 +191,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="ejemplo" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Ejemplo<a href="ejemplo.html#ejemplo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para ilustrar el cálculo del Índice de Pobreza Multidimensional (IPM), empleamos el conjunto de datos simulados a continuación.</p>
-<p>Consideremos un escenario con diez observaciones (<span class="math inline">\(N = 10\)</span>), a las cuales se les han asignado ocho dimensiones distintas (<span class="math inline">\(K = 8\)</span>). Estas dimensiones están ponderadas de acuerdo con el vector <span class="math inline">\(w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2)\)</span>.</p>
+<p>Consideremos un escenario con diez observaciones (<span class="math inline">\(N = 10\)</span>), a las cuales se les han asignado nueve dimensiones distintas (<span class="math inline">\(K = 9\)</span>). Estas dimensiones están ponderadas de acuerdo con el vector <span class="math inline">\(w = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2)\)</span>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="ejemplo.html#cb1-1" tabindex="-1"></a><span class="co"># Definición de parámetros</span></span>
-<span id="cb1-2"><a href="ejemplo.html#cb1-2" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">8</span>  <span class="co"># Número de dimensiones</span></span>
+<span id="cb1-2"><a href="ejemplo.html#cb1-2" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">9</span>  <span class="co"># Número de dimensiones</span></span>
 <span id="cb1-3"><a href="ejemplo.html#cb1-3" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="co"># Número de personas</span></span>
-<span id="cb1-4"><a href="ejemplo.html#cb1-4" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>)  <span class="co"># Ponderaciones para cada dimensión</span></span></code></pre></div>
+<span id="cb1-4"><a href="ejemplo.html#cb1-4" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>)  <span class="co"># Ponderaciones para cada dimensión</span></span></code></pre></div>
 <p>A continuación se realiza la simulación de la matriz de variables dicótomicas para las diez persona respondientes</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="ejemplo.html#cb2-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb2-2"><a href="ejemplo.html#cb2-2" tabindex="-1"></a><span class="co"># Generación de datos simulados</span></span>
@@ -233,6 +233,9 @@ y7
 <th style="text-align:right;">
 y8
 </th>
+<th style="text-align:right;">
+y9
+</th>
 </tr>
 </thead>
 <tbody>
@@ -264,6 +267,9 @@ P1
 <td style="text-align:right;">
 0
 </td>
+<td style="text-align:right;">
+1
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -293,6 +299,9 @@ P2
 <td style="text-align:right;">
 1
 </td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -315,6 +324,9 @@ P3
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+1
 </td>
 <td style="text-align:right;">
 1
@@ -351,6 +363,9 @@ P4
 <td style="text-align:right;">
 1
 </td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -380,6 +395,9 @@ P5
 <td style="text-align:right;">
 0
 </td>
+<td style="text-align:right;">
+1
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -405,6 +423,9 @@ P6
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0
 </td>
 <td style="text-align:right;">
 0
@@ -438,6 +459,9 @@ P7
 <td style="text-align:right;">
 0
 </td>
+<td style="text-align:right;">
+1
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -467,6 +491,9 @@ P8
 <td style="text-align:right;">
 1
 </td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -492,6 +519,9 @@ P9
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0
 </td>
 <td style="text-align:right;">
 0
@@ -525,14 +555,17 @@ P10
 <td style="text-align:right;">
 1
 </td>
+<td style="text-align:right;">
+1
+</td>
 </tr>
 </tbody>
 </table>
 <p>A continuación se realiza el calculo de H y A usando las ecuaciones dadas previamente.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="ejemplo.html#cb3-1" tabindex="-1"></a><span class="co"># Cálculo de H y A utilizando el vector q</span></span>
-<span id="cb3-2"><a href="ejemplo.html#cb3-2" tabindex="-1"></a>q <span class="ot">&lt;-</span> M_dummy <span class="sc">%*%</span> w  <span class="co"># Vector q de ponderaciones por dimensiones</span></span>
-<span id="cb3-3"><a href="ejemplo.html#cb3-3" tabindex="-1"></a>Indicadora <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(q <span class="sc">&gt;</span> <span class="fl">0.4</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
-<span id="cb3-4"><a href="ejemplo.html#cb3-4" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(M_dummy, <span class="at">q =</span> q, Indicadora) </span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="ejemplo.html#cb3-1" tabindex="-1"></a>q <span class="ot">&lt;-</span> M_dummy <span class="sc">%*%</span> w  <span class="co"># Vector q de ponderaciones por dimensiones</span></span>
+<span id="cb3-2"><a href="ejemplo.html#cb3-2" tabindex="-1"></a>Indicadora <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(q <span class="sc">&gt;=</span> <span class="fl">0.4</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb3-3"><a href="ejemplo.html#cb3-3" tabindex="-1"></a>c_i <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(Indicadora <span class="sc">==</span> <span class="dv">1</span>, q,<span class="dv">0</span>)   </span>
+<span id="cb3-4"><a href="ejemplo.html#cb3-4" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(M_dummy, <span class="at">q_i =</span> q, <span class="at">Ind_i =</span> Indicadora, c_i) </span></code></pre></div>
 <table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -563,10 +596,16 @@ y7
 y8
 </th>
 <th style="text-align:right;">
-q
+y9
 </th>
 <th style="text-align:right;">
-Indicadora
+q_i
+</th>
+<th style="text-align:right;">
+Ind_i
+</th>
+<th style="text-align:right;">
+c_i
 </th>
 </tr>
 </thead>
@@ -600,10 +639,16 @@ P1
 0
 </td>
 <td style="text-align:right;">
-0.1
+1
+</td>
+<td style="text-align:right;">
+0.3
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+0.0
 </td>
 </tr>
 <tr>
@@ -635,10 +680,16 @@ P2
 1
 </td>
 <td style="text-align:right;">
-0.3
+0
+</td>
+<td style="text-align:right;">
+0.2
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+0.0
 </td>
 </tr>
 <tr>
@@ -670,10 +721,16 @@ P3
 1
 </td>
 <td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
 0.5
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0.5
 </td>
 </tr>
 <tr>
@@ -705,10 +762,16 @@ P4
 1
 </td>
 <td style="text-align:right;">
-0.4
+0
+</td>
+<td style="text-align:right;">
+0.3
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+0.0
 </td>
 </tr>
 <tr>
@@ -740,10 +803,16 @@ P5
 0
 </td>
 <td style="text-align:right;">
-0.5
+1
+</td>
+<td style="text-align:right;">
+0.6
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0.6
 </td>
 </tr>
 <tr>
@@ -775,10 +844,16 @@ P6
 0
 </td>
 <td style="text-align:right;">
-0.3
+0
+</td>
+<td style="text-align:right;">
+0.2
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+0.0
 </td>
 </tr>
 <tr>
@@ -810,10 +885,16 @@ P7
 0
 </td>
 <td style="text-align:right;">
-0.5
+1
+</td>
+<td style="text-align:right;">
+0.7
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0.7
 </td>
 </tr>
 <tr>
@@ -845,10 +926,16 @@ P8
 1
 </td>
 <td style="text-align:right;">
-0.8
+0
+</td>
+<td style="text-align:right;">
+0.6
 </td>
 <td style="text-align:right;">
 1
+</td>
+<td style="text-align:right;">
+0.6
 </td>
 </tr>
 <tr>
@@ -880,10 +967,16 @@ P9
 0
 </td>
 <td style="text-align:right;">
-0.4
+0
+</td>
+<td style="text-align:right;">
+0.3
 </td>
 <td style="text-align:right;">
 0
+</td>
+<td style="text-align:right;">
+0.0
 </td>
 </tr>
 <tr>
@@ -915,26 +1008,61 @@ P10
 1
 </td>
 <td style="text-align:right;">
-0.4
+1
 </td>
 <td style="text-align:right;">
-0
+0.5
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.5
 </td>
 </tr>
 </tbody>
 </table>
-<p>Para obtener la primera parte de la ecuación hacemos la suma de la indicadora, es decir:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="ejemplo.html#cb4-1" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">sum</span>(Indicadora)</span>
-<span id="cb4-2"><a href="ejemplo.html#cb4-2" tabindex="-1"></a>D</span></code></pre></div>
-<pre><code>## [1] 4</code></pre>
-<p>El segundo elemento del IPM se obtiene al sumar los <span class="math inline">\(q_i\)</span></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="ejemplo.html#cb6-1" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">sum</span>(q)</span>
-<span id="cb6-2"><a href="ejemplo.html#cb6-2" tabindex="-1"></a>Q</span></code></pre></div>
-<pre><code>## [1] 4.2</code></pre>
-<p>Luego, el IPM se obtiene como:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="ejemplo.html#cb8-1" tabindex="-1"></a>IPM <span class="ot">&lt;-</span> (D <span class="sc">*</span> Q)<span class="sc">/</span>((N<span class="sc">^</span><span class="dv">2</span>)<span class="sc">*</span>K)  <span class="co"># Cálculo del IPM</span></span>
-<span id="cb8-2"><a href="ejemplo.html#cb8-2" tabindex="-1"></a>IPM</span></code></pre></div>
-<pre><code>## [1] 0.021</code></pre>
+<p>Para obtener el <span class="math inline">\(IPM\)</span> procedemos así</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="ejemplo.html#cb4-1" tabindex="-1"></a>IPM <span class="ot">=</span> <span class="fu">mean</span>(datos<span class="sc">$</span>c_i)</span></code></pre></div>
+<p>Los componentes <span class="math inline">\(H\)</span> y <span class="math inline">\(A\)</span> los se obtienen así:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="ejemplo.html#cb5-1" tabindex="-1"></a>Nz <span class="ot">=</span> <span class="fu">sum</span>(datos<span class="sc">$</span>Ind_i)</span>
+<span id="cb5-2"><a href="ejemplo.html#cb5-2" tabindex="-1"></a>H <span class="ot">=</span> Nz<span class="sc">/</span>N</span>
+<span id="cb5-3"><a href="ejemplo.html#cb5-3" tabindex="-1"></a>A <span class="ot">=</span> <span class="fu">sum</span>(datos<span class="sc">$</span>c_i)<span class="sc">/</span>Nz</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="ejemplo.html#cb6-1" tabindex="-1"></a><span class="fu">data.frame</span>(A,H,<span class="at">HA =</span> H<span class="sc">*</span>A, IPM) <span class="sc">%&gt;%</span> <span class="fu">tba</span>()</span></code></pre></div>
+<table class="table table-striped lightable-classic" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: Arial Narrow; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+H
+</th>
+<th style="text-align:right;">
+HA
+</th>
+<th style="text-align:right;">
+IPM
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.58
+</td>
+<td style="text-align:right;">
+0.5
+</td>
+<td style="text-align:right;">
+0.29
+</td>
+<td style="text-align:right;">
+0.29
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <!-- </div> -->
             </section>
